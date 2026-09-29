@@ -216,6 +216,7 @@ Do not build the complete website unless explicitly instructed.
 
 Use these documents as project references:
 
+* `BRAIN.md` (compact persistent project-state document)
 * `docs/PROJECT.md`
 * `docs/SITEMAP.md`
 * `docs/DESIGN.md`
@@ -223,3 +224,13 @@ Use these documents as project references:
 * `docs/SEO.md`
 
 If a new decision conflicts with an existing document, identify the conflict before making a major change.
+
+## Project State Document (`BRAIN.md`)
+
+`BRAIN.md` is the compact persistent project-state document for NPL Hub Nepal.
+
+**Maintenance Rule:**
+After every development task that materially changes routes, components, data models, architecture, functionality, project decisions, or implementation status, update `BRAIN.md` with the new current state and a concise change-log entry. Do not update it for trivial text/style changes unless they materially affect project architecture or behavior.
+
+Keep `BRAIN.md` concise and current. It is a project-state document, not a transcript of conversations.
+
