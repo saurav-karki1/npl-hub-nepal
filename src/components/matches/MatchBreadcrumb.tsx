@@ -8,6 +8,8 @@ interface MatchBreadcrumbProps {
 export function MatchBreadcrumb({ match }: MatchBreadcrumbProps) {
   const { team1, team2 } = resolveMatchTeams(match);
   const matchLabel = `Match #${match.matchNumber}: ${team1.shortName || team1.name} vs ${team2.shortName || team2.name}`;
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -17,19 +19,19 @@ export function MatchBreadcrumb({ match }: MatchBreadcrumbProps) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://nplhub.com.np",
+        item: siteUrl,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Schedule",
-        item: "https://nplhub.com.np/schedule",
+        item: `${siteUrl}/schedule`,
       },
       {
         "@type": "ListItem",
         position: 3,
         name: matchLabel,
-        item: `https://nplhub.com.np/matches/${match.slug}`,
+        item: `${siteUrl}/matches/${match.slug}`,
       },
     ],
   };

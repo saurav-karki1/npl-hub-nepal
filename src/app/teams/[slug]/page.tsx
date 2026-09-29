@@ -27,28 +27,31 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!team) {
     return {
-      title: "Team Not Found | NPL Hub Nepal",
+      title: "Team Not Found",
     };
   }
 
+  const title = `${team.name} — Squad, Fixtures & Team Profile`;
+  const description = `Complete profile for ${team.name} in Nepal Premier League Season 3. View captain ${team.captain}, ${team.region} regional representation, and live match schedule.`;
+
   return {
-    title: `${team.name} — NPL Season 3 Squad, Fixtures & Profile | NPL Hub Nepal`,
-    description: `Complete profile for ${team.name} in Nepal Premier League Season 3. View captain ${team.captain}, ${team.region} regional representation, and live match schedule.`,
+    title,
+    description,
     alternates: {
-      canonical: `https://nplhub.com.np/teams/${team.slug}`,
+      canonical: `/teams/${team.slug}`,
     },
     openGraph: {
-      title: `${team.name} — NPL Season 3 Squad & Schedule | NPL Hub Nepal`,
-      description: `Complete profile for ${team.name} in Nepal Premier League Season 3. View captain ${team.captain}, ${team.region} regional representation, and live match schedule.`,
-      url: `https://nplhub.com.np/teams/${team.slug}`,
+      title,
+      description,
+      url: `/teams/${team.slug}`,
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${team.name} — NPL Season 3 Squad & Schedule | NPL Hub Nepal`,
-      description: `Complete profile for ${team.name} in Nepal Premier League Season 3. View captain ${team.captain}, ${team.region} regional representation, and live match schedule.`,
+      title,
+      description,
     },
   };
 }
@@ -61,8 +64,51 @@ export default async function TeamDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
+  const sportsTeamSchema = {
+    "@context": "https://schema.org",
+    "@type": "SportsTeam",
+    name: team.name,
+    sport: "Cricket",
+    url: `${siteUrl}/teams/${team.slug}`,
+    ...(team.logoUrl ? { logo: `${siteUrl}${team.logoUrl}` } : {}),
+    description: team.description,
+    location: {
+      "@type": "Place",
+      name: team.region,
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: team.city,
+        addressCountry: "NP",
+      },
+    },
+    ...(team.captain && team.captain !== "To be announced"
+      ? {
+          athlete: {
+            "@type": "Person",
+            name: team.captain,
+            jobTitle: "Captain",
+          },
+        }
+      : {}),
+    ...(team.coach && team.coach !== "Not yet available"
+      ? {
+          coach: {
+            "@type": "Person",
+            name: team.coach,
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="py-6 sm:py-8 lg:py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(sportsTeamSchema) }}
+      />
       <Container className="space-y-8 sm:space-y-10">
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="text-xs text-[var(--color-ink-muted)]">

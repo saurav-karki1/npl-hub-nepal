@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Container } from "@/components/ui/Layout";
 import { LinkButton } from "@/components/ui/Button";
 import { getStandings } from "@/lib/repository/matches";
@@ -8,24 +7,24 @@ import { FullPointsTable } from "@/components/points-table/FullPointsTable";
 import { PointsTableRules } from "@/components/points-table/PointsTableRules";
 
 export const metadata: Metadata = {
-  title: "NPL Season 3 Points Table & Team Standings | NPL Hub Nepal",
+  title: "NPL Season 3 Points Table & Team Standings",
   description:
     "Official Nepal Premier League Season 3 points table and team standings. Track wins, losses, net run rates (NRR), and top-4 playoff qualification scenarios across all 8 franchises.",
   alternates: {
-    canonical: "https://nplhub.com.np/points-table",
+    canonical: "/points-table",
   },
   openGraph: {
-    title: "NPL Season 3 Points Table & Standings | NPL Hub Nepal",
+    title: "NPL Season 3 Points Table & Standings",
     description:
       "Official Nepal Premier League Season 3 points table and team standings. Track wins, losses, net run rates (NRR), and top-4 playoff qualification scenarios across all 8 franchises.",
-    url: "https://nplhub.com.np/points-table",
+    url: "/points-table",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NPL Season 3 Points Table & Standings | NPL Hub Nepal",
+    title: "NPL Season 3 Points Table & Standings",
     description:
       "Official Nepal Premier League Season 3 points table and team standings. Track wins, losses, net run rates (NRR), and top-4 playoff qualification scenarios across all 8 franchises.",
   },

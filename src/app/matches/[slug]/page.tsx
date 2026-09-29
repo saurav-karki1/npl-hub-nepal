@@ -29,24 +29,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!match) {
     return {
-      title: "Match Not Found | NPL Hub Nepal",
+      title: "Match Not Found",
     };
   }
 
   const { team1, team2 } = resolveMatchTeams(match);
-  const title = `Match #${match.matchNumber}: ${team1.name} vs ${team2.name} — NPL Season 3 Schedule & Scorecard | NPL Hub Nepal`;
+  const title = `Match #${match.matchNumber}: ${team1.name} vs ${team2.name} — NPL Season 3 Scorecard`;
   const description = `Nepal Premier League Season 3 Match #${match.matchNumber}: ${team1.name} vs ${team2.name} on ${match.dayOfWeek}, ${match.formattedDate} (${match.bsDateNepali}) at TU International Cricket Stadium, Kirtipur.`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: `https://nplhub.com.np/matches/${match.slug}`,
+      canonical: `/matches/${match.slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://nplhub.com.np/matches/${match.slug}`,
+      url: `/matches/${match.slug}`,
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "website",
@@ -70,6 +70,9 @@ export default async function MatchDetailPage({ params }: PageProps) {
   const { prevMatch, nextMatch } = getAdjacentMatches(match.matchNumber);
   const { team1, team2 } = resolveMatchTeams(match);
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
   // Schema.org SportsEvent structured data
   const sportsEventSchema = {
     "@context": "https://schema.org",
@@ -77,6 +80,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
     name: `${team1.name} vs ${team2.name} (NPL Season 3 Match #${match.matchNumber})`,
     description: `Nepal Premier League Season 3 Match #${match.matchNumber}: ${team1.name} vs ${team2.name} at TU International Cricket Stadium, Kirtipur.`,
     startDate: match.date,
+    url: `${siteUrl}/matches/${match.slug}`,
     location: {
       "@type": "Place",
       name: match.venue,
@@ -90,10 +94,12 @@ export default async function MatchDetailPage({ params }: PageProps) {
       {
         "@type": "SportsTeam",
         name: team1.name,
+        url: `${siteUrl}/teams/${team1.slug}`,
       },
       {
         "@type": "SportsTeam",
         name: team2.name,
+        url: `${siteUrl}/teams/${team2.slug}`,
       },
     ],
     organizer: {

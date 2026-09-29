@@ -24,19 +24,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const article = getArticleBySlug(slug);
 
   if (!article) {
-    return { title: "Article Not Found | NPL Hub Nepal" };
+    return { title: "Article Not Found" };
   }
 
   return {
-    title: `${article.title} | NPL Hub Nepal`,
+    title: article.title,
     description: article.excerpt,
     alternates: {
-      canonical: `https://nplhub.com.np/news/${article.slug}`,
+      canonical: `/news/${article.slug}`,
     },
     openGraph: {
-      title: `${article.title} | NPL Hub Nepal`,
+      title: article.title,
       description: article.excerpt,
-      url: `https://nplhub.com.np/news/${article.slug}`,
+      url: `/news/${article.slug}`,
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "article",
@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: "summary_large_image",
-      title: `${article.title} | NPL Hub Nepal`,
+      title: article.title,
       description: article.excerpt,
     },
   };
@@ -249,7 +249,12 @@ export default async function ArticlePage({ params }: PageProps) {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
 
-  if (!article) notFound();
+  if (!article) {
+    notFound();
+  }
+
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
   /* Schema.org NewsArticle structured data */
   const articleSchema = {
@@ -266,12 +271,12 @@ export default async function ArticlePage({ params }: PageProps) {
     publisher: {
       "@type": "Organization",
       name: "NPL Hub Nepal",
-      url: "https://nplhub.com.np",
+      url: siteUrl,
     },
-    url: `https://nplhub.com.np/news/${article.slug}`,
+    url: `${siteUrl}/news/${article.slug}`,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://nplhub.com.np/news/${article.slug}`,
+      "@id": `${siteUrl}/news/${article.slug}`,
     },
   };
 

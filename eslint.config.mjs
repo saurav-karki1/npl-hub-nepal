@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "download_reddit_images.js",
+    "parse_reddit.js",
+    "scripts/**",
   ]),
 ]);
 

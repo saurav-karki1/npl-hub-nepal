@@ -10,6 +10,8 @@ export function PlayerBreadcrumb({
   playerSlug,
 }: PlayerBreadcrumbProps) {
   const isProfile = Boolean(playerName && playerSlug);
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -19,13 +21,13 @@ export function PlayerBreadcrumb({
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://nplhub.com.np",
+        item: siteUrl,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Players",
-        item: "https://nplhub.com.np/players",
+        item: `${siteUrl}/players`,
       },
       ...(isProfile
         ? [
@@ -33,7 +35,7 @@ export function PlayerBreadcrumb({
               "@type": "ListItem",
               position: 3,
               name: playerName,
-              item: `https://nplhub.com.np/players/${playerSlug}`,
+              item: `${siteUrl}/players/${playerSlug}`,
             },
           ]
         : []),

@@ -11,17 +11,17 @@ import { AboutPlatformSection } from "@/components/about/AboutPlatformSection";
 import { AboutNavigationSection } from "@/components/about/AboutNavigationSection";
 
 export const metadata: Metadata = {
-  title: "Nepal Premier League Season 3 — Tournament Guide & Information Hub | NPL Hub Nepal",
+  title: "Tournament Guide & Information Hub",
   description:
     "Comprehensive independent guide to Nepal Premier League (NPL) Season 3 (2026). Explore all 8 franchise teams, 32 fixtures at TU Ground Kirtipur, tournament format, points table rules, and platform transparency.",
   alternates: {
-    canonical: "https://nplhub.com.np/about",
+    canonical: "/about",
   },
   openGraph: {
     title: "Nepal Premier League Season 3 — Tournament Guide & Information Hub",
     description:
       "Comprehensive independent guide to Nepal Premier League (NPL) Season 3. Explore 8 franchise teams, 32 fixtures at TU Stadium Kirtipur, tournament format, and standings rules.",
-    url: "https://nplhub.com.np/about",
+    url: "/about",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
@@ -35,6 +35,9 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
   /* Schema.org structured data for AboutPage and tournament event context */
   const aboutPageSchema = {
     "@context": "https://schema.org",
@@ -42,11 +45,11 @@ export default function AboutPage() {
     name: "Nepal Premier League Season 3 Information Hub",
     description:
       "Comprehensive independent guide and reference for Nepal Premier League Season 3 (2026), featuring verified fixtures, 8 regional teams, and competition rules.",
-    url: "https://nplhub.com.np/about",
+    url: `${siteUrl}/about`,
     publisher: {
       "@type": "Organization",
       name: "NPL Hub Nepal",
-      url: "https://nplhub.com.np",
+      url: siteUrl,
       description:
         "Independent digital information platform for Nepal Premier League cricket.",
     },

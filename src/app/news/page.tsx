@@ -11,24 +11,24 @@ import {
 } from "@/lib/repository/news";
 
 export const metadata: Metadata = {
-  title: "NPL News & Updates | NPL Hub Nepal",
+  title: "NPL News & Updates",
   description:
     "Independent news, tournament announcements, team updates, and editorial coverage of Nepal Premier League Season 3 from NPL Hub Nepal.",
   alternates: {
-    canonical: "https://nplhub.com.np/news",
+    canonical: "/news",
   },
   openGraph: {
-    title: "NPL News & Updates | NPL Hub Nepal",
+    title: "NPL News & Updates",
     description:
       "Independent news, tournament announcements, team updates, and editorial coverage of Nepal Premier League Season 3.",
-    url: "https://nplhub.com.np/news",
+    url: "/news",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NPL News & Updates | NPL Hub Nepal",
+    title: "NPL News & Updates",
     description:
       "Independent news, tournament announcements, team updates, and editorial coverage of Nepal Premier League Season 3.",
   },

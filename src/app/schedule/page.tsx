@@ -12,24 +12,24 @@ import { getAllMatches } from "@/lib/repository/matches";
 import { getAllTeams } from "@/lib/repository/teams";
 
 export const metadata: Metadata = {
-  title: "NPL Season 3 Schedule & Fixtures | NPL Hub Nepal",
+  title: "NPL Season 3 Schedule & Fixtures",
   description:
     "Complete NPL Season 3 schedule and fixtures for Nepal Premier League 2026. View all 32 T20 match dates, Nepali BS calendar dates, Nepal Time (NPT) timings, 8 franchise teams, and TU Stadium Kirtipur venues.",
   alternates: {
-    canonical: "https://nplhub.com.np/schedule",
+    canonical: "/schedule",
   },
   openGraph: {
-    title: "NPL Season 3 Schedule & Fixtures | NPL Hub Nepal",
+    title: "NPL Season 3 Schedule & Fixtures",
     description:
       "Complete NPL Season 3 schedule and fixtures for Nepal Premier League 2026. View all 32 T20 match dates, Nepali BS calendar dates, Nepal Time (NPT) timings, 8 franchise teams, and TU Stadium Kirtipur venues.",
-    url: "https://nplhub.com.np/schedule",
+    url: "/schedule",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NPL Season 3 Schedule & Fixtures | NPL Hub Nepal",
+    title: "NPL Season 3 Schedule & Fixtures",
     description:
       "Complete NPL Season 3 schedule and fixtures for Nepal Premier League 2026. View all 32 T20 match dates, Nepali BS calendar dates, Nepal Time (NPT) timings, 8 franchise teams, and TU Stadium Kirtipur venues.",
   },

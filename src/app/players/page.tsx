@@ -6,17 +6,17 @@ import { PlayerBreadcrumb } from "@/components/players/PlayerBreadcrumb";
 import { PlayerSearchFilter } from "@/components/players/PlayerSearchFilter";
 
 export const metadata: Metadata = {
-  title: "NPL 2026 Players Directory & Season 3 Squads | NPL Hub Nepal",
+  title: "NPL 2026 Players Directory & Season 3 Squads",
   description:
     "Explore verified Nepal Premier League Season 3 (2026) players across all 8 franchises. Filter by franchise, playing role, captains, and confirmed retained squad members.",
   alternates: {
-    canonical: "https://nplhub.com.np/players",
+    canonical: "/players",
   },
   openGraph: {
-    title: "NPL 2026 Players Directory & Season 3 Squads | NPL Hub Nepal",
+    title: "NPL 2026 Players Directory & Season 3 Squads",
     description:
       "Explore verified Nepal Premier League (NPL) Season 3 players across all 8 franchises. Search by name, filter by team and role.",
-    url: "https://nplhub.com.np/players",
+    url: "/players",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
@@ -32,6 +32,8 @@ export const metadata: Metadata = {
 export default function PlayersDirectoryPage() {
   const allPlayers = getAllPlayers();
   const allTeams = getAllTeams();
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
   const itemListSchema = {
     "@context": "https://schema.org",
@@ -39,13 +41,13 @@ export default function PlayersDirectoryPage() {
     name: "Nepal Premier League Season 3 Players Directory",
     description:
       "Directory of verified retained and core players for NPL Season 3.",
-    url: "https://nplhub.com.np/players",
+    url: `${siteUrl}/players`,
     numberOfItems: allPlayers.length,
     itemListElement: allPlayers.map((player, idx) => ({
       "@type": "ListItem",
       position: idx + 1,
       name: player.name,
-      url: `https://nplhub.com.np/players/${player.slug}`,
+      url: `${siteUrl}/players/${player.slug}`,
     })),
   };
 

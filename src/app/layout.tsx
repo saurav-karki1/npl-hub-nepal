@@ -21,22 +21,38 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "NPL Hub Nepal — Nepal Premier League Cricket",
     template: "%s | NPL Hub Nepal",
   },
   description:
     "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
-  metadataBase: new URL("https://nplhub.com.np"),
   openGraph: {
+    title: "NPL Hub Nepal — Nepal Premier League Cricket",
+    description:
+      "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
+    url: siteUrl,
     siteName: "NPL Hub Nepal",
-    type: "website",
     locale: "en_NP",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "NPL Hub Nepal — Nepal Premier League Cricket",
+    description:
+      "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
   },
   robots: {
     index: true,
     follow: true,
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,
   },
 };
 

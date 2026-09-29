@@ -7,24 +7,24 @@ import { getAllTeams } from "@/lib/repository/teams";
 import { TeamCard } from "@/components/teams/TeamCard";
 
 export const metadata: Metadata = {
-  title: "NPL Teams & Squads | Nepal Premier League Season 3 | NPL Hub Nepal",
+  title: "NPL Teams & Squads",
   description:
     "Explore all 8 Nepal Premier League franchise cricket teams competing in Season 3. View team profiles, captains, home venues, provinces, and match schedules.",
   alternates: {
-    canonical: "https://nplhub.com.np/teams",
+    canonical: "/teams",
   },
   openGraph: {
-    title: "NPL Teams & Squads | Nepal Premier League Season 3 | NPL Hub Nepal",
+    title: "NPL Teams & Squads",
     description:
       "Explore all 8 Nepal Premier League franchise cricket teams competing in Season 3. View team profiles, captains, home venues, provinces, and match schedules.",
-    url: "https://nplhub.com.np/teams",
+    url: "/teams",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NPL Teams & Squads | Nepal Premier League Season 3 | NPL Hub Nepal",
+    title: "NPL Teams & Squads",
     description:
       "Explore all 8 Nepal Premier League franchise cricket teams competing in Season 3. View team profiles, captains, home venues, provinces, and match schedules.",
   },

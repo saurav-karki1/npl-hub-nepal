@@ -6,7 +6,7 @@ import { getSeasonStats, getAvailableSeasons } from "@/lib/repository/stats";
 import { getAllTeams } from "@/lib/repository/teams";
 
 export const metadata: Metadata = {
-  title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026) | NPL Hub Nepal",
+  title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026)",
   description:
     "Official Nepal Premier League statistics hub. Explore verified NPL Season 2 (2025) records including top run scorers, leading wicket takers, tournament awards, playoff results, and NPL Season 3 (2026) competition data.",
   keywords: [
@@ -21,20 +21,20 @@ export const metadata: Metadata = {
     "Nepal cricket statistics",
   ],
   alternates: {
-    canonical: "https://nplhub.com.np/stats",
+    canonical: "/stats",
   },
   openGraph: {
-    title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026) | NPL Hub Nepal",
+    title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026)",
     description:
       "Official Nepal Premier League statistics. Explore verified NPL Season 2 (2025) tournament awards, top run scorers, top wicket takers, points table, and Season 3 competition architecture.",
-    url: "https://nplhub.com.np/stats",
+    url: "/stats",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026) | NPL Hub Nepal",
+    title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026)",
     description:
       "Official Nepal Premier League statistics. Explore verified NPL Season 2 (2025) records and Season 3 pre-tournament hub.",
   },
@@ -51,12 +51,15 @@ export default function StatsPage() {
     "season-3": season3Dataset,
   };
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "SportsEvent",
-        "@id": "https://nplhub.com.np/stats#season-2",
+        "@id": `${siteUrl}/stats#season-2`,
         name: "Siddhartha Bank Nepal Premier League 2025 (NPL Season 2)",
         description: "Official 2nd edition of the Nepal Premier League held from 17 Nov to 13 Dec 2025.",
         startDate: "2025-11-17",
@@ -89,13 +92,13 @@ export default function StatsPage() {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://nplhub.com.np",
+            item: siteUrl,
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Statistics",
-            item: "https://nplhub.com.np/stats",
+            item: `${siteUrl}/stats`,
           },
         ],
       },

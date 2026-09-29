@@ -35,26 +35,25 @@ export async function generateMetadata({
 
   if (!player) {
     return {
-      title: "Player Not Found | NPL Hub Nepal",
+      title: "Player Not Found",
     };
   }
 
   const team = getPlayerTeam(player);
   const teamName = team ? team.name : "NPL Franchise";
-  const title = `${player.name} (${teamName}) — NPL 2026 Player Profile | NPL Hub Nepal`;
+  const title = `${player.name} (${teamName}) — Player Profile & Stats`;
   const description = `Explore ${player.name}'s verified profile, ${teamName} squad status, ${player.role} role, batting/bowling style, and upcoming NPL Season 3 fixtures.`;
-  const canonicalUrl = `https://nplhub.com.np/players/${player.slug}`;
 
   return {
     title,
     description,
     alternates: {
-      canonical: canonicalUrl,
+      canonical: `/players/${player.slug}`,
     },
     openGraph: {
       title,
       description,
-      url: canonicalUrl,
+      url: `/players/${player.slug}`,
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "profile",
@@ -76,6 +75,8 @@ export default async function PlayerProfilePage({ params }: PlayerPageProps) {
   }
 
   const team = getPlayerTeam(player);
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
   /* Schema.org Person JSON-LD */
   const personSchema = {
@@ -92,11 +93,11 @@ export default async function PlayerProfilePage({ params }: PlayerPageProps) {
             "@type": "SportsTeam",
             name: team.name,
             sport: "Cricket",
-            url: `https://nplhub.com.np/teams/${team.slug}`,
+            url: `${siteUrl}/teams/${team.slug}`,
           },
         }
       : {}),
-    url: `https://nplhub.com.np/players/${player.slug}`,
+    url: `${siteUrl}/players/${player.slug}`,
   };
 
   return (

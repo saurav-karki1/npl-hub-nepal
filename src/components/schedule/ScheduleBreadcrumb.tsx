@@ -1,6 +1,9 @@
 import Link from "next/link";
 
 export function ScheduleBreadcrumb() {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -9,13 +12,13 @@ export function ScheduleBreadcrumb() {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://nplhub.com.np",
+        item: siteUrl,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Schedule & Fixtures",
-        item: "https://nplhub.com.np/schedule",
+        item: `${siteUrl}/schedule`,
       },
     ],
   };
