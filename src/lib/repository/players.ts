@@ -25,6 +25,121 @@ import { TeamDetail, getTeamBySlug } from "@/lib/repository/teams";
 export type { Player, PlayerRole, PlayerStatus, PlayerConfidence, SeasonStats };
 export { NPL_PLAYERS };
 
+// ---------------------------------------------------------------------------
+// Admin-specific types
+// ---------------------------------------------------------------------------
+
+export interface AdminPlayerSeasonRow {
+  id: string;
+  season_id: string;
+  team_id: string;
+  role: PlayerRole;
+  status: PlayerStatus;
+  captain: boolean;
+  marquee: boolean;
+  player_number: number | null;
+  confidence: PlayerConfidence;
+  source: string | null;
+  source_url: string | null;
+  source_date: string | null;
+  teams?: {
+    id: string;
+    slug: string;
+    name: string;
+    short_name: string;
+    initials: string;
+    brand_color: string;
+    crest_bg: string;
+    crest_text: string;
+  } | null;
+}
+
+export interface AdminPlayerRow {
+  id: string;
+  slug: string;
+  name: string;
+  display_name: string | null;
+  nationality: string;
+  date_of_birth: string | null;
+  birth_place: string | null;
+  batting_style: string | null;
+  bowling_style: string | null;
+  profile_image: string | null;
+  bio: string | null;
+  created_at: string;
+  updated_at: string;
+  player_seasons: AdminPlayerSeasonRow[];
+}
+
+export interface UpdatePlayerInput {
+  playerId: string;
+  seasonId: string;
+  // Core player fields
+  name?: string;
+  displayName?: string | null;
+  nationality?: string;
+  dateOfBirth?: string | null;
+  birthPlace?: string | null;
+  battingStyle?: string | null;
+  bowlingStyle?: string | null;
+  profileImage?: string | null;
+  bio?: string | null;
+  // Season association fields
+  teamId?: string;
+  role?: PlayerRole;
+  status?: PlayerStatus;
+  captain?: boolean;
+  marquee?: boolean;
+  playerNumber?: number | null;
+  confidence?: PlayerConfidence;
+  source?: string | null;
+  sourceUrl?: string | null;
+  sourceDate?: string | null;
+}
+
+/** Get all players (with season data and team info) for the admin panel via secure API route */
+export async function getAllPlayersAdmin(
+  accessToken: string
+): Promise<{ players: AdminPlayerRow[] | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/players", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { players: null, error: json.error ?? "Failed to load players." };
+    }
+    return { players: json.players as AdminPlayerRow[], error: null };
+  } catch {
+    return { players: null, error: "Network error. Could not reach the admin API." };
+  }
+}
+
+/** Update a player's core profile and/or season-specific role/team via secure API route */
+export async function updatePlayerAdmin(
+  input: UpdatePlayerInput,
+  accessToken: string
+): Promise<{ player: AdminPlayerRow | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/players", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(input),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { player: null, error: json.error ?? "Update failed." };
+    }
+    return { player: json.player as AdminPlayerRow, error: null };
+  } catch {
+    return { player: null, error: "Network error. Could not reach the admin API." };
+  }
+}
+
 /** Synchronous fallbacks for backwards compatibility */
 export const getAllPlayersSync = getAllPlayersData;
 export const getPlayerBySlugSync = getPlayerBySlugData;
