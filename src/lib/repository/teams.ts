@@ -4,6 +4,9 @@
  * Abstracted data access layer for NPL franchise teams.
  * Primary source: Supabase database (`teams` & `team_seasons` tables).
  * Fallback source: Centralized static data (`teams-data.ts`).
+ *
+ * Admin write functions call the secure /api/admin/teams API route
+ * (server-side, service-role key) — never Supabase directly from UI.
  */
 
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -17,6 +20,112 @@ import {
 
 export type { TeamDetail, CaptainConfidence };
 export { NPL_TEAM_DETAILS };
+
+// ---------------------------------------------------------------------------
+// Admin-specific types
+// ---------------------------------------------------------------------------
+
+export interface AdminTeamSeasonRow {
+  id: string;
+  season_id: string;
+  captain_name: string | null;
+  captain_confidence: "confirmed" | "reported" | null;
+  captain_source: string | null;
+  coach: string | null;
+  squad_status: string | null;
+  standing_position: number | null;
+  played: number;
+  won: number;
+  lost: number;
+  no_result: number;
+  points: number;
+}
+
+export interface AdminTeamRow {
+  id: string;
+  slug: string;
+  name: string;
+  short_name: string;
+  initials: string;
+  region: string;
+  city: string;
+  brand_color: string;
+  brand_bg: string;
+  crest_bg: string;
+  crest_text: string;
+  logo_url: string | null;
+  established: string | null;
+  description: string | null;
+  updated_at: string;
+  team_seasons: AdminTeamSeasonRow[];
+}
+
+export interface UpdateTeamInput {
+  teamId: string;
+  seasonId: string;
+  // Core team fields
+  name?: string;
+  shortName?: string;
+  initials?: string;
+  region?: string;
+  city?: string;
+  brandColor?: string;
+  brandBg?: string;
+  crestBg?: string;
+  crestText?: string;
+  logoUrl?: string | null;
+  established?: string;
+  description?: string;
+  // Season-specific fields
+  captainName?: string;
+  captainConfidence?: "confirmed" | "reported";
+  captainSource?: string;
+  coach?: string;
+  squadStatus?: string;
+}
+
+/** Get all teams (with all season data) for the admin panel via secure API route */
+export async function getAllTeamsAdmin(
+  accessToken: string
+): Promise<{ teams: AdminTeamRow[] | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/teams", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { teams: null, error: json.error ?? "Failed to load teams." };
+    }
+    return { teams: json.teams as AdminTeamRow[], error: null };
+  } catch {
+    return { teams: null, error: "Network error. Could not reach the admin API." };
+  }
+}
+
+/** Update a team's core fields and/or season-specific fields via secure API route */
+export async function updateTeamAdmin(
+  input: UpdateTeamInput,
+  accessToken: string
+): Promise<{ team: AdminTeamRow | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/teams", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(input),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { team: null, error: json.error ?? "Update failed." };
+    }
+    return { team: json.team as AdminTeamRow, error: null };
+  } catch {
+    return { team: null, error: "Network error. Could not reach the admin API." };
+  }
+}
 
 /** Synchronous fallbacks for components that require synchronous resolution */
 export const getAllTeamsSync = getAllTeamsData;
