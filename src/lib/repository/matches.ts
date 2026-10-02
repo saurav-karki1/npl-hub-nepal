@@ -42,6 +42,107 @@ export type {
 
 export { resolveMatchTeam, resolveMatchTeams, TOURNAMENT_INFO, SCHEDULE_FIXTURES };
 
+// ---------------------------------------------------------------------------
+// Admin-specific types
+// ---------------------------------------------------------------------------
+
+export interface AdminMatchRow {
+  id: string;
+  season_id: string;
+  match_number: number;
+  slug: string;
+  stage: "League" | "Qualifier 1" | "Eliminator" | "Qualifier 2" | "Final";
+  team1_id: string | null;
+  team1_placeholder: string | null;
+  team2_id: string | null;
+  team2_placeholder: string | null;
+  match_date: string;
+  formatted_date: string;
+  bs_date: string;
+  bs_date_nepali: string;
+  day_of_week: string;
+  match_time: string;
+  venue: string;
+  status: "upcoming" | "completed" | "live" | "tba";
+  result: string | null;
+  winner_team_id: string | null;
+  winner_name: string | null;
+  win_margin: string | null;
+  win_type: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" | null;
+  result_statement: string | null;
+  player_of_the_match: string | null;
+  toss_winner_team_id: string | null;
+  toss_decision: "bat" | "bowl" | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  scores: any | null;
+  is_provisional: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpdateMatchInput {
+  matchId: string;
+  seasonId: string;
+  matchNumber?: number;
+  stage?: "League" | "Qualifier 1" | "Eliminator" | "Qualifier 2" | "Final";
+  team1Id?: string | null;
+  team1Placeholder?: string | null;
+  team2Id?: string | null;
+  team2Placeholder?: string | null;
+  matchDate?: string;
+  formattedDate?: string;
+  bsDate?: string;
+  bsDateNepali?: string;
+  dayOfWeek?: string;
+  matchTime?: string;
+  venue?: string;
+  status?: "upcoming" | "completed" | "live" | "tba";
+  isProvisional?: boolean;
+}
+
+/** Get all matches for the admin panel via secure API route */
+export async function getAllMatchesAdmin(
+  accessToken: string
+): Promise<{ matches: AdminMatchRow[] | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/matches", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { matches: null, error: json.error ?? "Failed to load matches." };
+    }
+    return { matches: json.matches as AdminMatchRow[], error: null };
+  } catch {
+    return { matches: null, error: "Network error. Could not reach the admin API." };
+  }
+}
+
+/** Update a match fixture via secure API route */
+export async function updateMatchAdmin(
+  input: UpdateMatchInput,
+  accessToken: string
+): Promise<{ match: AdminMatchRow | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/matches", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(input),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { match: null, error: json.error ?? "Update failed." };
+    }
+    return { match: json.match as AdminMatchRow, error: null };
+  } catch {
+    return { match: null, error: "Network error. Could not reach the admin API." };
+  }
+}
+
 /** Synchronous fallbacks for components requiring synchronous resolution */
 export const getAllMatchesSync = (): ScheduleMatch[] => SCHEDULE_FIXTURES;
 export const getMatchBySlugSync = getMatchBySlugData;
