@@ -2,13 +2,13 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody } from "@/components/ui/Card";
 import {
-  getCompletedMatches,
+  getCompletedMatchesSync,
   resolveMatchTeams,
 } from "@/lib/repository/matches";
 import { LinkButton } from "@/components/ui/Button";
 
 export function CompletedMatchesSection() {
-  const completedMatches = getCompletedMatches();
+  const completedMatches = getCompletedMatchesSync();
 
   return (
     <section aria-labelledby="completed-matches-heading" className="space-y-4">

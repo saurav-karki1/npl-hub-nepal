@@ -15,13 +15,13 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
   return getAllArticleSlugs();
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug);
 
   if (!article) {
     return { title: "Article Not Found" };
@@ -121,86 +121,66 @@ function ArticleBody({ article }: { article: NewsArticle }) {
         {article.excerpt}
       </p>
 
-      {/* Divider */}
-      <div className="border-t border-[var(--color-rule)] mb-6" />
-
-      {/* Body paragraphs */}
-      <div className="space-y-4">
-        {article.content.map((para, i) => (
-          <p
-            key={i}
-            className="text-sm sm:text-base text-[var(--color-ink)] leading-relaxed"
-          >
-            {para}
-          </p>
+      {/* Main content paragraphs */}
+      <div className="space-y-4 text-sm text-[var(--color-ink)] leading-relaxed font-sans">
+        {article.content.map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
         ))}
       </div>
 
-      {/* Byline / source */}
-      <div className="mt-8 pt-4 border-t border-[var(--color-rule)] text-xs text-[var(--color-ink-muted)]">
-        <span className="font-semibold">By:</span> {article.author}
-        {article.source !== article.author && (
-          <>
-            {" · "}
-            <span className="font-semibold">Source:</span> {article.source}
-          </>
-        )}
+      {/* Byline / Source attribution */}
+      <div className="mt-8 pt-4 border-t border-[var(--color-rule)] flex flex-wrap items-center justify-between gap-2 text-xs text-[var(--color-ink-muted)]">
+        <span>
+          By <strong className="text-[var(--color-ink)]">{article.author}</strong>
+        </span>
+        <span>Source: {article.source}</span>
       </div>
     </article>
   );
 }
 
-/* ── Related links sidebar / footer section ────────────────────────────── */
+/* ── Related team / match links ────────────────────────────────────────── */
 function RelatedLinks({ article }: { article: NewsArticle }) {
-  const hasTeams =
-    article.relatedTeamIds && article.relatedTeamIds.length > 0;
+  const hasTeams = article.relatedTeamIds && article.relatedTeamIds.length > 0;
   const hasMatch = Boolean(article.relatedMatchSlug);
 
   if (!hasTeams && !hasMatch) return null;
 
   return (
-    <aside aria-label="Related pages" className="max-w-2xl mx-auto mt-10">
-      <div className="border-t-2 border-[var(--color-brand)] mb-3" />
-      <h2 className="text-section-title mb-4">Related</h2>
+    <aside
+      aria-label="Related Coverage Links"
+      className="max-w-2xl mx-auto rounded-lg border border-[var(--color-rule)] bg-[var(--color-surface)] p-4 text-xs"
+    >
+      <p className="font-bold text-[var(--color-ink)] mb-2 uppercase tracking-wider text-[11px]">
+        Related Coverage
+      </p>
       <div className="flex flex-wrap gap-2">
-        {hasTeams &&
-          article.relatedTeamIds!.map((teamId) => (
-            <Link
-              key={teamId}
-              href={`/teams/${teamId}`}
-              className="px-3 py-1.5 text-xs font-semibold border border-[var(--color-rule)] rounded-[var(--radius-md)] text-[var(--color-ink-secondary)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand)]"
-            >
-              {TEAM_NAMES[teamId] ?? teamId} →
-            </Link>
-          ))}
-        {hasMatch && (
+        {article.relatedTeamIds?.map((tId) => (
+          <Link
+            key={tId}
+            href={`/teams/${tId}`}
+            className="inline-flex items-center gap-1 rounded bg-[var(--color-surface-sunken)] px-2.5 py-1 text-[var(--color-brand)] font-semibold hover:bg-[var(--color-brand-light)] transition-colors"
+          >
+            {TEAM_NAMES[tId] ?? tId} →
+          </Link>
+        ))}
+        {article.relatedMatchSlug && (
           <Link
             href={`/matches/${article.relatedMatchSlug}`}
-            className="px-3 py-1.5 text-xs font-semibold border border-[var(--color-rule)] rounded-[var(--radius-md)] text-[var(--color-ink-secondary)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand)]"
+            className="inline-flex items-center gap-1 rounded bg-[var(--color-surface-sunken)] px-2.5 py-1 text-[var(--color-brand)] font-semibold hover:bg-[var(--color-brand-light)] transition-colors"
           >
-            View Match Page →
+            Match Scorecard →
           </Link>
         )}
-        <Link
-          href="/schedule"
-          className="px-3 py-1.5 text-xs font-semibold border border-[var(--color-rule)] rounded-[var(--radius-md)] text-[var(--color-ink-secondary)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand)]"
-        >
-          Schedule →
-        </Link>
-        <Link
-          href="/points-table"
-          className="px-3 py-1.5 text-xs font-semibold border border-[var(--color-rule)] rounded-[var(--radius-md)] text-[var(--color-ink-secondary)] hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand)]"
-        >
-          Points Table →
-        </Link>
       </div>
     </aside>
   );
 }
 
 /* ── Related articles footer ───────────────────────────────────────────── */
-function MoreArticles({ currentSlug }: { currentSlug: string }) {
-  const others = getAllArticles()
+async function MoreArticles({ currentSlug }: { currentSlug: string }) {
+  const all = await getAllArticles();
+  const others = all
     .filter((a) => a.slug !== currentSlug)
     .slice(0, 3);
 
@@ -247,7 +227,7 @@ function MoreArticles({ currentSlug }: { currentSlug: string }) {
 /* ── Page ──────────────────────────────────────────────────────────────── */
 export default async function ArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const article = await getArticleBySlug(slug);
 
   if (!article) {
     notFound();

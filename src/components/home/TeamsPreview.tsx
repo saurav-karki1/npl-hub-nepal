@@ -2,11 +2,11 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
-import { getAllTeams } from "@/lib/repository/teams";
+import { getAllTeamsSync } from "@/lib/repository/teams";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 
 export function TeamsPreview() {
-  const teams = getAllTeams();
+  const teams = getAllTeamsSync();
 
   return (
     <section>

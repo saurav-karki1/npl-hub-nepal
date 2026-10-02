@@ -9,3 +9,4 @@ export * from "./players";
 export * from "./matches";
 export * from "./news";
 export * from "./stats";
+export * from "./admin";

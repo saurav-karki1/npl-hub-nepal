@@ -3,15 +3,15 @@ import { Card, CardBody, CardHeader } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 import { ScheduleMatch, MatchTeamInfo, resolveMatchTeams } from "@/lib/repository/matches";
-import { getTeamBySlug, TeamDetail } from "@/lib/repository/teams";
+import { getTeamBySlugSync, TeamDetail } from "@/lib/repository/teams";
 
 interface MatchTeamsSectionProps {
   match: ScheduleMatch;
 }
 
 export function MatchTeamsSection({ match }: MatchTeamsSectionProps) {
-  const team1Detail = match.team1Id !== null ? getTeamBySlug(match.team1Id) : undefined;
-  const team2Detail = match.team2Id !== null ? getTeamBySlug(match.team2Id) : undefined;
+  const team1Detail = match.team1Id !== null ? getTeamBySlugSync(match.team1Id) : undefined;
+  const team2Detail = match.team2Id !== null ? getTeamBySlugSync(match.team2Id) : undefined;
   const { team1, team2 } = resolveMatchTeams(match);
 
   return (

@@ -40,11 +40,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function StatsPage() {
-  const season2Dataset = getSeasonStats("season-2");
-  const season3Dataset = getSeasonStats("season-3");
+export default async function StatsPage() {
+  const season2Dataset = await getSeasonStats("season-2");
+  const season3Dataset = await getSeasonStats("season-3");
   const availableSeasons = getAvailableSeasons();
-  const allTeams = getAllTeams();
+  const allTeams = await getAllTeams();
 
   const datasets = {
     "season-2": season2Dataset,
@@ -60,47 +60,28 @@ export default function StatsPage() {
       {
         "@type": "SportsEvent",
         "@id": `${siteUrl}/stats#season-2`,
-        name: "Siddhartha Bank Nepal Premier League 2025 (NPL Season 2)",
-        description: "Official 2nd edition of the Nepal Premier League held from 17 Nov to 13 Dec 2025.",
+        name: "Siddhartha Bank Nepal Premier League 2025 (Season 2)",
+        sport: "Cricket",
+        eventStatus: "https://schema.org/EventCompleted",
         startDate: "2025-11-17",
         endDate: "2025-12-13",
         location: {
           "@type": "Place",
-          name: "Tribhuvan University International Cricket Ground",
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: "Kirtipur",
-            addressRegion: "Kathmandu",
-            addressCountry: "NP",
-          },
+          name: "TU International Cricket Stadium, Kirtipur, Kathmandu",
         },
-        competitor: [
-          { "@type": "SportsTeam", name: "Lumbini Lions" },
-          { "@type": "SportsTeam", name: "Sudurpaschim Royals" },
-          { "@type": "SportsTeam", name: "Biratnagar Kings" },
-          { "@type": "SportsTeam", name: "Kathmandu Gorkhas" },
-          { "@type": "SportsTeam", name: "Pokhara Avengers" },
-          { "@type": "SportsTeam", name: "Karnali Yaks" },
-          { "@type": "SportsTeam", name: "Chitwan Rhinos" },
-          { "@type": "SportsTeam", name: "Janakpur Bolts" },
-        ],
       },
       {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: siteUrl,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Statistics",
-            item: `${siteUrl}/stats`,
-          },
-        ],
+        "@type": "SportsEvent",
+        "@id": `${siteUrl}/stats#season-3`,
+        name: "Siddhartha Bank Nepal Premier League 2026 (Season 3)",
+        sport: "Cricket",
+        eventStatus: "https://schema.org/EventScheduled",
+        startDate: "2026-10-26",
+        endDate: "2026-11-21",
+        location: {
+          "@type": "Place",
+          name: "TU International Cricket Stadium, Kirtipur, Kathmandu",
+        },
       },
     ],
   };
@@ -112,11 +93,11 @@ export default function StatsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="py-6 sm:py-8 lg:py-10">
-        <Container>
+        <Container className="space-y-8 sm:space-y-10">
           <Suspense
             fallback={
-              <div className="p-12 text-center text-sm text-[var(--color-ink-muted)]">
-                Loading NPL Statistics Hub...
+              <div className="animate-pulse space-y-4 py-12 text-center text-sm text-[var(--color-ink-muted)]">
+                Loading NPL Statistics Engine...
               </div>
             }
           >

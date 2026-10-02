@@ -1,7 +1,17 @@
+"use client";
+
 import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Container } from "./Layout";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Admin routes have their own layout
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   return (
     <footer className="mt-auto border-t border-[var(--color-rule)] bg-[var(--color-surface)] text-[var(--color-ink)]">
       {/* ── Main footer content ── */}
@@ -11,14 +21,15 @@ export function Footer() {
           <div className="md:col-span-2 space-y-4">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand)] rounded-sm"
+              className="inline-flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand)] rounded-sm"
             >
-              <span
-                className="flex w-6 h-6 rounded-sm bg-[var(--color-brand)] text-white text-[0.625rem] font-black items-center justify-center leading-none shrink-0"
-                aria-hidden="true"
-              >
-                N
-              </span>
+              <Image
+                src="/images/logo.png"
+                alt="NPL Hub Nepal Logo"
+                width={28}
+                height={28}
+                className="w-7 h-7 rounded-sm object-contain shrink-0"
+              />
               <span className="text-[1.125rem] font-black tracking-tight text-[var(--color-ink)]">
                 NPL<span className="text-[var(--color-brand)]">Hub</span> Nepal
               </span>

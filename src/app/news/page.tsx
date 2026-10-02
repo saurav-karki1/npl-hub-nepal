@@ -34,10 +34,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function NewsPage() {
-  const featured = getFeaturedArticles();
-  const all = getAllArticles();
-  const categories = getAvailableCategories();
+export default async function NewsPage() {
+  const featured = await getFeaturedArticles();
+  const all = await getAllArticles();
+  const categories = await getAvailableCategories();
 
   return (
     <div className="py-8 sm:py-10">
@@ -59,23 +59,14 @@ export default function NewsPage() {
 
         {/* Featured section */}
         {featured.length > 0 && (
-          <section aria-labelledby="featured-heading">
-            <div className="mb-4">
-              <div className="border-t-2 border-[var(--color-brand)] mb-2" />
-              <h2
-                id="featured-heading"
-                className="text-section-title"
-              >
-                Featured
-              </h2>
-            </div>
-            <div
-              className={
-                featured.length === 1
-                  ? "grid grid-cols-1 sm:grid-cols-2 gap-4"
-                  : "grid grid-cols-1 sm:grid-cols-2 gap-4"
-              }
+          <section aria-labelledby="featured-news-heading" className="space-y-4">
+            <h2
+              id="featured-news-heading"
+              className="text-lg font-extrabold text-[var(--color-ink)]"
             >
+              Featured Coverage
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {featured.map((article) => (
                 <NewsCard key={article.id} article={article} variant="featured" />
               ))}
@@ -83,16 +74,36 @@ export default function NewsPage() {
           </section>
         )}
 
-        {/* Filterable news grid */}
-        <NewsGrid articles={all} categories={categories} />
+        {/* All articles with category filter */}
+        <section aria-labelledby="all-news-heading" className="space-y-4">
+          <h2
+            id="all-news-heading"
+            className="text-lg font-extrabold text-[var(--color-ink)]"
+          >
+            All Articles
+          </h2>
+          <NewsGrid articles={all} categories={categories} />
+        </section>
 
-        {/* Footer nav */}
-        <div className="pt-4 flex flex-col sm:flex-row justify-between items-center gap-3 border-t border-[var(--color-rule)]">
+        {/* Disclaimer banner */}
+        <section className="rounded-lg bg-[var(--color-surface-sunken)] p-4 text-xs text-[var(--color-ink-muted)]">
+          <p className="font-semibold text-[var(--color-ink)] mb-1">
+            Editorial Integrity & Source Transparency
+          </p>
+          <p>
+            All articles are based on publicly verified announcements from CAN or
+            official franchise releases. Articles marked &quot;Provisional Draft&quot;
+            contain unconfirmed details clearly flagged with disclaimers.
+          </p>
+        </section>
+
+        {/* Footer actions */}
+        <div className="flex justify-between items-center pt-4 border-t border-[var(--color-rule)]">
           <LinkButton href="/" variant="secondary" size="sm">
-            ← Back to Home
+            ← Home
           </LinkButton>
           <LinkButton href="/schedule" variant="primary" size="sm">
-            Check Fixtures Schedule →
+            View Schedule →
           </LinkButton>
         </div>
       </Container>

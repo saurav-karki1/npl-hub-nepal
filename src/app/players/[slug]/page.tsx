@@ -31,7 +31,7 @@ export async function generateMetadata({
   params,
 }: PlayerPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const player = getPlayerBySlug(slug);
+  const player = await getPlayerBySlug(slug);
 
   if (!player) {
     return {
@@ -39,7 +39,7 @@ export async function generateMetadata({
     };
   }
 
-  const team = getPlayerTeam(player);
+  const team = await getPlayerTeam(player);
   const teamName = team ? team.name : "NPL Franchise";
   const title = `${player.name} (${teamName}) — Player Profile & Stats`;
   const description = `Explore ${player.name}'s verified profile, ${teamName} squad status, ${player.role} role, batting/bowling style, and upcoming NPL Season 3 fixtures.`;
@@ -68,13 +68,13 @@ export async function generateMetadata({
 
 export default async function PlayerProfilePage({ params }: PlayerPageProps) {
   const { slug } = await params;
-  const player = getPlayerBySlug(slug);
+  const player = await getPlayerBySlug(slug);
 
   if (!player) {
     notFound();
   }
 
-  const team = getPlayerTeam(player);
+  const team = await getPlayerTeam(player);
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 

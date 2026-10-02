@@ -2,13 +2,13 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody, StatusBadge } from "@/components/ui/Card";
 import {
-  getFeaturedUpcomingMatch,
+  getUpcomingMatchesSync,
   resolveMatchTeams,
 } from "@/lib/repository/matches";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 
 export function UpcomingMatchSection() {
-  const match = getFeaturedUpcomingMatch();
+  const match = getUpcomingMatchesSync(1)[0];
 
   if (!match) {
     return null;

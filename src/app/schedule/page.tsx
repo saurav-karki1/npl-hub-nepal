@@ -35,7 +35,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function SchedulePage() {
+export default async function SchedulePage() {
+  const matches = await getAllMatches();
+  const teams = await getAllTeams();
+
   return (
     <div className="py-6 sm:py-8 lg:py-10">
       <Container className="space-y-10 sm:space-y-12">
@@ -53,8 +56,8 @@ export default function SchedulePage() {
 
         {/* E. Full Fixtures List with Interactive Filters */}
         <FullFixturesSection
-          initialMatches={getAllMatches()}
-          initialTeams={getAllTeams()}
+          initialMatches={matches}
+          initialTeams={teams}
         />
 
         {/* F. Completed Matches / Result Status */}

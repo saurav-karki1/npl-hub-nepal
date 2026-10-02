@@ -1,11 +1,11 @@
-import { TOURNAMENT_INFO, getAllMatches } from "@/lib/repository/matches";
-import { getAllTeams } from "@/lib/repository/teams";
+import { TOURNAMENT_INFO, getAllMatchesSync } from "@/lib/repository/matches";
+import { getAllTeamsSync } from "@/lib/repository/teams";
 import { Card, CardBody } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/Layout";
 
 export function AboutTournamentOverview() {
-  const totalTeams = getAllTeams().length;
-  const matches = getAllMatches();
+  const totalTeams = getAllTeamsSync().length;
+  const matches = getAllMatchesSync();
   const totalMatches = matches.length;
   const leagueMatches = matches.filter(
     (m) => m.stage === "League"

@@ -3,15 +3,15 @@ import { ConstellationBackground } from "@/components/ui/ConstellationBackground
 import { StatusBadge } from "@/components/ui/Card";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 import { ScheduleMatch, resolveMatchTeams } from "@/lib/repository/matches";
-import { getTeamBySlug } from "@/lib/repository/teams";
+import { getTeamBySlugSync } from "@/lib/repository/teams";
 
 interface MatchHeaderProps {
   match: ScheduleMatch;
 }
 
 export function MatchHeader({ match }: MatchHeaderProps) {
-  const team1Detail = match.team1Id !== null ? getTeamBySlug(match.team1Id) : undefined;
-  const team2Detail = match.team2Id !== null ? getTeamBySlug(match.team2Id) : undefined;
+  const team1Detail = match.team1Id !== null ? getTeamBySlugSync(match.team1Id) : undefined;
+  const team2Detail = match.team2Id !== null ? getTeamBySlugSync(match.team2Id) : undefined;
   const { team1, team2 } = resolveMatchTeams(match);
 
   // Playoff context strings

@@ -4,7 +4,7 @@ import { getAllTeams } from "@/lib/repository/teams";
 import { getAllPlayerSlugs } from "@/lib/repository/players";
 import { getAllArticleSlugs } from "@/lib/repository/news";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
@@ -61,14 +61,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const teamRoutes: MetadataRoute.Sitemap = getAllTeams().map((team) => ({
+  const teams = await getAllTeams();
+  const teamRoutes: MetadataRoute.Sitemap = teams.map((team) => ({
     url: `${baseUrl}/teams/${team.slug}`,
     lastModified,
     changeFrequency: "weekly",
     priority: 0.8,
   }));
 
-  const matchRoutes: MetadataRoute.Sitemap = getAllMatchSlugs().map(
+  const matchSlugs = await getAllMatchSlugs();
+  const matchRoutes: MetadataRoute.Sitemap = matchSlugs.map(
     ({ slug }) => ({
       url: `${baseUrl}/matches/${slug}`,
       lastModified,
@@ -77,7 +79,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  const playerRoutes: MetadataRoute.Sitemap = getAllPlayerSlugs().map(
+  const playerSlugs = await getAllPlayerSlugs();
+  const playerRoutes: MetadataRoute.Sitemap = playerSlugs.map(
     ({ slug }) => ({
       url: `${baseUrl}/players/${slug}`,
       lastModified,
@@ -86,7 +89,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  const newsRoutes: MetadataRoute.Sitemap = getAllArticleSlugs().map(
+  const articleSlugs = await getAllArticleSlugs();
+  const newsRoutes: MetadataRoute.Sitemap = articleSlugs.map(
     ({ slug }) => ({
       url: `${baseUrl}/news/${slug}`,
       lastModified,

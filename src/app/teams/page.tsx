@@ -30,7 +30,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function TeamsPage() {
+export default async function TeamsPage() {
+  const teams = await getAllTeams();
+
   return (
     <div className="py-6 sm:py-8 lg:py-10">
       <Container className="space-y-8 sm:space-y-10">
@@ -71,7 +73,7 @@ export default function TeamsPage() {
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-ink-muted)] block">
               Franchises
             </span>
-            <span className="text-lg font-black text-[var(--color-ink)]">8 Teams</span>
+            <span className="text-lg font-black text-[var(--color-ink)]">{teams.length} Teams</span>
           </div>
           <div className="border-l border-[var(--color-rule)]">
             <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-ink-muted)] block">
@@ -104,7 +106,7 @@ export default function TeamsPage() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {getAllTeams().map((team) => (
+            {teams.map((team) => (
               <TeamCard key={team.id} team={team} />
             ))}
           </div>
@@ -119,24 +121,34 @@ export default function TeamsPage() {
             >
               i
             </span>
-            <div>
-              <strong className="font-bold text-[var(--color-ink)]">
-                Team Leadership & Squad Accuracy Note:
-              </strong>{" "}
-              Team leadership details reflect officially announced appointments and verified reports from previous competition cycles. Unconfirmed squad rosters, domestic draft selections, and overseas signings are marked as &ldquo;Squad to be announced&rdquo; and will be updated live as each franchise and the Cricket Association of Nepal (CAN) officially register their Season 3 squad sheets.
-            </div>
+            <p>
+              <strong className="text-[var(--color-ink)]">Verified Franchise Data:</strong> NPL Hub Nepal lists canonical team information sourced directly from official Cricket Association of Nepal (CAN) records and verified franchise disclosures. Captain leadership fields reflect verified designations or reported status.
+            </p>
           </CardBody>
         </Card>
 
-        {/* Bottom Navigation */}
-        <div className="pt-4 flex flex-col sm:flex-row justify-between items-center gap-3 border-t border-[var(--color-rule)]">
-          <LinkButton href="/" variant="secondary" size="sm">
-            ← Back to Home
-          </LinkButton>
-          <LinkButton href="/schedule" variant="primary" size="sm">
-            View Complete Match Schedule →
-          </LinkButton>
-        </div>
+        {/* Related Tournament Navigation */}
+        <section className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--color-rule)] pt-6">
+          <div className="space-y-1">
+            <h3 className="text-sm font-bold text-[var(--color-ink)]">
+              Looking for tournament fixtures or player rosters?
+            </h3>
+            <p className="text-xs text-[var(--color-ink-muted)]">
+              Browse the complete 32-match Season 3 schedule or view all retained players across teams.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <LinkButton href="/schedule" variant="secondary" size="sm">
+              View Schedule
+            </LinkButton>
+            <LinkButton href="/players" variant="secondary" size="sm">
+              View Players
+            </LinkButton>
+            <LinkButton href="/points-table" variant="primary" size="sm">
+              Points Table
+            </LinkButton>
+          </div>
+        </section>
       </Container>
     </div>
   );

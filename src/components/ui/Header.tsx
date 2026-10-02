@@ -20,6 +20,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Container } from "./Layout";
 
 const NAV_LINKS = [
@@ -34,7 +36,13 @@ const NAV_LINKS = [
 ] as const;
 
 export function Header() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Admin routes provide their own dedicated navigation header
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-[var(--color-canvas)] border-b border-[var(--color-rule)]">
@@ -60,14 +68,16 @@ export function Header() {
             href="/"
             className="flex items-center gap-2 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand)] focus-visible:outline-offset-2 rounded-sm"
           >
-            {/* Simple wordmark — replace with SVG logo when available */}
-            <span className="flex items-center gap-1.5">
-              <span
-                className="flex w-6 h-6 rounded-sm bg-[var(--color-brand)] text-white text-[0.625rem] font-black items-center justify-center leading-none shrink-0"
-                aria-hidden="true"
-              >
-                N
-              </span>
+            {/* Brand Logo & Wordmark */}
+            <span className="flex items-center gap-2">
+              <Image
+                src="/images/logo.png"
+                alt="NPL Hub Nepal Logo"
+                width={28}
+                height={28}
+                className="w-7 h-7 rounded-sm object-contain shrink-0"
+                priority
+              />
               <span className="text-[1.0625rem] font-black tracking-tight text-[var(--color-ink)]">
                 NPL<span className="text-[var(--color-brand)]">Hub</span>
               </span>

@@ -25,7 +25,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const match = getMatchBySlug(slug);
+  const match = await getMatchBySlug(slug);
 
   if (!match) {
     return {
@@ -61,13 +61,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function MatchDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const match = getMatchBySlug(slug);
+  const match = await getMatchBySlug(slug);
 
   if (!match) {
     notFound();
   }
 
-  const { prevMatch, nextMatch } = getAdjacentMatches(match.matchNumber);
+  const { prevMatch, nextMatch } = await getAdjacentMatches(match.matchNumber);
   const { team1, team2 } = resolveMatchTeams(match);
 
   const siteUrl =

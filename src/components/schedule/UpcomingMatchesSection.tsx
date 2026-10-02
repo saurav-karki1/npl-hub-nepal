@@ -2,7 +2,7 @@ import Link from "next/link";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody, StatusBadge } from "@/components/ui/Card";
 import {
-  getUpcomingMatches,
+  getUpcomingMatchesSync,
   resolveMatchTeams,
   ScheduleMatch,
 } from "@/lib/repository/matches";
@@ -10,7 +10,7 @@ import { TeamLogo } from "@/components/ui/TeamLogo";
 
 export function UpcomingMatchesSection() {
   // Grab the first 3 upcoming matches as featured highlights
-  const upcomingHighlights = getUpcomingMatches(3);
+  const upcomingHighlights = getUpcomingMatchesSync(3);
 
   return (
     <section aria-labelledby="upcoming-fixtures-heading" className="space-y-4">

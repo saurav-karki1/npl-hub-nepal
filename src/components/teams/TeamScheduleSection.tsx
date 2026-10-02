@@ -3,10 +3,10 @@ import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody, StatusBadge } from "@/components/ui/Card";
 import { LinkButton } from "@/components/ui/Button";
 import {
-  getMatchesByTeam,
+  getMatchesByTeamSync,
   resolveMatchTeam,
 } from "@/lib/repository/matches";
-import { TeamDetail, getTeamBySlug } from "@/lib/repository/teams";
+import { TeamDetail, getTeamBySlugSync } from "@/lib/repository/teams";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 
 interface TeamScheduleSectionProps {
@@ -15,7 +15,7 @@ interface TeamScheduleSectionProps {
 
 export function TeamScheduleSection({ team }: TeamScheduleSectionProps) {
   // Live filter from matches repository
-  const teamFixtures = getMatchesByTeam(team.id);
+  const teamFixtures = getMatchesByTeamSync(team.id);
 
   return (
     <section aria-labelledby="schedule-heading" className="space-y-4">
@@ -56,7 +56,7 @@ export function TeamScheduleSection({ team }: TeamScheduleSectionProps) {
                   const opponentId = isTeam1 ? match.team2Id : match.team1Id;
                   const opponentPlaceholder = isTeam1 ? match.team2Placeholder : match.team1Placeholder;
                   const opponent = resolveMatchTeam(opponentId, opponentPlaceholder);
-                  const opponentDetail = opponentId !== null ? getTeamBySlug(opponentId) : undefined;
+                  const opponentDetail = opponentId !== null ? getTeamBySlugSync(opponentId) : undefined;
 
                   return (
                     <tr
@@ -159,7 +159,7 @@ export function TeamScheduleSection({ team }: TeamScheduleSectionProps) {
               const opponentId = isTeam1 ? match.team2Id : match.team1Id;
               const opponentPlaceholder = isTeam1 ? match.team2Placeholder : match.team1Placeholder;
               const opponent = resolveMatchTeam(opponentId, opponentPlaceholder);
-              const opponentDetail = opponentId !== null ? getTeamBySlug(opponentId) : undefined;
+              const opponentDetail = opponentId !== null ? getTeamBySlugSync(opponentId) : undefined;
 
               return (
                 <Card key={match.id} className="border-[var(--color-rule)]">

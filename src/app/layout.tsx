@@ -26,18 +26,41 @@ const siteUrl =
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
+  applicationName: "NPL Hub Nepal",
   title: {
     default: "NPL Hub Nepal — Nepal Premier League Cricket",
     template: "%s | NPL Hub Nepal",
   },
   description:
-    "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
+    "Independent information platform for the Nepal Premier League. Live scores, schedules, points table standings, team profiles, player rosters, statistics, and NPL news.",
+  alternates: {
+    canonical: "./",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   openGraph: {
     title: "NPL Hub Nepal — Nepal Premier League Cricket",
     description:
       "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
     url: siteUrl,
     siteName: "NPL Hub Nepal",
+    images: [
+      {
+        url: `${siteUrl}/images/logo.png`,
+        width: 512,
+        height: 512,
+        alt: "NPL Hub Nepal Logo",
+      },
+    ],
     locale: "en_NP",
     type: "website",
   },
@@ -46,10 +69,18 @@ export const metadata: Metadata = {
     title: "NPL Hub Nepal — Nepal Premier League Cricket",
     description:
       "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
+    images: [`${siteUrl}/images/logo.png`],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,

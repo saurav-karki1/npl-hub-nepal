@@ -29,9 +29,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PlayersDirectoryPage() {
-  const allPlayers = getAllPlayers();
-  const allTeams = getAllTeams();
+export default async function PlayersDirectoryPage() {
+  const allPlayers = await getAllPlayers();
+  const allTeams = await getAllTeams();
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
@@ -59,55 +59,30 @@ export default function PlayersDirectoryPage() {
       />
 
       <div className="py-6 sm:py-8 lg:py-10">
-        <Container className="space-y-6 sm:space-y-8">
-          {/* Breadcrumb Navigation */}
+        <Container className="space-y-8 sm:space-y-10">
           <PlayerBreadcrumb />
 
-          {/* Directory Hero Header */}
-          <header className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-black uppercase tracking-wider bg-[var(--color-surface)] border border-[var(--color-rule)] px-2.5 py-0.5 rounded-[var(--radius-sm)] text-[var(--color-brand)]">
-                Players Directory
-              </span>
-              <span className="text-xs text-[var(--color-ink-muted)]">
-                Season 3 · 2026 Edition
-              </span>
-              <span className="text-xs text-[var(--color-ink-faint)]" aria-hidden="true">
-                ·
-              </span>
-              <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-[var(--radius-sm)] border border-emerald-200">
-                53 Verified Players
-              </span>
+          <header className="space-y-3 border-b border-[var(--color-rule)] pb-6">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[var(--color-brand-light)] border border-[var(--color-brand)]/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--color-brand)]">
+              <span
+                className="w-2 h-2 rounded-full bg-[var(--color-brand)]"
+                aria-hidden="true"
+              />
+              Verified Player Directory · Season 3
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--color-ink)]">
-              NPL Season 3 Players
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-[var(--color-ink)] leading-[1.15]">
+              NPL Players & Squad Rosters
             </h1>
 
             <p className="text-sm sm:text-base text-[var(--color-ink-secondary)] max-w-3xl leading-relaxed">
-              Explore officially verified franchise captains, marquee stars, and
-              confirmed retained players for Nepal Premier League Season 3. Use
-              the search and filters below to browse by playing role, franchise, or
-              leadership status. Additional draft picks and international signings
-              will populate as official CAN registrations are published.
+              Complete index of confirmed retained players and marquee leaders
+              competing in Nepal Premier League Season 3. Filter by team,
+              cricket role, captaincy status, or player search.
             </p>
           </header>
 
-          {/* Client-Side Interactive Search & Filtering Grid */}
           <PlayerSearchFilter initialPlayers={allPlayers} teams={allTeams} />
-
-          {/* Editorial Data Notice */}
-          <div className="rounded-[var(--radius-md)] border border-[var(--color-rule)] bg-[var(--color-surface)] p-4 text-xs text-[var(--color-ink-muted)] leading-relaxed space-y-1">
-            <strong className="text-[var(--color-ink)] font-semibold block">
-              Editorial Notice on Player Squads:
-            </strong>
-            <p>
-              This directory displays all 53 confirmed retained players and marquee
-              announcements across the 8 NPL franchises. Unconfirmed transfer rumors,
-              speculative salaries, and unannounced overseas signings are strictly
-              excluded to preserve 100% data integrity.
-            </p>
-          </div>
         </Container>
       </div>
     </>

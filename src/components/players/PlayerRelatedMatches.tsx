@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Player, getPlayerTeam } from "@/lib/repository/players";
-import { getMatchesByTeam, resolveMatchTeam } from "@/lib/repository/matches";
+import { Player } from "@/lib/repository/players";
+import { getTeamBySlugSync } from "@/lib/repository/teams";
+import { getMatchesByTeamSync, resolveMatchTeam } from "@/lib/repository/matches";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody } from "@/components/ui/Card";
 import { TeamLogo } from "@/components/ui/TeamLogo";
@@ -10,14 +11,14 @@ interface PlayerRelatedMatchesProps {
 }
 
 export function PlayerRelatedMatches({ player }: PlayerRelatedMatchesProps) {
-  const team = getPlayerTeam(player);
+  const team = getTeamBySlugSync(player.teamId);
 
   if (!team) {
     return null;
   }
 
   // Filter fixtures involving the player's team from repository
-  const teamMatches = getMatchesByTeam(team.id).slice(0, 4); // Display next 4 fixtures
+  const teamMatches = getMatchesByTeamSync(team.id).slice(0, 4); // Display next 4 fixtures
 
   if (teamMatches.length === 0) {
     return null;

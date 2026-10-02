@@ -15,7 +15,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const teams = getAllTeams();
+  const teams = await getAllTeams();
   return teams.map((team) => ({
     slug: team.slug,
   }));
@@ -23,7 +23,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const team = getTeamBySlug(slug);
+  const team = await getTeamBySlug(slug);
 
   if (!team) {
     return {
@@ -58,12 +58,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function TeamDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const team = getTeamBySlug(slug);
+  const team = await getTeamBySlug(slug);
 
   if (!team) {
     notFound();
   }
 
+  const relatedArticles = await getArticlesByTeam(team.id);
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
@@ -141,23 +142,19 @@ export default async function TeamDetailPage({ params }: PageProps) {
         <TeamSquadSection team={team} />
 
         {/* Related News & Editorial Updates */}
-        {(() => {
-          const relatedArticles = getArticlesByTeam(team.id);
-          if (relatedArticles.length === 0) return null;
-          return (
-            <section aria-labelledby="team-news-heading" className="space-y-4">
-              <SectionHeader
-                title={`${team.name} Updates`}
-                action={{ label: "All News →", href: "/news" }}
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {relatedArticles.map((article) => (
-                  <NewsCard key={article.id} article={article} />
-                ))}
-              </div>
-            </section>
-          );
-        })()}
+        {relatedArticles.length > 0 && (
+          <section aria-labelledby="team-news-heading" className="space-y-4">
+            <SectionHeader
+              title={`${team.name} Updates`}
+              action={{ label: "All News →", href: "/news" }}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {relatedArticles.map((article) => (
+                <NewsCard key={article.id} article={article} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Back Link & Navigation */}
         <div className="pt-4 flex flex-col sm:flex-row justify-between items-center gap-3 border-t border-[var(--color-rule)]">

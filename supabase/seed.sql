@@ -346,7 +346,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_janakpur-bolts', 'season-3', 'janakpur-bolts', 'Harmeet Singh', 'confirmed',
-  'Officially announced August 2026 for Season 3, replacing Anil Sah', '2026-08', 'Not yet available', 'Squad to be announced',
+  'Officially announced August 2026 for Season 3, replacing Anil Sah', '2026-08-01T00:00:00Z', 'Not yet available', 'Squad to be announced',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -362,7 +362,7 @@ INSERT INTO public.players (
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
   'sandeep-lamichhane', 'sandeep-lamichhane', 'Sandeep Lamichhane', 'S. Lamichhane',
-  'Nepalese', '2 August 2000', 'Aruchaur, Syangja District, Nepal',
+  'Nepalese', '2000-08-02', 'Aruchaur, Syangja District, Nepal',
   'Right-hand bat', 'Right-arm leg break, googly',
   NULL, 'Nepal''s premier leg-spinner and all-time leading international wicket-taker. Serves as captain and marquee player for Biratnagar Kings in NPL Season 3.'
 ) ON CONFLICT (id) DO UPDATE SET
@@ -2663,68 +2663,156 @@ INSERT INTO public.player_season_stats (
 -- Uses ON CONFLICT DO NOTHING to avoid overwriting; awards use UUID PKs.
 -- ------------------------------------------------------------------------------
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'player-of-tournament', 'Player of the Tournament / Series', 'Ruben Trumpelmann', NULL,
+  '00000002-0000-0000-0000-000000000001'::uuid, 'season-2', 'player-of-tournament', 'Player of the Tournament / Series', 'Ruben Trumpelmann', NULL,
   'lumbini-lions', 'Lumbini Lions', 'Reported as overall Player of the Series',
   'High', 'Kept as a distinct award category from Best Nepali Player per source documentation.', 1
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'best-nepali-player', 'Best Nepali Player', 'Rohit Kumar Paudel', 'rohit-paudel',
+  '00000002-0000-0000-0000-000000000002'::uuid, 'season-2', 'best-nepali-player', 'Best Nepali Player', 'Rohit Kumar Paudel', 'rohit-paudel',
   'lumbini-lions', 'Lumbini Lions', '276 runs, 10 wickets; Ratopati editorial reported as ''Player of the Tournament'' (Nepali sense)',
   'High', 'Distinguished from overall Player of the Series; sources use overlapping terms.', 2
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'best-batter', 'Best Batter', 'Rohit Kumar Paudel', 'rohit-paudel',
+  '00000002-0000-0000-0000-000000000003'::uuid, 'season-2', 'best-batter', 'Best Batter', 'Rohit Kumar Paudel', 'rohit-paudel',
   'lumbini-lions', 'Lumbini Lions', 'Reported by Ratopati (276 runs)',
   'High', NULL, 3
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'best-bowler', 'Best Bowler', 'Sandeep Lamichhane', 'sandeep-lamichhane',
+  '00000002-0000-0000-0000-000000000004'::uuid, 'season-2', 'best-bowler', 'Best Bowler', 'Sandeep Lamichhane', 'sandeep-lamichhane',
   'biratnagar-kings', 'Biratnagar Kings', '17 wickets across the tournament',
   'High', NULL, 4
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'emerging-player', 'Emerging Player', 'Sher Malla', 'sher-malla',
+  '00000002-0000-0000-0000-000000000005'::uuid, 'season-2', 'emerging-player', 'Emerging Player', 'Sher Malla', 'sher-malla',
   'lumbini-lions', 'Lumbini Lions', 'Verified via Lumbini Lions official club bulletin',
   'High', NULL, 5
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'leading-run-scorer', 'Leading Run Scorer', 'Adam Rossington', NULL,
+  '00000002-0000-0000-0000-000000000006'::uuid, 'season-2', 'leading-run-scorer', 'Leading Run Scorer', 'Adam Rossington', NULL,
   'pokhara-avengers', 'Pokhara Avengers', '323 runs in 7 innings (avg: 53.83, SR: 150.93)',
   'High', NULL, 6
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'leading-wicket-taker', 'Leading Wicket Taker', 'Sandeep Lamichhane', 'sandeep-lamichhane',
+  '00000002-0000-0000-0000-000000000007'::uuid, 'season-2', 'leading-wicket-taker', 'Leading Wicket Taker', 'Sandeep Lamichhane', 'sandeep-lamichhane',
   'biratnagar-kings', 'Biratnagar Kings', '17 wickets',
   'High', NULL, 7
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 INSERT INTO public.tournament_awards (
-  season_id, award_type, award_name, recipient_name, recipient_player_slug,
+  id, season_id, award_type, award_name, recipient_name, recipient_player_slug,
   recipient_team_id, recipient_team_name, secondary_detail, confidence, source_note, sort_order
 ) VALUES (
-  'season-2', 'player-of-final', 'Player of the Final', 'Ruben Trumpelmann', NULL,
+  '00000002-0000-0000-0000-000000000008'::uuid, 'season-2', 'player-of-final', 'Player of the Final', 'Ruben Trumpelmann', NULL,
   'lumbini-lions', 'Lumbini Lions', '3 wickets for 3 runs (3/3) in championship decider',
   'High', NULL, 8
-) ON CONFLICT DO NOTHING;
+) ON CONFLICT (id) DO UPDATE SET
+  award_type = EXCLUDED.award_type,
+  award_name = EXCLUDED.award_name,
+  recipient_name = EXCLUDED.recipient_name,
+  recipient_player_slug = EXCLUDED.recipient_player_slug,
+  recipient_team_id = EXCLUDED.recipient_team_id,
+  recipient_team_name = EXCLUDED.recipient_team_name,
+  secondary_detail = EXCLUDED.secondary_detail,
+  confidence = EXCLUDED.confidence,
+  source_note = EXCLUDED.source_note,
+  sort_order = EXCLUDED.sort_order,
+  updated_at = timezone('utc'::text, now());
 
 COMMIT;

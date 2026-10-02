@@ -2,15 +2,15 @@ import Link from "next/link";
 import { Card, CardBody, StatusBadge } from "@/components/ui/Card";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 import { ScheduleMatch, resolveMatchTeams } from "@/lib/repository/matches";
-import { getTeamBySlug } from "@/lib/repository/teams";
+import { getTeamBySlugSync } from "@/lib/repository/teams";
 
 interface MatchScoreboardProps {
   match: ScheduleMatch;
 }
 
 export function MatchScoreboard({ match }: MatchScoreboardProps) {
-  const team1Detail = match.team1Id !== null ? getTeamBySlug(match.team1Id) : undefined;
-  const team2Detail = match.team2Id !== null ? getTeamBySlug(match.team2Id) : undefined;
+  const team1Detail = match.team1Id !== null ? getTeamBySlugSync(match.team1Id) : undefined;
+  const team2Detail = match.team2Id !== null ? getTeamBySlugSync(match.team2Id) : undefined;
   const { team1, team2 } = resolveMatchTeams(match);
 
   const isCompleted = match.status === "completed";

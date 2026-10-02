@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody } from "@/components/ui/Card";
-import { getLatestArticles } from "@/lib/repository/news";
+import { getAllArticlesSync } from "@/lib/repository/news";
 
 export function LatestUpdatesSection() {
+  const latestArticles = getAllArticlesSync().slice(0, 4);
+
   return (
     <section>
       <SectionHeader
@@ -12,7 +14,7 @@ export function LatestUpdatesSection() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {getLatestArticles(4).map((article) => (
+        {latestArticles.map((article) => (
           <Link
             key={article.id}
             href={`/news/${article.slug}`}
