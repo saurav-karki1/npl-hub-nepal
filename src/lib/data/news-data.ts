@@ -56,6 +56,18 @@ export interface NewsArticle {
   /** Optional hero image path (relative to /public) */
   imageUrl?: string;
 
+  /** Descriptive alt text for hero image (SEO & accessibility) */
+  imageAlt?: string;
+
+  /** Optional caption for hero image */
+  imageCaption?: string;
+
+  /** Custom SEO <title> tag (<= 60 chars) */
+  metaTitle?: string;
+
+  /** Custom SEO meta description (<= 155 chars) */
+  metaDescription?: string;
+
   /** Byline / attribution */
   author: string;
 
@@ -260,6 +272,93 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     status: "published",
     readTime: "5 min read",
     displayDate: "10 Sep 2026",
+  },
+
+  /* ── 7. Overseas Signings ────────────────────────────────────────────────── */
+  {
+    id: "article-07",
+    slug: "npl-season-3-overseas-signings-warner-shakib",
+    title: "NPL Season 3 Overseas Stars: Warner, Shakib and Every Big Signing So Far",
+    metaTitle: "NPL 2026 Overseas Signings: Warner, Shakib & Full List",
+    metaDescription:
+      "From David Warner at Kathmandu Gorkhas to Shakib Al Hasan at Pokhara Avengers, here are NPL Season 3's biggest overseas signings so far.",
+    excerpt:
+      "From David Warner at Kathmandu Gorkhas to Shakib Al Hasan at Pokhara Avengers, here are NPL Season 3's biggest NPL 2026 overseas signings so far — verified, franchise by franchise.",
+    imageUrl: "/images/news/npl-season-3-overseas-stars.webp",
+    imageAlt:
+      "NPL Season 3 Overseas Stars — night stadium at TU International Cricket Stadium Kirtipur with floodlights and Himalayan backdrop",
+    imageCaption:
+      "TU International Cricket Stadium, Kirtipur will host all 32 NPL Season 3 matches.",
+    content: [
+      "With Nepal Premier League Season 3 scheduled to bowl off on October 26, 2026 at TU International Cricket Stadium in Kirtipur, the league has captured global attention with an unprecedented wave of international talent. The confirmed NPL 2026 overseas signings showcase a thrilling blend of World Cup champions, experienced franchise campaigners, and match-winners eager to play in front of Nepal's passionate cricket crowds. Across 32 fixtures running through November 21, the tournament promises to deliver the most competitive franchise cricket in the nation's history.",
+
+      "While previous editions laid the groundwork for domestic franchise cricket, Season 3 elevates the competition onto the international stage as all eight franchises assemble squads built to contend for the championship.",
+
+      "## The Headline Blockbusters: David Warner and Shakib Al Hasan Arrive in Nepal",
+
+      "Leading the roster of marquee international arrivals is Australian cricket legend David Warner, whose signing with the Kathmandu Gorkhas was officially announced on September 15, 2026. A two-time ODI World Cup winner (2015, 2023) and 2021 T20 World Cup champion, Warner brings over 12,000 international runs and extensive franchise pedigree worldwide. His David Warner NPL arrival gives Gorkhas fans a world-class opening batter alongside national team captain Rohit Paudel.",
+
+      "The capital franchise also secured Sri Lankan all-rounder Sahan Arachchige, whose top-order batting and off-break spin provide middle-overs stability, and Indian international wicketkeeper-batter K. S. Bharat, adding proven top-level glovework and technique.",
+
+      "Equally seismic is the signing of Bangladeshi legend Shakib Al Hasan by the Pokhara Avengers, confirmed on July 27, 2026. Regarded as one of the finest all-rounders in cricket history, Shakib Al Hasan NPL participation gives Pokhara an elite performer with over 7,000 international runs and nearly 700 wickets across formats. His ability to control match tempo on spin-friendly pitches makes him an invaluable asset for captain Kushal Malla's side.",
+
+      "To complement Shakib, the Avengers re-signed Sri Lankan pace-bowling all-rounder Dhananjaya Lakshan. Guiding Pokhara's dugout is legendary Sri Lankan mystery spinner Ajantha Mendis as head coach.",
+
+      "## Confirmed NPL 2026 Overseas Signings: Franchise-by-Franchise",
+
+      "Across all eight NPL Season 3 teams, franchises have deployed their overseas player quotas to address key tactical needs, balancing raw pace, batting power, and cunning spin. Here is a full verified breakdown of confirmed international signings heading into the opening match:",
+
+      "Kathmandu Gorkhas: David Warner (Australia), Sahan Arachchige (Sri Lanka), K. S. Bharat (India) — all confirmed. Pokhara Avengers: Shakib Al Hasan (Bangladesh), Dhananjaya Lakshan (Sri Lanka) — all confirmed. Janakpur Bolts: Jimmy Neesham (New Zealand), returning champion. Sudurpaschim Royals: Scott Kuggeleijn (New Zealand) and Saif Ali Zaib (England), both returning. Lumbini Lions: Niroshan Dickwella (Sri Lanka), retained. Biratnagar Kings: Charith Asalanka (Sri Lanka, confirmed September 17, 2026) and Shubham Ranjane (USA, confirmed September 29, 2026). Chitwan Rhinos: Sikandar Raza (Zimbabwe, confirmed August 27, 2026) and Kaleem Sana (Canada, confirmed September 2026). Karnali Yaks: Akbar Ali (Bangladesh) and Mark Watt (Scotland), both confirmed September 27, 2026.",
+
+      "Reigning titleholders Janakpur Bolts have retained Kiwi powerhouse Jimmy Neesham, whose death-overs power hitting and dependable seam bowling were crucial to the franchise's championship run under captain Dipendra Singh Airee.",
+
+      "Sudurpaschim Royals bring back Kiwi express pacer Scott Kuggeleijn, whose hit-the-deck pace offers real hostility on Kirtipur's true bounce, alongside English domestic standout Saif Ali Zaib.",
+
+      "Biratnagar Kings' headline capture is Sri Lankan national team star Charith Asalanka, a deft middle-order batter with a sharp off-break. Chitwan Rhinos unveiled Sikandar Raza — a devastating batting all-rounder — alongside Canadian left-arm spearhead Kaleem Sana. Karnali Yaks secured ICC Under-19 World Cup-winning captain Akbar Ali and Scottish spinner Mark Watt, known globally for his creative variations. Lumbini Lions have retained dynamic Sri Lankan stumper Niroshan Dickwella to spearhead their aggressive top order.",
+
+      "Note: Squad registration deadlines and final overseas selections are ongoing. All signings listed above have been verified from franchise social media announcements and accredited cricket press. Any subsequent additions will be reported as confirmed.",
+
+      "## Opinion: Who Could Make the Biggest Impact at TU Stadium?",
+
+      "The following section reflects analytical editorial opinion and does not contain invented statistics, quotes, or guarantees of performance.",
+
+      "1. The Warner Factor in the Powerplay. David Warner's career has been built on seizing control within the first six overs. The TU International Cricket Stadium dimensions, combined with over 15,000 passionate spectators, offer Warner a potent platform. If Warner fires consistently, the Kathmandu Gorkhas possess the batting depth to post match-winning totals throughout the season.",
+
+      "2. The Battle of Proven All-Rounders. T20 matches in Nepal are frequently decided in the middle overs. The presence of Sikandar Raza (Chitwan), Shakib Al Hasan (Pokhara), and Jimmy Neesham (Janakpur) gives their captains a formidable tactical cushion. All three veterans have the experience to rebuild from early setbacks or deliver vital wickets in crucial stages.",
+
+      "3. Spin Mastery on Autumn Tracks. Historically, Kirtipur pitches offer increasing turn as the tournament moves through November. Bowlers like Mark Watt (Karnali) and Charith Asalanka (Biratnagar) will relish these conditions. Watt's ability to bowl inside the powerplay with economy rates under six could prove decisive in close finishes.",
+
+      "## What's Next: Opening Match, Schedule and Teams",
+
+      "The tournament begins on Monday, October 26, 2026, when Lumbini Lions take on Sudurpaschim Royals in NPL Match #1 at TU International Cricket Stadium at 4:30 PM NPT — see the full opening match details on the /matches/match-1-lumbini-lions-vs-sudurpaschim-royals page. Fans can explore the complete 32-match programme on the NPL Season 3 Schedule at /schedule and explore every franchise squad on the Teams Hub at /teams. Full franchise profile pages are available for the Kathmandu Gorkhas, Biratnagar Kings, Janakpur Bolts, Pokhara Avengers, Chitwan Rhinos, Lumbini Lions, Karnali Yaks, and Sudurpaschim Royals.",
+
+      "NPL Hub Nepal is not affiliated with the official NPL or CAN. All player confirmation details have been cross-referenced against the sources listed below.",
+
+      "## Verified Sources",
+
+      "Sources used to verify all signings in this article: The Kathmandu Post — David Warner announced for Kathmandu Gorkhas (kathmandupost.com); Nepal News — Shakib Al Hasan confirmed for Pokhara Avengers (nepalnews.com); Ratopati Sports — Sikandar Raza signing announcement (ratopati.com); Official NPL T20 League Roster Pages (nplt20league.com); CAN official announcements (can.org.np). All signing dates are as reported by the referenced sources.",
+    ],
+    category: "Teams",
+    publishedAt: "2026-10-03T16:30:00+05:45",
+    updatedAt: "2026-10-03T16:30:00+05:45",
+    featured: true,
+    author: "NPL Hub Nepal Editorial",
+    source:
+      "Kathmandu Post, Nepal News, Ratopati, nplt20league.com, CAN",
+    relatedTeamIds: [
+      "kathmandu-gorkhas",
+      "pokhara-avengers",
+      "janakpur-bolts",
+      "sudurpaschim-royals",
+      "lumbini-lions",
+      "biratnagar-kings",
+      "chitwan-rhinos",
+      "karnali-yaks",
+    ],
+    relatedMatchSlug: "match-1-lumbini-lions-vs-sudurpaschim-royals",
+    status: "published",
+    readTime: "6 min read",
+    displayDate: "3 Oct 2026",
   },
 ];
 

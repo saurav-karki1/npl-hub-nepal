@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/Layout";
@@ -27,26 +28,43 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Article Not Found" };
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+  const metaTitle = article.metaTitle ?? article.title;
+  const metaDesc = article.metaDescription ?? article.excerpt;
+  const ogImage = article.imageUrl
+    ? `${siteUrl}${article.imageUrl}`
+    : `${siteUrl}/images/og-default.png`;
+
   return {
-    title: article.title,
-    description: article.excerpt,
+    title: metaTitle,
+    description: metaDesc,
     alternates: {
       canonical: `/news/${article.slug}`,
     },
     openGraph: {
-      title: article.title,
-      description: article.excerpt,
+      title: metaTitle,
+      description: metaDesc,
       url: `/news/${article.slug}`,
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "article",
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: article.imageAlt ?? article.title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
-      title: article.title,
-      description: article.excerpt,
+      title: metaTitle,
+      description: metaDesc,
+      images: [ogImage],
     },
   };
 }
@@ -110,6 +128,27 @@ function ArticleBody({ article }: { article: NewsArticle }) {
         <span className="text-[var(--color-ink-faint)]">·</span>
         <span className="text-[var(--color-ink-muted)]">{article.readTime}</span>
       </div>
+
+      {/* Hero image */}
+      {article.imageUrl && (
+        <figure className="mb-6 -mx-0">
+          <div className="relative w-full aspect-[1200/630] rounded-[var(--radius-lg)] overflow-hidden border border-[var(--color-rule)]">
+            <Image
+              src={article.imageUrl}
+              alt={article.imageAlt ?? article.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 768px) 100vw, 672px"
+            />
+          </div>
+          {article.imageCaption && (
+            <figcaption className="mt-2 text-xs text-[var(--color-ink-muted)] text-center italic">
+              {article.imageCaption}
+            </figcaption>
+          )}
+        </figure>
+      )}
 
       {/* Headline */}
       <h1 className="text-2xl sm:text-3xl font-black text-[var(--color-ink)] leading-tight mb-4">
@@ -241,7 +280,7 @@ export default async function ArticlePage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     headline: article.title,
-    description: article.excerpt,
+    description: article.metaDescription ?? article.excerpt,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt,
     author: {
@@ -258,6 +297,15 @@ export default async function ArticlePage({ params }: PageProps) {
       "@type": "WebPage",
       "@id": `${siteUrl}/news/${article.slug}`,
     },
+    ...(article.imageUrl && {
+      image: {
+        "@type": "ImageObject",
+        url: `${siteUrl}${article.imageUrl}`,
+        width: 1200,
+        height: 630,
+        ...(article.imageAlt && { caption: article.imageAlt }),
+      },
+    }),
   };
 
   return (
