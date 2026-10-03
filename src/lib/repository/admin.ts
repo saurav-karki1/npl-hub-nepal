@@ -143,7 +143,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
           totalMatches: 32,
           primaryVenue: "TU International Cricket Stadium, Kirtipur",
           status: "Upcoming",
-          projectedDates: "28 November – 21 December 2026",
+          projectedDates: "26 October – 21 November 2026",
           isConfirmed: true,
         };
 
@@ -170,7 +170,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
     edition: tournamentInfo.edition || "2026 Edition",
     venue: tournamentInfo.primaryVenue || "TU International Cricket Stadium, Kirtipur",
     projectedDates:
-      tournamentInfo.projectedDates || "28 November – 21 December 2026",
+      tournamentInfo.projectedDates || "26 October – 21 November 2026",
     totalTeams: tournamentInfo.totalTeams || teams.length || 8,
     totalMatches: tournamentInfo.totalMatches || matches.length || 32,
   };
