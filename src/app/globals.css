@@ -186,3 +186,28 @@ a:focus-visible {
   background: var(--color-brand-light);
   color: var(--color-brand-dark);
 }
+
+/* ============================================================
+   Match Countdown Tick Animation
+   ============================================================ */
+
+@keyframes tickGlow {
+  0% {
+    border-color: rgba(200, 159, 42, 0.7);
+    box-shadow: 0 0 8px rgba(200, 159, 42, 0.35);
+  }
+  100% {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: none;
+  }
+}
+
+.animate-tick {
+  animation: tickGlow 250ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-tick {
+    animation: none !important;
+  }
+}
