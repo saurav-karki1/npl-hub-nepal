@@ -172,7 +172,7 @@ export default function AdminDashboardPage() {
             status: "Pre-Tournament",
             edition: "2026 Edition",
             venue: "TU International Cricket Stadium, Kirtipur",
-            projectedDates: "28 November – 21 December 2026",
+            projectedDates: "26 October – 21 November 2026",
             totalTeams: 8,
             totalMatches: 32,
           }

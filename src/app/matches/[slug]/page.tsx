@@ -7,6 +7,7 @@ import {
   getAllMatchSlugs,
   resolveMatchTeams,
 } from "@/lib/repository/matches";
+import { buildMatchJsonLd, safeJsonLd } from "@/lib/structuredData";
 import { MatchBreadcrumb } from "@/components/matches/MatchBreadcrumb";
 import { MatchHeader } from "@/components/matches/MatchHeader";
 import { MatchScoreboard } from "@/components/matches/MatchScoreboard";
@@ -73,51 +74,16 @@ export default async function MatchDetailPage({ params }: PageProps) {
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
-  // Schema.org SportsEvent structured data
-  const sportsEventSchema = {
-    "@context": "https://schema.org",
-    "@type": "SportsEvent",
-    name: `${team1.name} vs ${team2.name} (NPL Season 3 Match #${match.matchNumber})`,
-    description: `Nepal Premier League Season 3 Match #${match.matchNumber}: ${team1.name} vs ${team2.name} at TU International Cricket Stadium, Kirtipur.`,
-    startDate: match.date,
-    url: `${siteUrl}/matches/${match.slug}`,
-    location: {
-      "@type": "Place",
-      name: match.venue,
-      address: {
-        "@type": "PostalAddress",
-        addressLocality: "Kirtipur, Kathmandu",
-        addressCountry: "NP",
-      },
-    },
-    competitor: [
-      {
-        "@type": "SportsTeam",
-        name: team1.name,
-        url: `${siteUrl}/teams/${team1.slug}`,
-      },
-      {
-        "@type": "SportsTeam",
-        name: team2.name,
-        url: `${siteUrl}/teams/${team2.slug}`,
-      },
-    ],
-    organizer: {
-      "@type": "Organization",
-      name: "Cricket Association of Nepal (CAN)",
-      url: "https://can.org.np",
-    },
-    eventStatus:
-      match.status === "completed"
-        ? "https://schema.org/EventCompleted"
-        : "https://schema.org/EventScheduled",
-  };
+  // Build complete SportsEvent JSON-LD via reusable helper (lib/structuredData.ts)
+  // Includes: eventStatus, eventAttendanceMode, homeTeam, awayTeam, performer, image, organizer
+  // Intentionally omits `offers` — no confirmed ticketing/pricing data exists.
+  const sportsEventSchema = buildMatchJsonLd({ match, team1, team2, siteUrl });
 
   return (
     <div className="py-6 sm:py-8 lg:py-10">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(sportsEventSchema) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(sportsEventSchema) }}
       />
 
       <Container className="space-y-8 sm:space-y-10">

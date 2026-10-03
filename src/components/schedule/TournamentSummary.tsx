@@ -1,4 +1,4 @@
-import { Card, CardBody } from "@/components/ui/Card";
+﻿import { Card, CardBody } from "@/components/ui/Card";
 import { TOURNAMENT_INFO } from "@/lib/repository/matches";
 
 export function TournamentSummary() {
@@ -87,7 +87,7 @@ export function TournamentSummary() {
                 26 Oct – 21 Nov 2026
               </span>
               <span className="text-xs text-[var(--color-ink-muted)]">
-                १० कार्तिक – ५ मंसिर २०८३
+                ३ कार्तिक – ५ मंसिर २०८३
               </span>
             </div>
           </div>
