@@ -160,11 +160,55 @@ function ArticleBody({ article }: { article: NewsArticle }) {
         {article.excerpt}
       </p>
 
-      {/* Main content paragraphs */}
+      {/* Main content blocks — handles ## headings, Note: callouts, 1. items */}
       <div className="space-y-4 text-sm text-[var(--color-ink)] leading-relaxed font-sans">
-        {article.content.map((paragraph, i) => (
-          <p key={i}>{paragraph}</p>
-        ))}
+        {article.content.map((block, i) => {
+          // ## H2 heading
+          if (block.startsWith("## ")) {
+            return (
+              <h2
+                key={i}
+                className="text-lg sm:text-xl font-bold text-[var(--color-ink)] pt-4 pb-1 border-b border-[var(--color-rule)] mt-6"
+              >
+                {block.slice(3)}
+              </h2>
+            );
+          }
+          // ### H3 heading
+          if (block.startsWith("### ")) {
+            return (
+              <h3
+                key={i}
+                className="text-base font-bold text-[var(--color-ink)] mt-4"
+              >
+                {block.slice(4)}
+              </h3>
+            );
+          }
+          // Note: callout block
+          if (block.startsWith("Note:")) {
+            return (
+              <aside
+                key={i}
+                className="border-l-4 border-[var(--color-brand)] bg-[var(--color-surface-sunken)] px-4 py-3 rounded-r-[var(--radius-md)] text-xs text-[var(--color-ink-muted)] italic"
+              >
+                {block}
+              </aside>
+            );
+          }
+          // 1. / 2. / 3. numbered item — bold the leading label up to the first period
+          const numberedMatch = block.match(/^(\d+\.\s[^.]+\.)\s(.*)/);
+          if (numberedMatch) {
+            return (
+              <p key={i}>
+                <strong className="text-[var(--color-ink)]">{numberedMatch[1]}</strong>{" "}
+                {numberedMatch[2]}
+              </p>
+            );
+          }
+          // Default paragraph
+          return <p key={i}>{block}</p>;
+        })}
       </div>
 
       {/* Byline / Source attribution */}
