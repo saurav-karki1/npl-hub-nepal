@@ -4,6 +4,9 @@
  * Abstracted data access layer for multi-season statistics and historical records.
  * Primary source: Supabase database (`seasons`, `team_seasons`, `tournament_awards`, `player_season_stats`).
  * Fallback source: Centralized static data (`stats-registry.ts`).
+ *
+ * Admin write functions call the secure /api/admin/stats API route
+ * (server-side, service-role key) — never Supabase directly from UI.
  */
 
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -53,6 +56,187 @@ export const AVAILABLE_SEASONS = AVAILABLE_SEASONS_DATA;
 
 /** Synchronous fallbacks for backwards compatibility */
 export const getSeasonStatsSync = getSeasonStatsData;
+
+// ---------------------------------------------------------------------------
+// Admin-specific types (Phase 5G)
+// ---------------------------------------------------------------------------
+
+export type StatConfidence = "High" | "Medium" | "Low";
+
+export interface AdminPlayerSeasonStatRow {
+  id: string;
+  player_season_id: string | null;
+  season_id: string;
+  player_name: string;
+  player_slug: string | null;
+  team_id: string;
+  team_name: string;
+  matches: number | null;
+  innings: number | null;
+  runs: number | null;
+  highest_score: string | null;
+  average: number | null;
+  strike_rate: number | null;
+  wickets: number | null;
+  best_bowling: string | null;
+  economy: number | null;
+  fours: number | null;
+  sixes: number | null;
+  hundreds: number | null;
+  fifties: number | null;
+  catches: number | null;
+  wicketkeeper_dismissals: number | null;
+  confidence: StatConfidence;
+  source_note: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminTournamentAwardRow {
+  id: string;
+  season_id: string;
+  award_type: string;
+  award_name: string;
+  recipient_name: string;
+  recipient_player_slug: string | null;
+  recipient_team_id: string | null;
+  recipient_team_name: string;
+  stat_metric: string | null;
+  secondary_detail: string | null;
+  confidence: StatConfidence;
+  source_note: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UpdatePlayerSeasonStatInput {
+  id: string;
+  matches?: number | null;
+  innings?: number | null;
+  runs?: number | null;
+  highest_score?: string | null;
+  average?: number | null;
+  strike_rate?: number | null;
+  wickets?: number | null;
+  best_bowling?: string | null;
+  economy?: number | null;
+  fours?: number | null;
+  sixes?: number | null;
+  hundreds?: number | null;
+  fifties?: number | null;
+  catches?: number | null;
+  wicketkeeper_dismissals?: number | null;
+  confidence?: StatConfidence;
+  source_note?: string | null;
+}
+
+export interface UpdateTournamentAwardInput {
+  id: string;
+  award_name?: string;
+  recipient_name?: string;
+  recipient_player_slug?: string | null;
+  recipient_team_id?: string | null;
+  recipient_team_name?: string;
+  stat_metric?: string | null;
+  secondary_detail?: string | null;
+  confidence?: StatConfidence;
+  source_note?: string | null;
+  sort_order?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Admin repository functions (Phase 5G)
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch all player_season_stats and tournament_awards for the admin panel.
+ * Optionally filter by seasonId.
+ * Calls the secure /api/admin/stats route (service-role server-side).
+ */
+export async function getAllStatsAdmin(
+  accessToken: string,
+  seasonId?: string
+): Promise<{
+  stats: AdminPlayerSeasonStatRow[];
+  awards: AdminTournamentAwardRow[];
+  error: string | null;
+}> {
+  try {
+    const url = seasonId
+      ? `/api/admin/stats?season=${encodeURIComponent(seasonId)}`
+      : "/api/admin/stats";
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { stats: [], awards: [], error: json.error ?? "Failed to fetch statistics." };
+    }
+    return {
+      stats: json.stats ?? [],
+      awards: json.awards ?? [],
+      error: null,
+    };
+  } catch {
+    return { stats: [], awards: [], error: "Network error fetching statistics." };
+  }
+}
+
+/**
+ * Update an existing player_season_stats record.
+ * Calls PUT /api/admin/stats with type='stat'.
+ */
+export async function updatePlayerSeasonStatAdmin(
+  input: UpdatePlayerSeasonStatInput,
+  accessToken: string
+): Promise<{ stat: AdminPlayerSeasonStatRow | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/stats", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ ...input, type: "stat" }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { stat: null, error: json.error ?? "Failed to update statistic." };
+    }
+    return { stat: json.stat ?? null, error: null };
+  } catch {
+    return { stat: null, error: "Network error updating statistic." };
+  }
+}
+
+/**
+ * Update an existing tournament_awards record.
+ * Calls PUT /api/admin/stats with type='award'.
+ */
+export async function updateTournamentAwardAdmin(
+  input: UpdateTournamentAwardInput,
+  accessToken: string
+): Promise<{ award: AdminTournamentAwardRow | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/stats", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ ...input, type: "award" }),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { award: null, error: json.error ?? "Failed to update award." };
+    }
+    return { award: json.award ?? null, error: null };
+  } catch {
+    return { award: null, error: "Network error updating award." };
+  }
+}
 
 /**
  * Retrieve statistics dataset for a given season ("season-2" | "season-3") from Supabase (with static fallback)

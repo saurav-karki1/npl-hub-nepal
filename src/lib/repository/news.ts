@@ -4,6 +4,9 @@
  * Abstracted data access layer for editorial news, announcements, and coverage.
  * Primary source: Supabase database (`news_articles` & `news_team_relations` tables).
  * Fallback source: Centralized static data (`news-data.ts`).
+ *
+ * Admin write functions call the secure /api/admin/news API route
+ * (server-side, service-role key) — never Supabase directly from UI.
  */
 
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
@@ -24,6 +27,157 @@ import {
 
 export type { NewsArticle, NewsCategory, ArticleStatus };
 export { NEWS_ARTICLES };
+
+// ---------------------------------------------------------------------------
+// Admin-specific types (Phase 5F)
+// ---------------------------------------------------------------------------
+
+export interface AdminNewsTeamRelation {
+  id: string;
+  team_id: string;
+}
+
+export interface AdminNewsRow {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string[];
+  category: NewsCategory;
+  status: ArticleStatus;
+  featured: boolean;
+  image_url: string | null;
+  author: string;
+  author_role: string;
+  read_time: string;
+  tags: string[];
+  source: string | null;
+  source_url: string | null;
+  published_at: string;
+  updated_at: string;
+  created_at: string;
+  news_team_relations: AdminNewsTeamRelation[];
+}
+
+export interface CreateNewsInput {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string[];
+  category: NewsCategory;
+  status: ArticleStatus;
+  featured: boolean;
+  image_url?: string | null;
+  author: string;
+  author_role: string;
+  read_time: string;
+  tags: string[];
+  source?: string | null;
+  source_url?: string | null;
+  published_at?: string;
+  teamIds: string[];
+}
+
+export interface UpdateNewsInput {
+  id: string;
+  slug?: string;
+  title?: string;
+  excerpt?: string;
+  content?: string[];
+  category?: NewsCategory;
+  status?: ArticleStatus;
+  featured?: boolean;
+  image_url?: string | null;
+  author?: string;
+  author_role?: string;
+  read_time?: string;
+  tags?: string[];
+  source?: string | null;
+  source_url?: string | null;
+  published_at?: string;
+  teamIds?: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Admin repository functions (Phase 5F)
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetch ALL news articles (published + draft) for the admin panel.
+ * Calls the secure /api/admin/news route (service-role server-side).
+ */
+export async function getAllNewsAdmin(
+  accessToken: string
+): Promise<{ articles: AdminNewsRow[]; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/news", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      cache: "no-store",
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { articles: [], error: json.error ?? "Failed to fetch articles." };
+    }
+    return { articles: json.articles ?? [], error: null };
+  } catch {
+    return { articles: [], error: "Network error fetching news articles." };
+  }
+}
+
+/**
+ * Create a new news article.
+ * Calls POST /api/admin/news (service-role server-side).
+ */
+export async function createNewsAdmin(
+  input: CreateNewsInput,
+  accessToken: string
+): Promise<{ article: AdminNewsRow | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/news", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(input),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { article: null, error: json.error ?? "Failed to create article." };
+    }
+    return { article: json.article ?? null, error: null };
+  } catch {
+    return { article: null, error: "Network error creating news article." };
+  }
+}
+
+/**
+ * Update an existing news article (including team relations replacement).
+ * Calls PUT /api/admin/news (service-role server-side).
+ */
+export async function updateNewsAdmin(
+  input: UpdateNewsInput,
+  accessToken: string
+): Promise<{ article: AdminNewsRow | null; error: string | null }> {
+  try {
+    const res = await fetch("/api/admin/news", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(input),
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      return { article: null, error: json.error ?? "Failed to update article." };
+    }
+    return { article: json.article ?? null, error: null };
+  } catch {
+    return { article: null, error: "Network error updating news article." };
+  }
+}
 
 /** Synchronous fallbacks for backwards compatibility */
 export const getAllArticlesSync = getAllArticlesData;
