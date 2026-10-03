@@ -265,11 +265,38 @@ export async function getArticleBySlug(slug: string): Promise<NewsArticle | unde
 }
 
 /**
- * Get all article slugs for Next.js generateStaticParams
+ * Get all article slugs for Next.js generateStaticParams.
+ * Always merges static slugs with Supabase slugs so that locally-defined
+ * articles are pre-rendered even when Supabase is the primary data source.
  */
 export async function getAllArticleSlugs(): Promise<{ slug: string }[]> {
-  const articles = await getAllArticles();
-  return articles.map((a) => ({ slug: a.slug }));
+  // Static slugs are always the source of truth for generateStaticParams
+  const staticSlugs = getAllArticleSlugsData();
+
+  if (!isSupabaseConfigured()) {
+    return staticSlugs;
+  }
+
+  try {
+    const client = getSupabaseClient();
+    const { data, error } = await client
+      .from("news_articles")
+      .select("slug")
+      .eq("status", "published");
+
+    if (!error && data && data.length > 0) {
+      // Merge: static slugs + Supabase slugs (deduplicated)
+      const seen = new Set(staticSlugs.map((s) => s.slug));
+      const extra = data
+        .map((r: { slug: string }) => ({ slug: r.slug }))
+        .filter((s: { slug: string }) => !seen.has(s.slug));
+      return [...staticSlugs, ...extra];
+    }
+  } catch {
+    // Fall back to static slugs only
+  }
+
+  return staticSlugs;
 }
 
 /**
