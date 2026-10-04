@@ -11,6 +11,10 @@ import {
   getAllArticles,
   type NewsArticle,
 } from "@/lib/repository/news";
+import { normalizeArticleBlocks } from "@/lib/types/article-blocks";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -160,55 +164,117 @@ function ArticleBody({ article }: { article: NewsArticle }) {
         {article.excerpt}
       </p>
 
-      {/* Main content blocks — handles ## headings, Note: callouts, 1. items */}
+      {/* Main content blocks — semantic HTML for paragraphs, headings, lists, quotes, FAQs */}
       <div className="space-y-4 text-sm text-[var(--color-ink)] leading-relaxed font-sans">
-        {article.content.map((block, i) => {
-          // ## H2 heading
-          if (block.startsWith("## ")) {
-            return (
-              <h2
-                key={i}
-                className="text-lg sm:text-xl font-bold text-[var(--color-ink)] pt-4 pb-1 border-b border-[var(--color-rule)] mt-6"
-              >
-                {block.slice(3)}
-              </h2>
-            );
-          }
-          // ### H3 heading
-          if (block.startsWith("### ")) {
-            return (
-              <h3
-                key={i}
-                className="text-base font-bold text-[var(--color-ink)] mt-4"
-              >
-                {block.slice(4)}
-              </h3>
-            );
-          }
-          // Note: callout block
-          if (block.startsWith("Note:")) {
-            return (
-              <aside
-                key={i}
-                className="border-l-4 border-[var(--color-brand)] bg-[var(--color-surface-sunken)] px-4 py-3 rounded-r-[var(--radius-md)] text-xs text-[var(--color-ink-muted)] italic"
-              >
-                {block}
-              </aside>
-            );
-          }
-          // 1. / 2. / 3. numbered item — bold the leading label up to the first period
-          const numberedMatch = block.match(/^(\d+\.\s[^.]+\.)\s(.*)/);
-          if (numberedMatch) {
-            return (
-              <p key={i}>
-                <strong className="text-[var(--color-ink)]">{numberedMatch[1]}</strong>{" "}
-                {numberedMatch[2]}
-              </p>
-            );
-          }
-          // Default paragraph
-          return <p key={i}>{block}</p>;
-        })}
+        {(() => {
+          const blocks =
+            article.blocks && article.blocks.length > 0
+              ? article.blocks
+              : normalizeArticleBlocks(article.content);
+
+          return blocks.map((block, i) => {
+            switch (block.type) {
+              case "heading":
+                if (block.level === 3) {
+                  return (
+                    <h3
+                      key={i}
+                      className="text-base sm:text-lg font-bold text-[var(--color-ink)] mt-6 mb-2"
+                    >
+                      {block.text}
+                    </h3>
+                  );
+                }
+                return (
+                  <h2
+                    key={i}
+                    className="text-lg sm:text-xl font-bold text-[var(--color-ink)] pt-4 pb-1 border-b border-[var(--color-rule)] mt-8 mb-3"
+                  >
+                    {block.text}
+                  </h2>
+                );
+
+              case "list":
+                if (block.style === "ordered") {
+                  return (
+                    <ol
+                      key={i}
+                      className="list-decimal pl-6 space-y-1.5 my-4 text-[var(--color-ink)] leading-relaxed"
+                    >
+                      {block.items.map((item, itemIdx) => (
+                        <li key={itemIdx}>{item}</li>
+                      ))}
+                    </ol>
+                  );
+                }
+                return (
+                  <ul
+                    key={i}
+                    className="list-disc pl-6 space-y-1.5 my-4 text-[var(--color-ink)] leading-relaxed"
+                  >
+                    {block.items.map((item, itemIdx) => (
+                      <li key={itemIdx}>{item}</li>
+                    ))}
+                  </ul>
+                );
+
+              case "quote":
+                return (
+                  <blockquote
+                    key={i}
+                    className="border-l-4 border-[var(--color-brand)] bg-[var(--color-surface-sunken)] px-4 py-3 rounded-r-[var(--radius-md)] text-xs sm:text-sm text-[var(--color-ink-muted)] italic my-4"
+                  >
+                    <p>{block.text}</p>
+                    {block.author && (
+                      <cite className="block mt-2 text-xs font-semibold not-italic text-[var(--color-ink)]">
+                        — {block.author}
+                      </cite>
+                    )}
+                  </blockquote>
+                );
+
+              case "faq":
+                return (
+                  <div
+                    key={i}
+                    className="border border-[var(--color-rule)] rounded-[var(--radius-md)] bg-[var(--color-surface-sunken)] p-4 my-4 space-y-2"
+                  >
+                    <h3 className="font-bold text-sm sm:text-base text-[var(--color-ink)] flex items-start gap-2">
+                      <span className="text-[var(--color-brand)] font-black text-[10px] uppercase px-1.5 py-0.5 rounded bg-[var(--color-brand-light)] border border-[var(--color-brand)]/20 mt-0.5 shrink-0">
+                        FAQ
+                      </span>
+                      <span>{block.question}</span>
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[var(--color-ink-secondary)] leading-relaxed pl-7">
+                      {block.answer}
+                    </p>
+                  </div>
+                );
+
+              case "link":
+                return (
+                  <p key={i} className="my-2">
+                    <a
+                      href={block.url}
+                      target={block.url.startsWith("http") ? "_blank" : undefined}
+                      rel={block.url.startsWith("http") ? "noopener noreferrer" : undefined}
+                      className="text-[var(--color-brand)] hover:underline font-semibold"
+                    >
+                      {block.text} →
+                    </a>
+                  </p>
+                );
+
+              case "paragraph":
+              default:
+                return (
+                  <p key={i} className="leading-relaxed">
+                    {block.text}
+                  </p>
+                );
+            }
+          });
+        })()}
       </div>
 
       {/* Byline / Source attribution */}

@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody } from "@/components/ui/Card";
-import { getAllArticlesSync } from "@/lib/repository/news";
+import { getAllArticlesSync, type NewsArticle } from "@/lib/repository/news";
 
-export function LatestUpdatesSection() {
-  const latestArticles = getAllArticlesSync().slice(0, 4);
+interface LatestUpdatesSectionProps {
+  articles?: NewsArticle[];
+}
+
+export function LatestUpdatesSection({ articles }: LatestUpdatesSectionProps) {
+  const latestArticles = (articles ?? getAllArticlesSync()).slice(0, 4);
 
   return (
     <section>

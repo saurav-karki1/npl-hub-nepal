@@ -24,6 +24,10 @@ import {
   getArticlesByTeam as getArticlesByTeamData,
   getAvailableCategories as getAvailableCategoriesData,
 } from "@/lib/data/news-data";
+import {
+  type ArticleBlock,
+  normalizeArticleBlocks,
+} from "@/lib/types/article-blocks";
 
 export type { NewsArticle, NewsCategory, ArticleStatus };
 export { NEWS_ARTICLES };
@@ -37,12 +41,17 @@ export interface AdminNewsTeamRelation {
   team_id: string;
 }
 
+export type NewsContentPayload =
+  | string[]
+  | { blocks: ArticleBlock[] }
+  | ArticleBlock[];
+
 export interface AdminNewsRow {
   id: string;
   slug: string;
   title: string;
   excerpt: string;
-  content: string[];
+  content: NewsContentPayload;
   category: NewsCategory;
   status: ArticleStatus;
   featured: boolean;
@@ -64,7 +73,7 @@ export interface CreateNewsInput {
   slug: string;
   title: string;
   excerpt: string;
-  content: string[];
+  content: NewsContentPayload;
   category: NewsCategory;
   status: ArticleStatus;
   featured: boolean;
@@ -84,7 +93,7 @@ export interface UpdateNewsInput {
   slug?: string;
   title?: string;
   excerpt?: string;
-  content?: string[];
+  content?: NewsContentPayload;
   category?: NewsCategory;
   status?: ArticleStatus;
   featured?: boolean;
@@ -198,12 +207,15 @@ function mapSupabaseArticle(row: any): NewsArticle {
     ? row.news_team_relations.map((r: { team_id: string }) => r.team_id)
     : undefined;
 
+  const blocks = normalizeArticleBlocks(row.content);
+
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
     excerpt: row.excerpt,
-    content: Array.isArray(row.content) ? row.content : [String(row.content)],
+    content: blocks.length > 0 ? blocks : (Array.isArray(row.content) ? row.content : [String(row.content)]),
+    blocks,
     category: row.category as NewsCategory,
     publishedAt: row.published_at,
     updatedAt: row.updated_at,

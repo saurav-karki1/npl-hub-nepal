@@ -22,6 +22,12 @@ import {
   NewsCategory,
   ArticleStatus,
 } from "@/lib/repository/news";
+import { AdminArticleContentEditor } from "@/components/admin/AdminArticleContentEditor";
+import {
+  ArticleBlock,
+  normalizeArticleBlocks,
+  blocksToPlainText,
+} from "@/lib/types/article-blocks";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -85,7 +91,8 @@ interface ArticleFormState {
   slug: string;
   title: string;
   excerpt: string;
-  contentText: string; // Textarea value — paragraphs separated by blank lines
+  contentText: string; // Raw textarea value
+  blocks: ArticleBlock[]; // Structured blocks
   category: NewsCategory;
   status: ArticleStatus;
   featured: boolean;
@@ -107,6 +114,7 @@ function defaultForm(): ArticleFormState {
     title: "",
     excerpt: "",
     contentText: "",
+    blocks: [],
     category: "Tournament",
     status: "draft",
     featured: false,
@@ -123,12 +131,21 @@ function defaultForm(): ArticleFormState {
 }
 
 function articleToForm(a: AdminNewsRow): ArticleFormState {
+  const blocks = normalizeArticleBlocks(a.content);
+  const plainText =
+    blocks.length > 0
+      ? blocksToPlainText(blocks)
+      : Array.isArray(a.content)
+      ? a.content.join("\n\n")
+      : String(a.content ?? "");
+
   return {
     id: a.id,
     slug: a.slug,
     title: a.title,
     excerpt: a.excerpt,
-    contentText: Array.isArray(a.content) ? a.content.join("\n\n") : String(a.content),
+    contentText: plainText,
+    blocks,
     category: a.category,
     status: a.status,
     featured: a.featured,
@@ -211,6 +228,7 @@ interface ArticleEditorProps {
   isSaving: boolean;
   saveError: string | null;
   slugManuallyEdited: boolean;
+  accessToken: string | null;
   onFormChange: (patch: Partial<ArticleFormState>) => void;
   onSlugManualEdit: () => void;
   onSave: () => void;
@@ -223,6 +241,7 @@ function ArticleEditor({
   isSaving,
   saveError,
   slugManuallyEdited,
+  accessToken,
   onFormChange,
   onSlugManualEdit,
   onSave,
@@ -523,24 +542,15 @@ function ArticleEditor({
             </div>
           </div>
 
-          {/* Content */}
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-              Article Content <span className="text-red-400">*</span>
-              <span className="ml-2 text-slate-500 normal-case font-normal">
-                Separate paragraphs with a blank line
-              </span>
-            </label>
-            <textarea
-              value={form.contentText}
-              onChange={(e) => onFormChange({ contentText: e.target.value })}
-              rows={12}
-              placeholder={`First paragraph of the article...\n\nSecond paragraph continues here...\n\nEach blank line creates a new paragraph.`}
-              className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-md px-3 py-2 resize-y focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 font-mono leading-relaxed"
+          {/* Article Content with AI Structuring */}
+          <div className="pt-1">
+            <AdminArticleContentEditor
+              rawText={form.contentText}
+              blocks={form.blocks}
+              accessToken={accessToken}
+              onRawTextChange={(text) => onFormChange({ contentText: text })}
+              onBlocksChange={(blocks) => onFormChange({ blocks })}
             />
-            <p className="text-[11px] text-slate-500 mt-1">
-              Content is stored as plain paragraphs (no HTML or Markdown).
-            </p>
           </div>
         </div>
 
@@ -683,8 +693,19 @@ export default function AdminNewsPage() {
 
   const handleSave = useCallback(() => {
     if (!accessToken || isSaving) return;
-    const contentParagraphs = formToContentArray(form.contentText);
-    if (contentParagraphs.length === 0) {
+
+    const contentPayload =
+      form.blocks && form.blocks.length > 0
+        ? { blocks: form.blocks }
+        : formToContentArray(form.contentText);
+
+    const hasValidContent =
+      (Array.isArray(contentPayload) && contentPayload.length > 0) ||
+      (typeof contentPayload === "object" &&
+        "blocks" in contentPayload &&
+        contentPayload.blocks.length > 0);
+
+    if (!hasValidContent) {
       setSaveError("Content cannot be empty.");
       return;
     }
@@ -699,7 +720,7 @@ export default function AdminNewsPage() {
         slug: form.slug,
         title: form.title,
         excerpt: form.excerpt,
-        content: contentParagraphs,
+        content: contentPayload,
         category: form.category,
         status: form.status,
         featured: form.featured,
@@ -737,7 +758,7 @@ export default function AdminNewsPage() {
         slug: form.slug,
         title: form.title,
         excerpt: form.excerpt,
-        content: contentParagraphs,
+        content: contentPayload,
         category: form.category,
         status: form.status,
         featured: form.featured,
@@ -1095,6 +1116,7 @@ export default function AdminNewsPage() {
           isSaving={isSaving}
           saveError={saveError}
           slugManuallyEdited={slugManuallyEdited}
+          accessToken={accessToken}
           onFormChange={handleFormChange}
           onSlugManualEdit={() => setSlugManuallyEdited(true)}
           onSave={handleSave}

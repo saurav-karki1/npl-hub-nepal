@@ -13,6 +13,8 @@
  *  - Do NOT add invented scores, quotes, transfers, or player info.
  */
 
+import type { ArticleBlock } from "@/lib/types/article-blocks";
+
 export type NewsCategory =
   | "Tournament"
   | "Teams"
@@ -36,11 +38,12 @@ export interface NewsArticle {
   excerpt: string;
 
   /**
-   * Full article body in plain paragraphs.
-   * Each string is rendered as a <p> element.
-   * Future: replace with MDX / rich-text from CMS.
+   * Full article body in plain paragraphs or semantic structured blocks.
    */
-  content: string[];
+  content: string[] | ArticleBlock[];
+
+  /** Normalized semantic blocks (paragraphs, headings, lists, quotes, FAQs) */
+  blocks?: ArticleBlock[];
 
   category: NewsCategory;
 

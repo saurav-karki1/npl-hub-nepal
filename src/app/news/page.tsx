@@ -10,6 +10,9 @@ import {
   getAvailableCategories,
 } from "@/lib/repository/news";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "NPL News & Updates",
   description:

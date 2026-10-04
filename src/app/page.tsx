@@ -6,6 +6,7 @@ import { PointsTablePreview } from "@/components/home/PointsTablePreview";
 import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
 import { TeamsPreview } from "@/components/home/TeamsPreview";
 import { getFeaturedUpcomingMatch, getStandingsAsync } from "@/lib/repository/matches";
+import { getLatestArticles } from "@/lib/repository/news";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -80,9 +81,10 @@ const homeJsonLd = {
 };
 
 export default async function HomePage() {
-  const [featuredMatch, standings] = await Promise.all([
+  const [featuredMatch, standings, latestNews] = await Promise.all([
     getFeaturedUpcomingMatch(),
     getStandingsAsync(),
+    getLatestArticles(4),
   ]);
 
   return (
@@ -102,7 +104,7 @@ export default async function HomePage() {
         <PointsTablePreview standings={standings} />
 
         {/* 4. Latest News & Tournament Updates */}
-        <LatestUpdatesSection />
+        <LatestUpdatesSection articles={latestNews} />
 
         {/* 5. NPL Franchise Teams */}
         <TeamsPreview />

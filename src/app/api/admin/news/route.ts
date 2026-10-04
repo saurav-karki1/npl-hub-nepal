@@ -13,9 +13,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/supabase/types";
+import type { ArticleBlock } from "@/lib/types/article-blocks";
 
 // ---------------------------------------------------------------------------
 // Auth Helpers
@@ -73,12 +75,17 @@ const VALID_CATEGORIES: NewsCategory[] = [
 ];
 const VALID_STATUSES = ["published", "draft"] as const;
 
+export type NewsArticleContent =
+  | string[]
+  | { blocks: ArticleBlock[] }
+  | ArticleBlock[];
+
 interface CreateNewsPayload {
   id: string;
   slug: string;
   title: string;
   excerpt: string;
-  content: string[];
+  content: NewsArticleContent;
   category: NewsCategory;
   status?: "published" | "draft";
   featured?: boolean;
@@ -98,7 +105,7 @@ interface UpdateNewsPayload {
   slug?: string;
   title?: string;
   excerpt?: string;
-  content?: string[];
+  content?: NewsArticleContent;
   category?: NewsCategory;
   status?: "published" | "draft";
   featured?: boolean;
@@ -122,12 +129,12 @@ export async function GET(req: NextRequest) {
     await verifyAuthSession(req);
     const admin = getSupabaseAdminClient();
 
-    // Return ALL articles (published + draft) with team relations
+    // Return ALL articles (published + draft) with team relations & content
     const { data: articles, error } = await admin
       .from("news_articles")
       .select(
         `
-        id, slug, title, excerpt, category, status,
+        id, slug, title, excerpt, content, category, status,
         featured, image_url, author, author_role, read_time,
         tags, source, source_url, published_at, updated_at, created_at,
         news_team_relations ( id, team_id )
@@ -180,9 +187,17 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    if (!Array.isArray(content) || content.length === 0) {
+    const hasValidContent =
+      (Array.isArray(content) && content.length > 0) ||
+      (typeof content === "object" &&
+        content !== null &&
+        "blocks" in content &&
+        Array.isArray((content as { blocks: unknown[] }).blocks) &&
+        (content as { blocks: unknown[] }).blocks.length > 0);
+
+    if (!hasValidContent) {
       return NextResponse.json(
-        { error: "content must be a non-empty array of paragraph strings." },
+        { error: "content must be a non-empty array of paragraph strings or structured blocks." },
         { status: 400 }
       );
     }
@@ -265,7 +280,7 @@ export async function POST(req: NextRequest) {
       .from("news_articles")
       .select(
         `
-        id, slug, title, excerpt, category, status,
+        id, slug, title, excerpt, content, category, status,
         featured, image_url, author, author_role, read_time,
         tags, source, source_url, published_at, updated_at, created_at,
         news_team_relations ( id, team_id )
@@ -276,6 +291,14 @@ export async function POST(req: NextRequest) {
 
     if (fetchErr) {
       return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    }
+
+    try {
+      revalidatePath("/news");
+      revalidatePath("/");
+      if (slug) revalidatePath(`/news/${slug}`);
+    } catch {
+      // Ignore revalidation errors in non-edge environments
     }
 
     return NextResponse.json({ article: created }, { status: 201 });
@@ -397,7 +420,7 @@ export async function PUT(req: NextRequest) {
       .from("news_articles")
       .select(
         `
-        id, slug, title, excerpt, category, status,
+        id, slug, title, excerpt, content, category, status,
         featured, image_url, author, author_role, read_time,
         tags, source, source_url, published_at, updated_at, created_at,
         news_team_relations ( id, team_id )
@@ -408,6 +431,16 @@ export async function PUT(req: NextRequest) {
 
     if (fetchErr) {
       return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    }
+
+    try {
+      revalidatePath("/news");
+      revalidatePath("/");
+      const updatedSlug = (updated as { slug?: string } | null)?.slug;
+      if (updatedSlug) revalidatePath(`/news/${updatedSlug}`);
+      if (fields.slug && fields.slug !== updatedSlug) revalidatePath(`/news/${fields.slug}`);
+    } catch {
+      // Ignore revalidation errors
     }
 
     return NextResponse.json({ article: updated });
