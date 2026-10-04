@@ -69,13 +69,12 @@ export async function structureArticleWithGemini(
     };
   }
 
-  // Models tried in order of preference.
-  // gemini-2.5-flash uses v1beta (preview); 2.0-flash and 2.0-flash-lite use v1beta too.
-  // gemini-1.5-flash is removed — deprecated on v1beta.
+  // Current available Gemini models (as of Oct 2026).
+  // gemini-2.0-flash / 1.5-flash are deprecated and removed from the API.
   const models = [
-    { id: "gemini-2.5-flash", api: "v1beta" },
-    { id: "gemini-2.0-flash", api: "v1beta" },
-    { id: "gemini-2.0-flash-lite", api: "v1beta" },
+    { id: "gemini-2.5-flash-lite", api: "v1beta" },
+    { id: "gemini-3.1-flash-lite", api: "v1beta" },
+    { id: "gemini-2.5-flash-image", api: "v1beta" },
   ];
 
   let lastError = "Could not connect to Gemini API.";
