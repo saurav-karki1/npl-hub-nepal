@@ -11,6 +11,9 @@ import { RelatedLinksSection } from "@/components/schedule/RelatedLinksSection";
 import { getAllMatches } from "@/lib/repository/matches";
 import { getAllTeams } from "@/lib/repository/teams";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "NPL Season 3 Schedule & Fixtures",
   description:

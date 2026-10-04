@@ -15,17 +15,20 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
 
   const isCompleted = match.status === "completed";
   const isLive = match.status === "live";
+  const hasScores = Boolean(match.scores?.team1?.runs != null || match.scores?.team2?.runs != null);
 
   return (
     <section aria-labelledby="scoreboard-heading" className="space-y-4">
       <div className="flex items-center justify-between border-b border-[var(--color-rule)] pb-2.5">
         <div>
           <h2 id="scoreboard-heading" className="text-lg sm:text-xl font-black text-[var(--color-ink)]">
-            {isCompleted ? "Match Scorecard & Result" : "Pre-Match Scoreboard & Status"}
+            {isCompleted ? "Match Scorecard & Result" : isLive ? "Live Match Scoreboard" : "Pre-Match Scoreboard & Status"}
           </h2>
           <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">
             {isCompleted
               ? "Official match outcome, innings scores, and match metrics."
+              : isLive
+              ? "Live match in progress. Scores updated in real-time."
               : "Pre-match fixture state. Official scores and lineups will activate once the match is underway."}
           </p>
         </div>
@@ -37,23 +40,32 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
       </div>
 
       <Card className="border-[var(--color-rule)] bg-[var(--color-canvas)]">
-        {/* If Completed: Result-ready scoreboard */}
-        {isCompleted ? (
+        {/* If Completed or Live: Result-ready scoreboard */}
+        {isCompleted || isLive || hasScores ? (
           <CardBody className="p-5 sm:p-6 space-y-6">
-            {/* Winner Announcement Banner */}
-            <div className="bg-[var(--color-surface)] border border-[var(--color-rule)] rounded-[var(--radius-md)] p-4 text-center">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-brand)] block mb-1">
-                Official Result
-              </span>
-              <p className="text-lg sm:text-xl font-black text-[var(--color-ink)]">
-                {match.resultDetails?.statement || match.result || "Match Completed"}
-              </p>
-              {match.resultDetails?.winMargin && (
-                <p className="text-xs text-[var(--color-ink-muted)] mt-1">
-                  Margin: <strong>{match.resultDetails.winMargin}</strong>
+            {/* Winner Announcement or Live Banner */}
+            {isCompleted ? (
+              <div className="bg-[var(--color-surface)] border border-[var(--color-rule)] rounded-[var(--radius-md)] p-4 text-center">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-brand)] block mb-1">
+                  Official Result
+                </span>
+                <p className="text-lg sm:text-xl font-black text-[var(--color-ink)]">
+                  {match.resultDetails?.statement || match.result || "Match Completed"}
                 </p>
-              )}
-            </div>
+                {match.resultDetails?.winMargin && (
+                  <p className="text-xs text-[var(--color-ink-muted)] mt-1">
+                    Margin: <strong>{match.resultDetails.winMargin}</strong>
+                  </p>
+                )}
+              </div>
+            ) : isLive ? (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-[var(--radius-md)] p-3 text-center flex items-center justify-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-red-400">
+                  LIVE MATCH IN PROGRESS
+                </span>
+              </div>
+            ) : null}
 
             {/* Innings Score Summary Table */}
             <div className="overflow-x-auto">

@@ -7,6 +7,9 @@ import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
 import { TeamsPreview } from "@/components/home/TeamsPreview";
 import { getFeaturedUpcomingMatch, getStandingsAsync } from "@/lib/repository/matches";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 

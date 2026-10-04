@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import { recalculateAndPersistStandings } from "@/lib/standings/calculator";
@@ -368,6 +369,18 @@ export async function PUT(req: NextRequest) {
 
     if (refetchErr) {
       return NextResponse.json({ error: refetchErr.message }, { status: 500 });
+    }
+
+    // Bust Next.js cache so public pages show updated match data immediately
+    try {
+      revalidatePath("/");
+      revalidatePath("/schedule");
+      revalidatePath("/points-table");
+      if (updated.slug) {
+        revalidatePath(`/matches/${updated.slug}`);
+      }
+    } catch {
+      // Non-blocking
     }
 
     return NextResponse.json({ match: updated });
