@@ -69,14 +69,20 @@ export async function structureArticleWithGemini(
     };
   }
 
-  // List of models to try in order of preference
-  const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+  // Models tried in order of preference.
+  // gemini-2.5-flash uses v1beta (preview); 2.0-flash and 2.0-flash-lite use v1beta too.
+  // gemini-1.5-flash is removed — deprecated on v1beta.
+  const models = [
+    { id: "gemini-2.5-flash", api: "v1beta" },
+    { id: "gemini-2.0-flash", api: "v1beta" },
+    { id: "gemini-2.0-flash-lite", api: "v1beta" },
+  ];
 
   let lastError = "Could not connect to Gemini API.";
 
-  for (const model of models) {
+  for (const { id: model, api } of models) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/${api}/models/${model}:generateContent?key=${apiKey}`;
 
       const res = await fetch(url, {
         method: "POST",
