@@ -1,4 +1,4 @@
-﻿# NPL Hub Nepal — Project Brain (BRAIN.md)
+# NPL Hub Nepal — Project Brain (BRAIN.md)
 
 > **Persistent Project-State Document**  
 > This file is the single compact source of truth for current project status, data architecture, routes, conventions, and roadmaps. Read this file to understand the project state without inspecting the entire repository.
@@ -17,12 +17,13 @@
 
 ## 2. Current Development Status
 
-- **Stage:** Phase 5F Complete — Admin News Management.
+- **Stage:** Phase 7 Complete — AI Article Structuring System (Gemini-powered semantic block editor).
 - **Core Stack:** Next.js 16.3.6 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4.
 - **Calendar Engine:** `nepali-date-converter` for Gregorian to Bikram Sambat (BS 2083) conversions.
 - **Database:** Supabase PostgreSQL — all repository modules query Supabase first, with deterministic static fallback.
-- **Admin Console:** Protected `/admin` dashboard with full Teams CRUD (`/admin/teams`), Players CRUD (`/admin/players`), Matches / Fixtures CRUD (`/admin/matches`), and News CRUD (`/admin/news`) — all using secure service-role API routes. No hard delete on any module to preserve relational integrity.
-- **Build Status:** ✅ `npm run build` generates **124 static routes** with **0 TypeScript errors** and **0 lint errors**.
+- **Admin Console:** Protected `/admin` dashboard with full Teams CRUD, Players CRUD, Matches CRUD, News CRUD (with AI article structuring), and Stats CRUD — all using secure service-role API routes. No hard delete on any module.
+- **AI Integration:** `GEMINI_API_KEY` (server-side env only) powers the `/api/admin/news/ai-structure` route. Gemini structures raw pasted article text into typed semantic blocks. Zero hallucination policy — AI only structures, never invents facts.
+- **Build Status:** ✅ `npm run build` generates **128 static routes** with **0 TypeScript errors** and **0 lint errors**.
 
 ---
 
@@ -311,3 +312,5 @@ pl-season-3-schedule-venues-announced) � title, excerpt, all body content corr
   - **Admin Panel Enhancements:** Added AdminLiveSyncCard to /admin and /admin/matches; updated /admin/matches with full Scorecard & Results editor (runs, wickets, overs, toss, winner, margin, player of match, external IDs); updated pi/admin/matches route to handle results and trigger auto-recalculation.
   - **Public Frontend Data Connection:** Homepage, Schedule, and Points Table converted to async server components fetching real database standings and fixtures.
   - **Production Build:** ✅ 130 static routes, 0 TypeScript errors, 0 ESLint errors.
+
+- **2026-10-04:** Phase 7 — AI Article Structuring System: `src/lib/types/article-blocks.ts` (`ArticleBlock` discriminated union, `normalizeArticleBlocks`, `sanitizeBlock`, `blocksToPlainText`); `src/lib/ai-news/gemini-structurer.ts` (Gemini 2.5/2.0/1.5-flash fallback chain, zero-hallucination system prompt, `responseMimeType: "application/json"`); `/api/admin/news/ai-structure` POST route (JWT auth, server-side only); `AdminArticleContentEditor.tsx` (two-tab block editor: Raw/Paste + Structured Blocks, heading H2↔H3 toggle, list style toggle, FAQ editor, "Format with AI" button, "Re-run AI", "Back to Raw Text" recovery); updated news repository with `normalizeArticleBlocks` backward-compatible normalization; admin news page sends `{ blocks: [...] }` JSONB to Supabase; admin API calls `revalidatePath` on publish; public article renderer uses full semantic block switch (h2, h3, p, ul, ol, blockquote, FAQ div, link a); `force-dynamic` + `revalidate = 0` on `/news` and `/news/[slug]`; homepage receives live Supabase articles via `getLatestArticles(4)` in `Promise.all`. `GEMINI_API_KEY` required in Vercel env. Committed `cf8377f`, pushed to `main` + `master`. Production build: 128 static routes, 0 TypeScript errors.
