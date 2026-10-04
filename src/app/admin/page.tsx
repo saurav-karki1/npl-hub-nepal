@@ -20,6 +20,7 @@ import { AdminUpcomingMatches } from "@/components/admin/AdminUpcomingMatches";
 import { AdminRecentNews } from "@/components/admin/AdminRecentNews";
 import { AdminQuickActions } from "@/components/admin/AdminQuickActions";
 import { AdminDatabaseStatus } from "@/components/admin/AdminDatabaseStatus";
+import { AdminLiveSyncCard } from "@/components/admin/AdminLiveSyncCard";
 
 export default function AdminDashboardPage() {
   const { user } = useAdminAuth();
@@ -136,6 +137,9 @@ export default function AdminDashboardPage() {
           </button>
         </div>
       )}
+
+      {/* ── Live Sync Card ── */}
+      <AdminLiveSyncCard />
 
       {/* ── Database Status Indicator ── */}
       <AdminDatabaseStatus

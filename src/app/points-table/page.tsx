@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Layout";
 import { LinkButton } from "@/components/ui/Button";
-import { getStandings } from "@/lib/repository/matches";
+import { getStandingsAsync } from "@/lib/repository/matches";
 import { PointsTableHeader } from "@/components/points-table/PointsTableHeader";
 import { FullPointsTable } from "@/components/points-table/FullPointsTable";
 import { PointsTableRules } from "@/components/points-table/PointsTableRules";
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PointsTablePage() {
-  const standings = getStandings();
+export default async function PointsTablePage() {
+  const standings = await getStandingsAsync();
 
   return (
     <div className="py-6 sm:py-8 lg:py-10">

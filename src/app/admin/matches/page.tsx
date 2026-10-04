@@ -19,6 +19,7 @@ import {
   UpdateMatchInput,
 } from "@/lib/repository/matches";
 import { resolveMatchTeam } from "@/lib/data/schedule-data";
+import { AdminLiveSyncCard } from "@/components/admin/AdminLiveSyncCard";
 
 // ---------------------------------------------------------------------------
 // Constants & Metadata
@@ -30,7 +31,7 @@ const SEASONS = [
 ];
 
 const STAGES = ["League", "Qualifier 1", "Eliminator", "Qualifier 2", "Final"] as const;
-const STATUSES = ["upcoming", "tba", "live", "completed"] as const;
+const STATUSES = ["upcoming", "tba", "live", "postponed", "abandoned", "completed"] as const;
 
 const FRANCHISES = [
   { id: "biratnagar-kings", name: "Biratnagar Kings", shortName: "BK", color: "#0284c7" },
@@ -103,6 +104,22 @@ interface EditMatchFormState {
   matchTime: string;
   venue: string;
   isProvisional: boolean;
+  // Scorecard, results & external sync
+  result: string;
+  winnerTeamId: string;
+  winMargin: string;
+  winType: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" | "";
+  playerOfTheMatch: string;
+  tossWinnerTeamId: string;
+  tossDecision: "bat" | "bowl" | "";
+  team1Runs: string;
+  team1Wickets: string;
+  team1Overs: string;
+  team2Runs: string;
+  team2Wickets: string;
+  team2Overs: string;
+  externalProvider: string;
+  externalMatchId: string;
 }
 
 function buildEditMatchForm(match: AdminMatchRow): EditMatchFormState {
@@ -127,6 +144,39 @@ function buildEditMatchForm(match: AdminMatchRow): EditMatchFormState {
     matchTime: match.match_time,
     venue: match.venue,
     isProvisional: match.is_provisional,
+    result: match.result || "",
+    winnerTeamId: match.winner_team_id || "",
+    winMargin: match.win_margin || "",
+    winType: (match.win_type as EditMatchFormState["winType"]) || "",
+    playerOfTheMatch: match.player_of_the_match || "",
+    tossWinnerTeamId: match.toss_winner_team_id || "",
+    tossDecision: (match.toss_decision as EditMatchFormState["tossDecision"]) || "",
+    team1Runs:
+      match.scores?.team1?.runs !== undefined && match.scores?.team1?.runs !== null
+        ? String(match.scores.team1.runs)
+        : "",
+    team1Wickets:
+      match.scores?.team1?.wickets !== undefined && match.scores?.team1?.wickets !== null
+        ? String(match.scores.team1.wickets)
+        : "",
+    team1Overs:
+      match.scores?.team1?.overs !== undefined && match.scores?.team1?.overs !== null
+        ? String(match.scores.team1.overs)
+        : "",
+    team2Runs:
+      match.scores?.team2?.runs !== undefined && match.scores?.team2?.runs !== null
+        ? String(match.scores.team2.runs)
+        : "",
+    team2Wickets:
+      match.scores?.team2?.wickets !== undefined && match.scores?.team2?.wickets !== null
+        ? String(match.scores.team2.wickets)
+        : "",
+    team2Overs:
+      match.scores?.team2?.overs !== undefined && match.scores?.team2?.overs !== null
+        ? String(match.scores.team2.overs)
+        : "",
+    externalProvider: match.external_provider || "",
+    externalMatchId: match.external_match_id || "",
   };
 }
 
@@ -241,6 +291,31 @@ function EditPanel({ match, seasonId, accessToken, onClose, onSaved }: EditPanel
 
     setIsSaving(true);
 
+    // Construct scores object if runs or overs are given
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let scoresObj: any = null;
+    const hasTeam1Score = form.team1Runs !== "" || form.team1Overs !== "";
+    const hasTeam2Score = form.team2Runs !== "" || form.team2Overs !== "";
+    if (hasTeam1Score || hasTeam2Score) {
+      scoresObj = {};
+      if (hasTeam1Score) {
+        scoresObj.team1 = {
+          runs: parseInt(form.team1Runs, 10) || 0,
+          wickets: parseInt(form.team1Wickets, 10) || 0,
+          overs: form.team1Overs.trim() || "0.0",
+        };
+      }
+      if (hasTeam2Score) {
+        scoresObj.team2 = {
+          runs: parseInt(form.team2Runs, 10) || 0,
+          wickets: parseInt(form.team2Wickets, 10) || 0,
+          overs: form.team2Overs.trim() || "0.0",
+        };
+      }
+    }
+
+    const selectedWinner = FRANCHISES.find((f) => f.id === form.winnerTeamId);
+
     const input: UpdateMatchInput = {
       matchId: match.id,
       seasonId,
@@ -259,6 +334,17 @@ function EditPanel({ match, seasonId, accessToken, onClose, onSaved }: EditPanel
       venue: form.venue.trim(),
       status: form.status,
       isProvisional: form.isProvisional,
+      result: form.result.trim() || null,
+      winnerTeamId: form.winnerTeamId || null,
+      winnerName: selectedWinner ? selectedWinner.name : null,
+      winMargin: form.winMargin.trim() || null,
+      winType: form.winType ? form.winType : null,
+      playerOfTheMatch: form.playerOfTheMatch.trim() || null,
+      tossWinnerTeamId: form.tossWinnerTeamId || null,
+      tossDecision: form.tossDecision ? form.tossDecision : null,
+      scores: scoresObj,
+      externalProvider: form.externalProvider.trim() || null,
+      externalMatchId: form.externalMatchId.trim() || null,
     };
 
     const { match: updated, error } = await updateMatchAdmin(input, accessToken);
@@ -568,7 +654,163 @@ function EditPanel({ match, seasonId, accessToken, onClose, onSaved }: EditPanel
               required
             />
           </section>
+
+          {/* Section 5: Match Scorecard & Results */}
+          <section className="space-y-5">
+            <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+              <span className="inline-block w-4 h-px bg-emerald-400/40" />
+              Match Scorecard &amp; Results
+            </h3>
+
+            {/* Scores sub-section */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 space-y-3">
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Scores</p>
+              <div className="grid grid-cols-3 gap-3">
+                <FormField
+                  label="Team 1 Runs"
+                  value={form.team1Runs}
+                  onChange={(v) => setField("team1Runs", v)}
+                  placeholder="168"
+                />
+                <FormField
+                  label="Team 1 Wickets"
+                  value={form.team1Wickets}
+                  onChange={(v) => setField("team1Wickets", v)}
+                  placeholder="5"
+                />
+                <FormField
+                  label="Team 1 Overs"
+                  value={form.team1Overs}
+                  onChange={(v) => setField("team1Overs", v)}
+                  placeholder="20.0"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                <FormField
+                  label="Team 2 Runs"
+                  value={form.team2Runs}
+                  onChange={(v) => setField("team2Runs", v)}
+                  placeholder="142"
+                />
+                <FormField
+                  label="Team 2 Wickets"
+                  value={form.team2Wickets}
+                  onChange={(v) => setField("team2Wickets", v)}
+                  placeholder="4"
+                />
+                <FormField
+                  label="Team 2 Overs"
+                  value={form.team2Overs}
+                  onChange={(v) => setField("team2Overs", v)}
+                  placeholder="17.2"
+                />
+              </div>
+            </div>
+
+            {/* Result sub-section */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 space-y-3">
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Result</p>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Toss Winner</label>
+                  <select
+                    className="w-full bg-[#080e1a] border border-slate-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    value={form.tossWinnerTeamId}
+                    onChange={(e) => setField("tossWinnerTeamId", e.target.value)}
+                  >
+                    <option value="">-- Not Set --</option>
+                    {FRANCHISES.map((f) => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Toss Decision</label>
+                  <select
+                    className="w-full bg-[#080e1a] border border-slate-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    value={form.tossDecision}
+                    onChange={(e) => setField("tossDecision", e.target.value as EditMatchFormState["tossDecision"])}
+                  >
+                    <option value="">-- Not Set --</option>
+                    <option value="bat">Bat</option>
+                    <option value="bowl">Bowl</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Winner</label>
+                  <select
+                    className="w-full bg-[#080e1a] border border-slate-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    value={form.winnerTeamId}
+                    onChange={(e) => setField("winnerTeamId", e.target.value)}
+                  >
+                    <option value="">-- Not Completed --</option>
+                    {FRANCHISES.map((f) => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-300 block mb-1">Win Type</label>
+                  <select
+                    className="w-full bg-[#080e1a] border border-slate-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    value={form.winType}
+                    onChange={(e) => setField("winType", e.target.value as EditMatchFormState["winType"])}
+                  >
+                    <option value="">-- Not Set --</option>
+                    <option value="runs">runs</option>
+                    <option value="wickets">wickets</option>
+                    <option value="super_over">super_over</option>
+                    <option value="no_result">no_result</option>
+                    <option value="abandoned">abandoned</option>
+                  </select>
+                </div>
+              </div>
+
+              <FormField
+                label="Win Margin"
+                value={form.winMargin}
+                onChange={(v) => setField("winMargin", v)}
+                placeholder="26 runs"
+              />
+              <FormField
+                label="Player of the Match"
+                value={form.playerOfTheMatch}
+                onChange={(v) => setField("playerOfTheMatch", v)}
+                placeholder=""
+              />
+              <FormField
+                label="Result Statement"
+                value={form.result}
+                onChange={(v) => setField("result", v)}
+                placeholder=""
+              />
+            </div>
+
+            {/* External Provider sub-section */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-lg p-4 space-y-3">
+              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">External Provider</p>
+              <div className="grid grid-cols-2 gap-3">
+                <FormField
+                  label="External Provider"
+                  value={form.externalProvider}
+                  onChange={(v) => setField("externalProvider", v)}
+                  placeholder="thesportsdb or sportmonks"
+                />
+                <FormField
+                  label="External Match ID"
+                  value={form.externalMatchId}
+                  onChange={(v) => setField("externalMatchId", v)}
+                  placeholder="2408031"
+                />
+              </div>
+            </div>
+          </section>
         </form>
+
 
         {/* Footer */}
         <div className="px-6 py-4 border-t border-slate-800 shrink-0 space-y-3">
@@ -911,12 +1153,16 @@ export default function AdminMatchesPage() {
           disabled={isLoading}
           className="text-xs font-semibold text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 rounded-lg px-4 py-2.5 transition-colors disabled:opacity-40"
         >
-          ↻ Refresh
+        ↻ Refresh
         </button>
       </div>
 
+      {/* Live Sync Card */}
+      <AdminLiveSyncCard />
+
       {/* Content */}
       {authLoading || isLoading ? (
+
         <div className="bg-[#0c121e] border border-slate-800 rounded-xl p-12 text-center">
           <div className="w-6 h-6 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mx-auto mb-3" />
           <p className="text-sm text-slate-400">Loading tournament fixtures from database…</p>

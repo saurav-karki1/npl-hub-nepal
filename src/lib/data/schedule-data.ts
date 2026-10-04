@@ -108,7 +108,7 @@ export interface ScheduleMatch {
   dayOfWeek: string; // e.g. Monday
   time: string; // Local Nepal Time (NPT) display or "Time TBA"
   venue: string;
-  status: "upcoming" | "completed" | "live" | "tba";
+  status: "upcoming" | "completed" | "live" | "postponed" | "abandoned" | "tba";
   result?: string;
   scores?: {
     team1?: MatchScoreDetails;
@@ -117,6 +117,8 @@ export interface ScheduleMatch {
   resultDetails?: MatchResultDetails;
   slug: string;
   isProvisional: boolean;
+  externalProvider?: string;
+  externalMatchId?: string;
 }
 
 /** Helper to resolve both teams for a given match */

@@ -4,11 +4,18 @@ import { Card, CardBody } from "@/components/ui/Card";
 import {
   getCompletedMatchesSync,
   resolveMatchTeams,
+  ScheduleMatch,
 } from "@/lib/repository/matches";
 import { LinkButton } from "@/components/ui/Button";
 
-export function CompletedMatchesSection() {
-  const completedMatches = getCompletedMatchesSync();
+interface CompletedMatchesSectionProps {
+  matches?: ScheduleMatch[];
+}
+
+export function CompletedMatchesSection({ matches: propMatches }: CompletedMatchesSectionProps) {
+  const completedMatches = (propMatches ?? getCompletedMatchesSync()).filter(
+    (m) => m.status === "completed"
+  );
 
   return (
     <section aria-labelledby="completed-matches-heading" className="space-y-4">

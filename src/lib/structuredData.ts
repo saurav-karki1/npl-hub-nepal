@@ -46,6 +46,8 @@ const EVENT_STATUS_MAP: Record<MatchStatus, string> = {
   live: "https://schema.org/EventScheduled",
   tba: "https://schema.org/EventScheduled",
   completed: "https://schema.org/EventCompleted",
+  postponed: "https://schema.org/EventPostponed",
+  abandoned: "https://schema.org/EventCancelled",
 };
 
 // ---------------------------------------------------------------------------

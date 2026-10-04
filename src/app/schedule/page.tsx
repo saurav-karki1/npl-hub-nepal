@@ -52,7 +52,7 @@ export default async function SchedulePage() {
         <TournamentSummary />
 
         {/* D. Featured Upcoming Matches */}
-        <UpcomingMatchesSection />
+        <UpcomingMatchesSection matches={matches} />
 
         {/* E. Full Fixtures List with Interactive Filters */}
         <FullFixturesSection
@@ -61,7 +61,7 @@ export default async function SchedulePage() {
         />
 
         {/* F. Completed Matches / Result Status */}
-        <CompletedMatchesSection />
+        <CompletedMatchesSection matches={matches} />
 
         {/* G. Helpful Factual FAQ Section */}
         <ScheduleFAQSection />

@@ -8,9 +8,15 @@ import {
 } from "@/lib/repository/matches";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 
-export function UpcomingMatchesSection() {
+interface UpcomingMatchesSectionProps {
+  matches?: ScheduleMatch[];
+}
+
+export function UpcomingMatchesSection({ matches: propMatches }: UpcomingMatchesSectionProps) {
   // Grab the first 3 upcoming matches as featured highlights
-  const upcomingHighlights = getUpcomingMatchesSync(3);
+  const upcomingHighlights = (propMatches ?? getUpcomingMatchesSync())
+    .filter((m) => m.status === "upcoming" || m.status === "tba")
+    .slice(0, 3);
 
   return (
     <section aria-labelledby="upcoming-fixtures-heading" className="space-y-4">

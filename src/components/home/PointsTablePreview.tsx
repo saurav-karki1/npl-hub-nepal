@@ -11,11 +11,15 @@ import {
   Td,
   Th,
 } from "@/components/ui/Table";
-import { getStandings, StandingsRow } from "@/lib/repository/matches";
+import { getStandings, StandingsData, StandingsRow } from "@/lib/repository/matches";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 
-export function PointsTablePreview() {
-  const standings = getStandings();
+interface PointsTablePreviewProps {
+  standings?: StandingsData;
+}
+
+export function PointsTablePreview({ standings: propStandings }: PointsTablePreviewProps) {
+  const standings = propStandings ?? getStandings();
   // Show top 5 preview rows on homepage
   const previewRows = standings.rows.slice(0, 5);
 

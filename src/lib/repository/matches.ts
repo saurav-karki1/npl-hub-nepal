@@ -63,7 +63,7 @@ export interface AdminMatchRow {
   day_of_week: string;
   match_time: string;
   venue: string;
-  status: "upcoming" | "completed" | "live" | "tba";
+  status: "upcoming" | "completed" | "live" | "postponed" | "abandoned" | "tba";
   result: string | null;
   winner_team_id: string | null;
   winner_name: string | null;
@@ -76,6 +76,8 @@ export interface AdminMatchRow {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   scores: any | null;
   is_provisional: boolean;
+  external_provider?: string | null;
+  external_match_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -96,8 +98,21 @@ export interface UpdateMatchInput {
   dayOfWeek?: string;
   matchTime?: string;
   venue?: string;
-  status?: "upcoming" | "completed" | "live" | "tba";
+  status?: "upcoming" | "completed" | "live" | "postponed" | "abandoned" | "tba";
   isProvisional?: boolean;
+  result?: string | null;
+  winnerTeamId?: string | null;
+  winnerName?: string | null;
+  winMargin?: string | null;
+  winType?: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" | null;
+  resultStatement?: string | null;
+  playerOfTheMatch?: string | null;
+  tossWinnerTeamId?: string | null;
+  tossDecision?: "bat" | "bowl" | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  scores?: any | null;
+  externalProvider?: string | null;
+  externalMatchId?: string | null;
 }
 
 /** Get all matches for the admin panel via secure API route */
@@ -193,6 +208,8 @@ function mapSupabaseMatch(row: any): ScheduleMatch {
     resultDetails,
     slug: row.slug,
     isProvisional: row.is_provisional ?? false,
+    externalProvider: row.external_provider ?? undefined,
+    externalMatchId: row.external_match_id ?? undefined,
   };
 }
 
@@ -336,10 +353,18 @@ export async function getTournamentInfo(): Promise<TournamentInfo> {
 }
 
 /**
- * Retrieve current points table standings
+ * Retrieve current points table standings (synchronous fallback)
  */
 export function getStandings(): StandingsData {
   return getStandingsData();
+}
+
+/**
+ * Retrieve current points table standings asynchronously, querying Supabase matches first
+ */
+export async function getStandingsAsync(): Promise<StandingsData> {
+  const matches = await getAllMatches();
+  return computeStandingsData(matches);
 }
 
 /**

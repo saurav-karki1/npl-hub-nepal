@@ -4,11 +4,16 @@ import { Card, CardBody, StatusBadge } from "@/components/ui/Card";
 import {
   getUpcomingMatchesSync,
   resolveMatchTeams,
+  ScheduleMatch,
 } from "@/lib/repository/matches";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 
-export function UpcomingMatchSection() {
-  const match = getUpcomingMatchesSync(1)[0];
+interface UpcomingMatchSectionProps {
+  match?: ScheduleMatch;
+}
+
+export function UpcomingMatchSection({ match: propMatch }: UpcomingMatchSectionProps) {
+  const match = propMatch ?? getUpcomingMatchesSync(1)[0];
 
   if (!match) {
     return null;

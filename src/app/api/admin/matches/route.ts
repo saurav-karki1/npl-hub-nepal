@@ -14,6 +14,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { recalculateAndPersistStandings } from "@/lib/standings/calculator";
 import type { Database } from "@/lib/supabase/types";
 
 // ---------------------------------------------------------------------------
@@ -55,7 +56,7 @@ async function verifyAuthSession(req: NextRequest) {
 // ---------------------------------------------------------------------------
 
 const VALID_STAGES = ["League", "Qualifier 1", "Eliminator", "Qualifier 2", "Final"] as const;
-const VALID_STATUSES = ["upcoming", "completed", "live", "tba"] as const;
+const VALID_STATUSES = ["upcoming", "completed", "live", "postponed", "abandoned", "tba"] as const;
 
 const VALID_FRANCHISE_IDS = [
   "biratnagar-kings",
@@ -101,6 +102,19 @@ interface UpdateMatchPayload {
   venue?: string;
   status?: (typeof VALID_STATUSES)[number];
   isProvisional?: boolean;
+  result?: string | null;
+  winnerTeamId?: string | null;
+  winnerName?: string | null;
+  winMargin?: string | null;
+  winType?: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" | null;
+  resultStatement?: string | null;
+  playerOfTheMatch?: string | null;
+  tossWinnerTeamId?: string | null;
+  tossDecision?: "bat" | "bowl" | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  scores?: any | null;
+  externalProvider?: string | null;
+  externalMatchId?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -304,6 +318,18 @@ export async function PUT(req: NextRequest) {
     if (fields.venue !== undefined) matchUpdate.venue = fields.venue;
     if (fields.status !== undefined) matchUpdate.status = fields.status;
     if (fields.isProvisional !== undefined) matchUpdate.is_provisional = fields.isProvisional;
+    if (fields.result !== undefined) matchUpdate.result = fields.result;
+    if (fields.winnerTeamId !== undefined) matchUpdate.winner_team_id = fields.winnerTeamId;
+    if (fields.winnerName !== undefined) matchUpdate.winner_name = fields.winnerName;
+    if (fields.winMargin !== undefined) matchUpdate.win_margin = fields.winMargin;
+    if (fields.winType !== undefined) matchUpdate.win_type = fields.winType;
+    if (fields.resultStatement !== undefined) matchUpdate.result_statement = fields.resultStatement;
+    if (fields.playerOfTheMatch !== undefined) matchUpdate.player_of_the_match = fields.playerOfTheMatch;
+    if (fields.tossWinnerTeamId !== undefined) matchUpdate.toss_winner_team_id = fields.tossWinnerTeamId;
+    if (fields.tossDecision !== undefined) matchUpdate.toss_decision = fields.tossDecision;
+    if (fields.scores !== undefined) matchUpdate.scores = fields.scores;
+    if (fields.externalProvider !== undefined) matchUpdate.external_provider = fields.externalProvider;
+    if (fields.externalMatchId !== undefined) matchUpdate.external_match_id = fields.externalMatchId;
 
     if (Object.keys(matchUpdate).length > 0) {
       matchUpdate.updated_at = new Date().toISOString();
@@ -315,6 +341,20 @@ export async function PUT(req: NextRequest) {
 
       if (updateErr) {
         return NextResponse.json({ error: updateErr.message }, { status: 500 });
+      }
+
+      // Automatically recalculate standings if match is completed or scores modified
+      if (
+        fields.status === "completed" ||
+        existing.status === "completed" ||
+        fields.scores !== undefined ||
+        fields.result !== undefined
+      ) {
+        try {
+          await recalculateAndPersistStandings(seasonId);
+        } catch {
+          // Non-blocking for match save
+        }
       }
     }
 

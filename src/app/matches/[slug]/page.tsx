@@ -15,6 +15,7 @@ import { MatchInfoSection } from "@/components/matches/MatchInfoSection";
 import { MatchTeamsSection } from "@/components/matches/MatchTeamsSection";
 import { MatchNavigation } from "@/components/matches/MatchNavigation";
 import { MatchRelatedLinks } from "@/components/matches/MatchRelatedLinks";
+import { LiveCommentaryFeed } from "@/components/matches/LiveCommentaryFeed";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -95,6 +96,16 @@ export default async function MatchDetailPage({ params }: PageProps) {
 
         {/* 3. Result-Ready Scoreboard & Pre-Match Guarantee */}
         <MatchScoreboard match={match} />
+
+        {/* Live Commentary Section */}
+        <section className="mt-8">
+          <LiveCommentaryFeed
+            matchSlug={match.slug}
+            matchId={match.id}
+            isLive={match.status === "live"}
+            matchStatus={match.status}
+          />
+        </section>
 
         {/* 4. Match Details & Venue Factsheet */}
         <MatchInfoSection match={match} />

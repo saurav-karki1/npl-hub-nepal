@@ -5,6 +5,7 @@ import { UpcomingMatchSection } from "@/components/home/UpcomingMatchSection";
 import { PointsTablePreview } from "@/components/home/PointsTablePreview";
 import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
 import { TeamsPreview } from "@/components/home/TeamsPreview";
+import { getFeaturedUpcomingMatch, getStandingsAsync } from "@/lib/repository/matches";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
@@ -75,7 +76,12 @@ const homeJsonLd = {
   ],
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [featuredMatch, standings] = await Promise.all([
+    getFeaturedUpcomingMatch(),
+    getStandingsAsync(),
+  ]);
+
   return (
     <div className="py-6 sm:py-8 lg:py-10">
       <script
@@ -87,10 +93,10 @@ export default function HomePage() {
         <HeroSection />
 
         {/* 2. Featured Upcoming Match */}
-        <UpcomingMatchSection />
+        <UpcomingMatchSection match={featuredMatch} />
 
         {/* 3. Points Table Standings Preview */}
-        <PointsTablePreview />
+        <PointsTablePreview standings={standings} />
 
         {/* 4. Latest News & Tournament Updates */}
         <LatestUpdatesSection />
