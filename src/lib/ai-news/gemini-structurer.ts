@@ -69,12 +69,11 @@ export async function structureArticleWithGemini(
     };
   }
 
-  // Current available Gemini models (as of Oct 2026).
-  // gemini-2.0-flash / 1.5-flash are deprecated and removed from the API.
+  // Verified current Gemini model IDs (Oct 2026, confirmed from Google AI for Developers).
   const models = [
-    { id: "gemini-2.5-flash-lite", api: "v1beta" },
-    { id: "gemini-3.1-flash-lite", api: "v1beta" },
-    { id: "gemini-2.5-flash-image", api: "v1beta" },
+    { id: "gemini-2.5-flash", api: "v1beta" },      // Balanced price-performance
+    { id: "gemini-3.5-flash-lite", api: "v1beta" },  // High-volume, low-latency
+    { id: "gemini-3.8-flash", api: "v1beta" },       // Flagship workhorse fallback
   ];
 
   let lastError = "Could not connect to Gemini API.";
