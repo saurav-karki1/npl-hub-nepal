@@ -12,7 +12,8 @@ export type ArticleBlockType =
   | "list"
   | "quote"
   | "faq"
-  | "link";
+  | "link"
+  | "image";
 
 export interface ParagraphBlock {
   type: "paragraph";
@@ -49,13 +50,23 @@ export interface LinkBlock {
   url: string;
 }
 
+export interface ImageBlock {
+  type: "image";
+  src: string;
+  alt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
+}
+
 export type ArticleBlock =
   | ParagraphBlock
   | HeadingBlock
   | ListBlock
   | QuoteBlock
   | FaqBlock
-  | LinkBlock;
+  | LinkBlock
+  | ImageBlock;
 
 export interface ArticleStructuredContent {
   blocks: ArticleBlock[];
@@ -111,6 +122,16 @@ export function normalizeArticleBlocks(content: unknown): ArticleBlock[] {
         }
         if (text.startsWith("Note:")) {
           return { type: "quote", text };
+        }
+        const imgMatch = text.match(/^!\[([^\]]*)\]\(([^)]+)\)(?:[\s\S]*?\*([^*]+)\*)?/);
+        if (imgMatch) {
+          const caption = imgMatch[3]?.trim();
+          return {
+            type: "image",
+            alt: imgMatch[1],
+            src: imgMatch[2],
+            ...(caption ? { caption } : {}),
+          };
         }
         return { type: "paragraph", text };
       })
@@ -169,6 +190,24 @@ export function sanitizeBlock(raw: unknown): ArticleBlock | null {
       if (!text || !url) return null;
       return { type: "link", text, url };
     }
+    case "image": {
+      const src = String(obj.src || "").trim();
+      if (!src) return null;
+      const alt = String(obj.alt || "").trim();
+      const caption = obj.caption ? String(obj.caption).trim() : undefined;
+      const width =
+        typeof obj.width === "number" && obj.width > 0 ? obj.width : undefined;
+      const height =
+        typeof obj.height === "number" && obj.height > 0 ? obj.height : undefined;
+      return {
+        type: "image",
+        src,
+        alt,
+        ...(caption ? { caption } : {}),
+        ...(width ? { width } : {}),
+        ...(height ? { height } : {}),
+      };
+    }
     case "paragraph":
     default: {
       const text = String(obj.text || "").trim();
@@ -199,6 +238,8 @@ export function blocksToPlainText(blocks: ArticleBlock[]): string {
           return `Q: ${block.question}\nA: ${block.answer}`;
         case "link":
           return `[${block.text}](${block.url})`;
+        case "image":
+          return `![${block.alt}](${block.src})${block.caption ? `\n*${block.caption}*` : ""}`;
         case "paragraph":
         default:
           return block.text;

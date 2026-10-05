@@ -265,6 +265,28 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                   </p>
                 );
 
+              case "image":
+                return (
+                  <figure key={i} className="my-6 space-y-2">
+                    <div className="relative w-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-rule)] bg-[var(--color-surface-sunken)]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={block.src}
+                        alt={block.alt || article.title}
+                        loading="lazy"
+                        className="w-full h-auto max-h-[580px] object-contain mx-auto"
+                        width={block.width}
+                        height={block.height}
+                      />
+                    </div>
+                    {block.caption && (
+                      <figcaption className="text-center text-xs text-[var(--color-ink-muted)] italic px-4">
+                        {block.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                );
+
               case "paragraph":
               default:
                 return (

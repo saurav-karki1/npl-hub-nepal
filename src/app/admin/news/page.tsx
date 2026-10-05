@@ -23,6 +23,7 @@ import {
   ArticleStatus,
 } from "@/lib/repository/news";
 import { AdminArticleContentEditor } from "@/components/admin/AdminArticleContentEditor";
+import { AdminFeaturedImageUploader } from "@/components/admin/AdminFeaturedImageUploader";
 import {
   ArticleBlock,
   normalizeArticleBlocks,
@@ -455,17 +456,13 @@ function ArticleEditor({
             </div>
           </div>
 
-          {/* Image URL */}
+          {/* Featured Image Upload Area */}
           <div>
-            <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
-              Image URL
-            </label>
-            <input
-              type="text"
-              value={form.image_url}
-              onChange={(e) => onFormChange({ image_url: e.target.value })}
-              placeholder="/images/articles/my-article.jpg"
-              className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-md px-3 py-2 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600"
+            <AdminFeaturedImageUploader
+              imageUrl={form.image_url}
+              articleId={form.id || form.slug || "article"}
+              accessToken={accessToken}
+              onImageUrlChange={(url) => onFormChange({ image_url: url })}
             />
           </div>
 
@@ -542,12 +539,13 @@ function ArticleEditor({
             </div>
           </div>
 
-          {/* Article Content with AI Structuring */}
+          {/* Article Content with AI Structuring & Inline Images */}
           <div className="pt-1">
             <AdminArticleContentEditor
               rawText={form.contentText}
               blocks={form.blocks}
               accessToken={accessToken}
+              articleId={form.id || form.slug || "article"}
               onRawTextChange={(text) => onFormChange({ contentText: text })}
               onBlocksChange={(blocks) => onFormChange({ blocks })}
             />
