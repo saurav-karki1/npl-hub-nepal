@@ -9,7 +9,7 @@ const FAQS: FAQItem[] = [
   {
     question: "When does Nepal Premier League (NPL) Season 3 start?",
     answer:
-      "NPL Season 3 is scheduled to run from 26 October 2026 to 21 November 2026 (१० कार्तिक – ५ मंसिर २०८३ BS). The opening match features Lumbini Lions vs Sudurpaschim Royals at the TU International Cricket Stadium, Kirtipur.",
+      "NPL Season 3 is scheduled to run from 26 October 2026 to 21 November 2026 (९ कार्तिक – ५ मंसिर २०८३ BS). The opening match features Lumbini Lions vs Sudurpaschim Royals at the TU International Cricket Stadium, Kirtipur.",
   },
   {
     question: "Are the NPL Season 3 fixtures and match dates on this page officially confirmed?",
