@@ -12,6 +12,7 @@ import {
   type NewsArticle,
 } from "@/lib/repository/news";
 import { normalizeArticleBlocks } from "@/lib/types/article-blocks";
+import { renderRichText } from "@/lib/seo/rich-text";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -181,7 +182,7 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                       key={i}
                       className="text-base sm:text-lg font-bold text-[var(--color-ink)] mt-6 mb-2"
                     >
-                      {block.text}
+                      {renderRichText(block.text)}
                     </h3>
                   );
                 }
@@ -190,7 +191,7 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                     key={i}
                     className="text-lg sm:text-xl font-bold text-[var(--color-ink)] pt-4 pb-1 border-b border-[var(--color-rule)] mt-8 mb-3"
                   >
-                    {block.text}
+                    {renderRichText(block.text)}
                   </h2>
                 );
 
@@ -202,7 +203,7 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                       className="list-decimal pl-6 space-y-1.5 my-4 text-[var(--color-ink)] leading-relaxed"
                     >
                       {block.items.map((item, itemIdx) => (
-                        <li key={itemIdx}>{item}</li>
+                        <li key={itemIdx}>{renderRichText(item)}</li>
                       ))}
                     </ol>
                   );
@@ -213,7 +214,7 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                     className="list-disc pl-6 space-y-1.5 my-4 text-[var(--color-ink)] leading-relaxed"
                   >
                     {block.items.map((item, itemIdx) => (
-                      <li key={itemIdx}>{item}</li>
+                      <li key={itemIdx}>{renderRichText(item)}</li>
                     ))}
                   </ul>
                 );
@@ -224,7 +225,7 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                     key={i}
                     className="border-l-4 border-[var(--color-brand)] bg-[var(--color-surface-sunken)] px-4 py-3 rounded-r-[var(--radius-md)] text-xs sm:text-sm text-[var(--color-ink-muted)] italic my-4"
                   >
-                    <p>{block.text}</p>
+                    <p>{renderRichText(block.text)}</p>
                     {block.author && (
                       <cite className="block mt-2 text-xs font-semibold not-italic text-[var(--color-ink)]">
                         — {block.author}
@@ -243,27 +244,40 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                       <span className="text-[var(--color-brand)] font-black text-[10px] uppercase px-1.5 py-0.5 rounded bg-[var(--color-brand-light)] border border-[var(--color-brand)]/20 mt-0.5 shrink-0">
                         FAQ
                       </span>
-                      <span>{block.question}</span>
+                      <span>{renderRichText(block.question)}</span>
                     </h3>
                     <p className="text-xs sm:text-sm text-[var(--color-ink-secondary)] leading-relaxed pl-7">
-                      {block.answer}
+                      {renderRichText(block.answer)}
                     </p>
                   </div>
                 );
 
-              case "link":
+              case "link": {
+                const isInternal = block.url.startsWith("/");
                 return (
                   <p key={i} className="my-2">
-                    <a
-                      href={block.url}
-                      target={block.url.startsWith("http") ? "_blank" : undefined}
-                      rel={block.url.startsWith("http") ? "noopener noreferrer" : undefined}
-                      className="text-[var(--color-brand)] hover:underline font-semibold"
-                    >
-                      {block.text} →
-                    </a>
+                    {isInternal ? (
+                      <Link
+                        href={block.url}
+                        className="text-[var(--color-brand)] hover:underline font-semibold inline-flex items-center gap-1"
+                      >
+                        <span>{block.text}</span>
+                        <span>→</span>
+                      </Link>
+                    ) : (
+                      <a
+                        href={block.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[var(--color-brand)] hover:underline font-semibold inline-flex items-center gap-1"
+                      >
+                        <span>{block.text}</span>
+                        <span className="text-xs">↗</span>
+                      </a>
+                    )}
                   </p>
                 );
+              }
 
               case "image":
                 return (
@@ -291,7 +305,7 @@ function ArticleBody({ article }: { article: NewsArticle }) {
               default:
                 return (
                   <p key={i} className="leading-relaxed">
-                    {block.text}
+                    {renderRichText(block.text)}
                   </p>
                 );
             }

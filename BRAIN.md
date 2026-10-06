@@ -17,7 +17,7 @@
 
 ## 2. Current Development Status
 
-- **Stage:** Phase 7 Complete — AI Article Structuring System (Gemini-powered semantic block editor).
+- **Stage:** Phase 9 Complete — SEO Internal & External Linking System (canonical NPL entity directory, Ctrl+K shortcut, rich text renderer).
 - **Core Stack:** Next.js 16.3.6 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4.
 - **Calendar Engine:** `nepali-date-converter` for Gregorian to Bikram Sambat (BS 2083) conversions.
 - **Database:** Supabase PostgreSQL — all repository modules query Supabase first, with deterministic static fallback.
@@ -323,3 +323,10 @@ pl-season-3-schedule-venues-announced) � title, excerpt, all body content corr
   - **Verification:** 29 automated tests passed in `scripts/test-image-system.mjs`; production build: 129 routes compiled with 0 TypeScript/ESLint errors.
 - **2026-10-06:** Database & Article Date Sync Fix: Diagnosed discrepancy where `/news/npl-season-3-schedule-venues-announced` on Vercel displayed outdated tournament dates (28 Nov – 21 Dec 2026) because Supabase database rows in `news_articles` retained old initial seed data while git repository (`news-data.ts`) had been corrected. Regenerated `supabase/seed.sql` via `generate-seed-sql.ts`, created `scripts/sync-news-to-supabase.ts` (added to `package.json` as `sync:news`), and synchronized all 7 canonical articles and team relations directly to Supabase production. Verified live Vercel URL now renders correct dates (26 October – 21 November 2026, 9 Kartik – 5 Mangsir 2083 BS) with 0 errors.
 - **2026-10-06:** Google Analytics 4 Integration: Installed `@next/third-parties` and integrated `GoogleAnalytics` with Measurement ID `G-VBLLG090FH` (with `NEXT_PUBLIC_GA_ID` env variable support) in root `src/app/layout.tsx`. Followed official Next.js App Router third-party script guidelines (`afterInteractive` loading strategy, zero duplication, global layout integration). Added `NEXT_PUBLIC_GA_ID` to `.env.local` and `.env.example`. Verified production build with 130 static/dynamic routes and 0 TypeScript errors.
+- **2026-10-06:** Phase 9 — SEO Internal & External Linking System:
+  - **Entity Directory & Utilities:** Built `src/lib/seo/internal-links.ts` providing a canonical searchable index of all 8 franchise teams, 53 confirmed squad players, 32 fixtures, core tournament pages (`/schedule`, `/points-table`, `/teams`, `/players`, `/stats`, `/news`, `/about`), published news, and TU venue with relevance-scored search algorithm; HTTP/HTTPS validation & sanitization for external links; markdown link extraction and unlinking helpers.
+  - **Rich Text Renderer:** Built `src/lib/seo/rich-text.tsx` to safely parse markdown links `[anchor](url)` into Next.js `<Link>` elements for internal canonical relative URLs and secure `<a>` tags (`target="_blank" rel="noopener noreferrer"` with `↗` icon) for external URLs. Zero `dangerouslySetInnerHTML`.
+  - **Admin Link Modal UI:** Built `src/components/admin/AdminLinkModal.tsx` modal dialog supporting instant NPL entity search recommendations, category tabs, canonical URL previews, external web URL validation with editorial safety tips, and unlinking.
+  - **Editor Integration:** Upgraded `AdminArticleContentEditor.tsx` with selection tracking across all block types (headings, paragraphs, lists, quotes, FAQs), `Ctrl+K` keyboard shortcut, active link chips bar under blocks, block header `[ 🔗 Link ]` tool button, floating selection pill `[ 🔗 Link Selection: "Janakpur Bolts" (Ctrl+K) ]`, edit modal, and unlinking.
+  - **Public Frontend Wiring:** Updated `src/app/news/[slug]/page.tsx` with `renderRichText` across headings, paragraphs, lists, quotes, FAQs, and standalone link blocks.
+  - **Production Build:** ✅ 130 static/dynamic routes compiled cleanly with 0 TypeScript/ESLint errors.

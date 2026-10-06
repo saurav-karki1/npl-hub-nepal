@@ -230,6 +230,7 @@ interface ArticleEditorProps {
   saveError: string | null;
   slugManuallyEdited: boolean;
   accessToken: string | null;
+  availableArticles?: Array<{ title: string; slug: string }>;
   onFormChange: (patch: Partial<ArticleFormState>) => void;
   onSlugManualEdit: () => void;
   onSave: () => void;
@@ -243,6 +244,7 @@ function ArticleEditor({
   saveError,
   slugManuallyEdited,
   accessToken,
+  availableArticles,
   onFormChange,
   onSlugManualEdit,
   onSave,
@@ -546,6 +548,7 @@ function ArticleEditor({
               blocks={form.blocks}
               accessToken={accessToken}
               articleId={form.id || form.slug || "article"}
+              availableArticles={availableArticles}
               onRawTextChange={(text) => onFormChange({ contentText: text })}
               onBlocksChange={(blocks) => onFormChange({ blocks })}
             />
@@ -1115,6 +1118,7 @@ export default function AdminNewsPage() {
           saveError={saveError}
           slugManuallyEdited={slugManuallyEdited}
           accessToken={accessToken}
+          availableArticles={articles.map((a) => ({ title: a.title, slug: a.slug }))}
           onFormChange={handleFormChange}
           onSlugManualEdit={() => setSlugManuallyEdited(true)}
           onSave={handleSave}

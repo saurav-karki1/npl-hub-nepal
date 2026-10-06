@@ -6,14 +6,43 @@ import {
   ImageBlock,
   blocksToPlainText,
 } from "@/lib/types/article-blocks";
+import { AdminLinkModal } from "@/components/admin/AdminLinkModal";
+import {
+  extractMarkdownLinks,
+  unlinkMarkdown,
+  updateMarkdownLink,
+} from "@/lib/seo/internal-links";
 
 interface AdminArticleContentEditorProps {
   rawText: string;
   blocks: ArticleBlock[];
   accessToken: string | null;
   articleId?: string;
+  availableArticles?: Array<{ title: string; slug: string }>;
   onRawTextChange: (text: string) => void;
   onBlocksChange: (blocks: ArticleBlock[]) => void;
+}
+
+type FieldType =
+  | "heading"
+  | "paragraph"
+  | "quote"
+  | "list_item"
+  | "faq_q"
+  | "faq_a"
+  | "link"
+  | "raw";
+
+interface LinkTargetState {
+  blockIndex: number;
+  fieldType: FieldType;
+  itemIndex?: number;
+  selectionStart: number;
+  selectionEnd: number;
+  anchorText: string;
+  url: string;
+  rawLink?: string;
+  isEditingExistingLink: boolean;
 }
 
 export function AdminArticleContentEditor({
@@ -21,6 +50,7 @@ export function AdminArticleContentEditor({
   blocks,
   accessToken,
   articleId = "general",
+  availableArticles,
   onRawTextChange,
   onBlocksChange,
 }: AdminArticleContentEditorProps) {
@@ -46,6 +76,306 @@ export function AdminArticleContentEditor({
   const replaceFileInputRef = useRef<HTMLInputElement | null>(null);
   const slotFileInputRef = useRef<HTMLInputElement | null>(null);
   const pendingInsertIndexRef = useRef<number | null>(null);
+
+  // ---------------------------------------------------------------------------
+  // SEO Linking State & Handlers
+  // ---------------------------------------------------------------------------
+  const [linkTarget, setLinkTarget] = useState<LinkTargetState | null>(null);
+  const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
+  const [currentSelection, setCurrentSelection] = useState<{
+    blockIndex: number;
+    fieldType: FieldType;
+    itemIndex?: number;
+    start: number;
+    end: number;
+    text: string;
+  } | null>(null);
+
+  const handleTextSelect = (
+    blockIndex: number,
+    fieldType: FieldType,
+    e: React.SyntheticEvent<HTMLInputElement | HTMLTextAreaElement>,
+    itemIndex?: number
+  ) => {
+    const target = e.currentTarget;
+    const start = target.selectionStart ?? 0;
+    const end = target.selectionEnd ?? 0;
+    const selText = target.value.substring(start, end);
+
+    if (selText.trim().length > 0) {
+      const existingLinks = extractMarkdownLinks(selText);
+      if (existingLinks.length > 0) {
+        const first = existingLinks[0];
+        setCurrentSelection({
+          blockIndex,
+          fieldType,
+          itemIndex,
+          start,
+          end,
+          text: first.text,
+        });
+      } else {
+        setCurrentSelection({
+          blockIndex,
+          fieldType,
+          itemIndex,
+          start,
+          end,
+          text: selText,
+        });
+      }
+    }
+  };
+
+  const handleKeyDown = (
+    blockIndex: number,
+    fieldType: FieldType,
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    itemIndex?: number
+  ) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+      e.preventDefault();
+      openLinkModal(blockIndex, fieldType, itemIndex, e.currentTarget);
+    }
+  };
+
+  const openLinkModal = (
+    blockIndex: number,
+    fieldType: FieldType,
+    itemIndex?: number,
+    inputEl?: HTMLInputElement | HTMLTextAreaElement,
+    existingLink?: { raw: string; text: string; url: string }
+  ) => {
+    let anchor = "";
+    let url = "";
+    let start = 0;
+    let end = 0;
+    let rawLnk: string | undefined = undefined;
+    let isEditing = false;
+
+    if (existingLink) {
+      anchor = existingLink.text;
+      url = existingLink.url;
+      rawLnk = existingLink.raw;
+      isEditing = true;
+    } else if (inputEl) {
+      start = inputEl.selectionStart ?? 0;
+      end = inputEl.selectionEnd ?? 0;
+      const selected = inputEl.value.substring(start, end);
+      if (selected.trim()) {
+        const links = extractMarkdownLinks(selected);
+        if (links.length > 0) {
+          anchor = links[0].text;
+          url = links[0].url;
+          rawLnk = links[0].raw;
+          isEditing = true;
+        } else {
+          anchor = selected;
+        }
+      }
+    } else if (
+      currentSelection &&
+      currentSelection.blockIndex === blockIndex &&
+      currentSelection.fieldType === fieldType &&
+      currentSelection.itemIndex === itemIndex
+    ) {
+      anchor = currentSelection.text;
+      start = currentSelection.start;
+      end = currentSelection.end;
+    }
+
+    setLinkTarget({
+      blockIndex,
+      fieldType,
+      itemIndex,
+      selectionStart: start,
+      selectionEnd: end,
+      anchorText: anchor,
+      url,
+      rawLink: rawLnk,
+      isEditingExistingLink: isEditing,
+    });
+    setIsLinkModalOpen(true);
+  };
+
+  const applyLink = (newAnchor: string, newUrl: string) => {
+    if (!linkTarget) return;
+
+    const {
+      blockIndex,
+      fieldType,
+      itemIndex,
+      selectionStart,
+      selectionEnd,
+      rawLink,
+      isEditingExistingLink,
+    } = linkTarget;
+
+    const updateFieldValue = (currentVal: string): string => {
+      if (isEditingExistingLink && rawLink) {
+        return updateMarkdownLink(currentVal, rawLink, newAnchor, newUrl);
+      }
+      const markdownLnk = `[${newAnchor.trim()}](${newUrl.trim()})`;
+      if (selectionStart !== selectionEnd && selectionStart >= 0) {
+        return (
+          currentVal.substring(0, selectionStart) +
+          markdownLnk +
+          currentVal.substring(selectionEnd)
+        );
+      }
+      if (currentVal.trim().length > 0) {
+        return `${currentVal} ${markdownLnk}`;
+      }
+      return markdownLnk;
+    };
+
+    if (fieldType === "raw") {
+      onRawTextChange(updateFieldValue(rawText));
+    } else if (blockIndex >= 0 && blockIndex < blocks.length) {
+      const block = blocks[blockIndex];
+      if (fieldType === "heading" && block.type === "heading") {
+        updateBlock(blockIndex, { ...block, text: updateFieldValue(block.text) });
+      } else if (fieldType === "paragraph" && block.type === "paragraph") {
+        updateBlock(blockIndex, { ...block, text: updateFieldValue(block.text) });
+      } else if (fieldType === "quote" && block.type === "quote") {
+        updateBlock(blockIndex, { ...block, text: updateFieldValue(block.text) });
+      } else if (
+        fieldType === "list_item" &&
+        block.type === "list" &&
+        itemIndex !== undefined
+      ) {
+        const newItems = [...block.items];
+        newItems[itemIndex] = updateFieldValue(newItems[itemIndex] || "");
+        updateBlock(blockIndex, { ...block, items: newItems });
+      } else if (fieldType === "faq_q" && block.type === "faq") {
+        updateBlock(blockIndex, {
+          ...block,
+          question: updateFieldValue(block.question),
+        });
+      } else if (fieldType === "faq_a" && block.type === "faq") {
+        updateBlock(blockIndex, {
+          ...block,
+          answer: updateFieldValue(block.answer),
+        });
+      } else if (fieldType === "link" && block.type === "link") {
+        updateBlock(blockIndex, {
+          ...block,
+          text: updateFieldValue(block.text),
+        });
+      }
+    }
+
+    setIsLinkModalOpen(false);
+    setLinkTarget(null);
+    setCurrentSelection(null);
+  };
+
+  const handleRemoveLink = (
+    blockIndex: number,
+    fieldType: FieldType,
+    rawLink: string,
+    itemIndex?: number
+  ) => {
+    const removeFieldValue = (currentVal: string) => unlinkMarkdown(currentVal, rawLink);
+
+    if (fieldType === "raw") {
+      onRawTextChange(removeFieldValue(rawText));
+    } else if (blockIndex >= 0 && blockIndex < blocks.length) {
+      const block = blocks[blockIndex];
+      if (fieldType === "heading" && block.type === "heading") {
+        updateBlock(blockIndex, { ...block, text: removeFieldValue(block.text) });
+      } else if (fieldType === "paragraph" && block.type === "paragraph") {
+        updateBlock(blockIndex, { ...block, text: removeFieldValue(block.text) });
+      } else if (fieldType === "quote" && block.type === "quote") {
+        updateBlock(blockIndex, { ...block, text: removeFieldValue(block.text) });
+      } else if (
+        fieldType === "list_item" &&
+        block.type === "list" &&
+        itemIndex !== undefined
+      ) {
+        const newItems = [...block.items];
+        newItems[itemIndex] = removeFieldValue(newItems[itemIndex] || "");
+        updateBlock(blockIndex, { ...block, items: newItems });
+      } else if (fieldType === "faq_q" && block.type === "faq") {
+        updateBlock(blockIndex, {
+          ...block,
+          question: removeFieldValue(block.question),
+        });
+      } else if (fieldType === "faq_a" && block.type === "faq") {
+        updateBlock(blockIndex, {
+          ...block,
+          answer: removeFieldValue(block.answer),
+        });
+      } else if (fieldType === "link" && block.type === "link") {
+        updateBlock(blockIndex, {
+          ...block,
+          text: removeFieldValue(block.text),
+        });
+      }
+    }
+  };
+
+  const renderActiveLinks = (
+    text: string,
+    blockIndex: number,
+    fieldType: FieldType,
+    itemIndex?: number
+  ) => {
+    const links = extractMarkdownLinks(text);
+    if (links.length === 0) return null;
+
+    return (
+      <div className="flex flex-wrap items-center gap-1.5 pt-1.5 mt-1 border-t border-slate-800/60 text-xs">
+        <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+          <span>🔗 Active Links:</span>
+        </span>
+        {links.map((lnk, lIdx) => {
+          const isExt =
+            lnk.url.startsWith("http://") || lnk.url.startsWith("https://");
+          return (
+            <div
+              key={lIdx}
+              className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border text-[11px] ${
+                isExt
+                  ? "bg-amber-950/40 border-amber-500/30 text-amber-300"
+                  : "bg-emerald-950/40 border-emerald-500/30 text-emerald-300"
+              }`}
+            >
+              <span className="font-semibold">{lnk.text}</span>
+              <span
+                className="text-[10px] opacity-75 font-mono truncate max-w-[140px]"
+                title={lnk.url}
+              >
+                → {lnk.url}
+              </span>
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() =>
+                  openLinkModal(blockIndex, fieldType, itemIndex, undefined, lnk)
+                }
+                className="text-[10px] px-1 py-0.2 rounded bg-slate-800 hover:bg-slate-700 text-white font-medium ml-0.5"
+                title="Edit link destination or anchor text"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() =>
+                  handleRemoveLink(blockIndex, fieldType, lnk.raw, itemIndex)
+                }
+                className="text-[10px] text-red-400 hover:text-red-200 px-0.5 font-bold"
+                title="Remove link (keep plain text)"
+              >
+                ✕
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   // ---------------------------------------------------------------------------
   // AI Format Handler
@@ -102,9 +432,17 @@ export function AdminArticleContentEditor({
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // Block Manipulation Handlers
-  // ---------------------------------------------------------------------------
+  const restoreRawText = () => {
+    if (blocks.length > 0) {
+      const regenerated = blocksToPlainText(blocks);
+      onRawTextChange(regenerated || rawBackup);
+    } else {
+      onRawTextChange(rawBackup);
+    }
+    setActiveTab("raw");
+  };
+
+  // Block manipulation helpers
   const updateBlock = (index: number, updated: ArticleBlock) => {
     const next = [...blocks];
     next[index] = updated;
@@ -117,77 +455,53 @@ export function AdminArticleContentEditor({
   };
 
   const moveBlock = (index: number, direction: "up" | "down") => {
-    const target = direction === "up" ? index - 1 : index + 1;
-    if (target < 0 || target >= blocks.length) return;
+    const targetIdx = direction === "up" ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= blocks.length) return;
     const next = [...blocks];
-    const temp = next[index];
-    next[index] = next[target];
-    next[target] = temp;
+    const [moved] = next.splice(index, 1);
+    next.splice(targetIdx, 0, moved);
     onBlocksChange(next);
   };
 
-  const createDefaultBlock = (
-    type: ArticleBlock["type"],
-    level: 2 | 3 = 2
-  ): ArticleBlock => {
-    switch (type) {
-      case "heading":
-        return { type: "heading", level, text: "" };
-      case "list":
-        return { type: "list", style: "unordered", items: [""] };
-      case "quote":
-        return { type: "quote", text: "" };
-      case "faq":
-        return { type: "faq", question: "", answer: "" };
-      case "link":
-        return { type: "link", text: "", url: "" };
-      case "image":
-        return { type: "image", src: "", alt: "" };
-      case "paragraph":
-      default:
-        return { type: "paragraph", text: "" };
-    }
-  };
-
-  const insertBlockAt = (
-    index: number,
-    type: ArticleBlock["type"],
-    level: 2 | 3 = 2
-  ) => {
-    if (type === "image") {
-      // Trigger file selector for this slot
-      pendingInsertIndexRef.current = index;
-      slotFileInputRef.current?.click();
-      return;
-    }
-
-    const newBlock = createDefaultBlock(type, level);
+  const addBlockAt = (index: number, block: ArticleBlock) => {
     const next = [...blocks];
-    next.splice(index, 0, newBlock);
+    next.splice(index, 0, block);
     onBlocksChange(next);
     setActiveInsertIndex(null);
   };
 
-  const addBlockToEnd = (type: ArticleBlock["type"], level: 2 | 3 = 2) => {
-    insertBlockAt(blocks.length, type, level);
+  const addBlockToEnd = (type: ArticleBlock["type"], level?: 2 | 3) => {
+    let newBlock: ArticleBlock;
+    if (type === "heading") {
+      newBlock = { type: "heading", level: level || 2, text: "" };
+    } else if (type === "list") {
+      newBlock = { type: "list", style: "unordered", items: [""] };
+    } else if (type === "quote") {
+      newBlock = { type: "quote", text: "" };
+    } else if (type === "faq") {
+      newBlock = { type: "faq", question: "", answer: "" };
+    } else if (type === "image") {
+      newBlock = { type: "image", src: "", alt: "", caption: "" };
+    } else {
+      newBlock = { type: "paragraph", text: "" };
+    }
+    onBlocksChange([...blocks, newBlock]);
   };
 
-  // ---------------------------------------------------------------------------
-  // Inline Image Upload Handlers
-  // ---------------------------------------------------------------------------
-  const uploadInlineImage = async (file: File, targetIndex: number) => {
+  // Image upload helpers
+  const uploadAndInsertImage = async (file: File, targetIndex: number) => {
     if (!accessToken) {
-      setUploadError("Authentication required. Please re-login.");
+      setUploadError("Authentication required to upload images.");
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      setUploadError("Only image files (JPG, PNG, WebP, GIF, AVIF) are allowed.");
+      setUploadError("Only image files (JPG, PNG, WebP, GIF, SVG) are allowed.");
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      setUploadError("Image exceeds the 10MB limit.");
+      setUploadError("Image size exceeds the 10MB maximum limit.");
       return;
     }
 
@@ -298,202 +612,212 @@ export function AdminArticleContentEditor({
       );
     } finally {
       setUploadingSlot(null);
-      setReplacingBlockIndex(null);
     }
   };
 
-  const handleSlotFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    const targetIdx = pendingInsertIndexRef.current ?? blocks.length;
-    if (file) {
-      uploadInlineImage(file, targetIdx);
-    }
-    e.target.value = "";
-    pendingInsertIndexRef.current = null;
+  // Drag and Drop handlers for dropping external images directly between blocks
+  const handleDragOverSlot = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverIndex(index);
   };
 
-  const handleReplaceFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && replacingBlockIndex !== null) {
-      replaceInlineImage(file, replacingBlockIndex);
-    }
-    e.target.value = "";
+  const handleDragLeaveSlot = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragOverIndex(null);
   };
 
-  const handleDropOnSlot = (e: React.DragEvent, targetIndex: number) => {
+  const handleDropSlot = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     e.stopPropagation();
     setDragOverIndex(null);
 
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      uploadInlineImage(file, targetIndex);
-    }
-  };
-
-  const restoreRawText = () => {
-    if (
-      window.confirm(
-        "Restore original unformatted text? Current block changes will be kept in raw text."
-      )
-    ) {
-      if (rawBackup && rawBackup.trim()) {
-        onRawTextChange(rawBackup);
-      } else if (blocks.length > 0) {
-        onRawTextChange(blocksToPlainText(blocks));
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const imageFile = Array.from(files).find((f) => f.type.startsWith("image/"));
+      if (imageFile) {
+        uploadAndInsertImage(imageFile, index);
+      } else {
+        setUploadError("Please drop a valid image file.");
       }
-      setActiveTab("raw");
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // Sub-component: Inserter Divider between blocks
-  // ---------------------------------------------------------------------------
-  const renderInserter = (slotIndex: number) => {
-    const isExpanded = activeInsertIndex === slotIndex;
-    const isDragTarget = dragOverIndex === slotIndex;
-    const isSlotUploading = uploadingSlot === slotIndex;
+  // Inserter UI component
+  const renderInserter = (insertIndex: number) => {
+    const isExpanded = activeInsertIndex === insertIndex;
+    const isDragTarget = dragOverIndex === insertIndex;
+    const isUploadingThisSlot = uploadingSlot === insertIndex;
 
     return (
       <div
-        key={`inserter-${slotIndex}`}
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragOverIndex(slotIndex);
-        }}
-        onDragLeave={() => {
-          setDragOverIndex(null);
-        }}
-        onDrop={(e) => handleDropOnSlot(e, slotIndex)}
-        className="my-1.5 relative group"
+        onDragOver={(e) => handleDragOverSlot(e, insertIndex)}
+        onDragLeave={handleDragLeaveSlot}
+        onDrop={(e) => handleDropSlot(e, insertIndex)}
+        className={`group relative py-1.5 transition-all ${
+          isDragTarget ? "py-4 bg-emerald-950/30 rounded-lg border-2 border-dashed border-emerald-500" : ""
+        }`}
       >
-        {isSlotUploading ? (
-          <div className="py-3 px-4 rounded-lg bg-emerald-950/40 border border-emerald-500/50 flex items-center justify-center gap-2 text-xs text-emerald-300">
-            <span className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
-            <span>Uploading inline image to storage…</span>
+        {isDragTarget ? (
+          <div className="text-center text-xs text-emerald-400 font-semibold flex items-center justify-center gap-2 pointer-events-none py-2">
+            <span>📷 Drop image here to insert block</span>
           </div>
-        ) : isDragTarget ? (
-          <div className="py-4 px-4 rounded-lg border-2 border-dashed border-emerald-400 bg-emerald-500/10 text-center text-xs font-semibold text-emerald-300 animate-pulse">
-            📷 Drop image file here to insert at position #{slotIndex + 1}
+        ) : isUploadingThisSlot ? (
+          <div className="text-center text-xs text-emerald-400 font-semibold py-2 bg-slate-900 border border-emerald-500/40 rounded-lg flex items-center justify-center gap-2">
+            <span className="w-3.5 h-3.5 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin" />
+            <span>Uploading dropped image…</span>
           </div>
         ) : isExpanded ? (
-          <div className="bg-[#0b1220] border border-emerald-500/40 rounded-lg p-3 space-y-2.5 shadow-lg animate-in fade-in duration-150">
+          <div className="bg-slate-900 border border-emerald-500/50 rounded-lg p-3 space-y-2 shadow-lg animate-fadeIn">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wide">
-                Insert block at #{slotIndex + 1}
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                Insert Content Block at position #{insertIndex + 1}
               </span>
               <button
                 type="button"
                 onClick={() => setActiveInsertIndex(null)}
-                className="text-xs text-slate-500 hover:text-slate-300 px-1.5 py-0.5"
+                className="text-xs text-slate-400 hover:text-white"
               >
                 ✕ Cancel
               </button>
             </div>
-            <div className="flex flex-wrap items-center gap-1.5">
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
               <button
                 type="button"
-                onClick={() => insertBlockAt(slotIndex, "paragraph")}
-                className="px-2.5 py-1 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded border border-slate-700"
+                onClick={() => addBlockAt(insertIndex, { type: "paragraph", text: "" })}
+                className="p-2.5 rounded bg-slate-800 hover:bg-slate-750 text-slate-200 border border-slate-700 flex flex-col items-center gap-1 transition-colors"
               >
-                + Paragraph
+                <span className="font-bold">Paragraph</span>
+                <span className="text-[10px] text-slate-400">Standard text body</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => insertBlockAt(slotIndex, "heading", 2)}
-                className="px-2.5 py-1 text-xs font-medium bg-purple-950/40 hover:bg-purple-900/60 text-purple-300 rounded border border-purple-800/40"
+                onClick={() => addBlockAt(insertIndex, { type: "heading", level: 2, text: "" })}
+                className="p-2.5 rounded bg-purple-950/40 hover:bg-purple-900/50 text-purple-200 border border-purple-800/40 flex flex-col items-center gap-1 transition-colors"
               >
-                + H2 Heading
+                <span className="font-bold">H2 Heading</span>
+                <span className="text-[10px] text-purple-300/80">Major section title</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => insertBlockAt(slotIndex, "heading", 3)}
-                className="px-2.5 py-1 text-xs font-medium bg-sky-950/40 hover:bg-sky-900/60 text-sky-300 rounded border border-sky-800/40"
+                onClick={() => addBlockAt(insertIndex, { type: "heading", level: 3, text: "" })}
+                className="p-2.5 rounded bg-sky-950/40 hover:bg-sky-900/50 text-sky-200 border border-sky-800/40 flex flex-col items-center gap-1 transition-colors"
               >
-                + H3 Subheading
+                <span className="font-bold">H3 Heading</span>
+                <span className="text-[10px] text-sky-300/80">Sub-section title</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => insertBlockAt(slotIndex, "image")}
-                className="px-3 py-1 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded shadow-sm flex items-center gap-1"
+                onClick={() => {
+                  pendingInsertIndexRef.current = insertIndex;
+                  slotFileInputRef.current?.click();
+                }}
+                className="p-2.5 rounded bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-200 border border-emerald-600/50 flex flex-col items-center gap-1 transition-colors font-semibold"
               >
-                <span>📷</span>
-                <span>+ Upload Image</span>
+                <span className="font-bold flex items-center gap-1">
+                  <span>📷</span>
+                  <span>Inline Image</span>
+                </span>
+                <span className="text-[10px] text-emerald-300/80">Upload from laptop</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => insertBlockAt(slotIndex, "list")}
-                className="px-2.5 py-1 text-xs font-medium bg-amber-950/40 hover:bg-amber-900/60 text-amber-300 rounded border border-amber-800/40"
+                onClick={() => addBlockAt(insertIndex, { type: "list", style: "unordered", items: [""] })}
+                className="p-2.5 rounded bg-amber-950/40 hover:bg-amber-900/50 text-amber-200 border border-amber-800/40 flex flex-col items-center gap-1 transition-colors"
               >
-                + List
+                <span className="font-bold">List</span>
+                <span className="text-[10px] text-amber-300/80">Bullet or numbered</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => insertBlockAt(slotIndex, "faq")}
-                className="px-2.5 py-1 text-xs font-medium bg-emerald-950/40 hover:bg-emerald-900/60 text-emerald-300 rounded border border-emerald-800/40"
+                onClick={() => addBlockAt(insertIndex, { type: "faq", question: "", answer: "" })}
+                className="p-2.5 rounded bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-200 border border-emerald-800/40 flex flex-col items-center gap-1 transition-colors"
               >
-                + FAQ
+                <span className="font-bold">FAQ Block</span>
+                <span className="text-[10px] text-emerald-300/80">Q&amp;A accordion</span>
               </button>
+
               <button
                 type="button"
-                onClick={() => insertBlockAt(slotIndex, "quote")}
-                className="px-2.5 py-1 text-xs font-medium bg-teal-950/40 hover:bg-teal-900/60 text-teal-300 rounded border border-teal-800/40"
+                onClick={() => addBlockAt(insertIndex, { type: "quote", text: "" })}
+                className="p-2.5 rounded bg-teal-950/40 hover:bg-teal-900/50 text-teal-200 border border-teal-800/40 flex flex-col items-center gap-1 transition-colors"
               >
-                + Quote
+                <span className="font-bold">Quote</span>
+                <span className="text-[10px] text-teal-300/80">Callout blockquote</span>
               </button>
             </div>
-            <p className="text-[10px] text-slate-500">
-              Tip: You can also drag an image file from your laptop and drop it directly on this divider.
-            </p>
           </div>
         ) : (
-          <div className="flex items-center justify-center py-1 opacity-40 hover:opacity-100 transition-opacity">
-            <div className="h-px bg-slate-800 flex-1" />
+          <div className="flex items-center justify-center relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-800 group-hover:border-slate-700 transition-colors" />
+            </div>
             <button
               type="button"
-              onClick={() => setActiveInsertIndex(slotIndex)}
-              className="mx-2 px-2 py-0.5 text-[10px] font-semibold text-slate-400 hover:text-emerald-300 bg-slate-900 hover:bg-slate-800 border border-slate-700/60 hover:border-emerald-500/50 rounded-full transition-all flex items-center gap-1 shadow-sm"
+              onClick={() => setActiveInsertIndex(insertIndex)}
+              className="relative bg-slate-900 hover:bg-slate-800 text-slate-500 group-hover:text-emerald-400 border border-slate-800 group-hover:border-emerald-500/50 rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-all flex items-center gap-1 shadow-sm"
               title="Insert block or drop image here"
             >
               <span>+</span>
-              <span>Add</span>
+              <span className="text-[10px]">Insert content / image here</span>
             </button>
-            <div className="h-px bg-slate-800 flex-1" />
           </div>
         )}
       </div>
     );
   };
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
   return (
     <div className="space-y-4">
-      {/* Hidden file pickers */}
+      {/* Hidden file inputs for image uploads */}
       <input
-        ref={slotFileInputRef}
         type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
-        onChange={handleSlotFileSelected}
-        className="hidden"
-      />
-      <input
         ref={replaceFileInputRef}
-        type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif,image/avif"
-        onChange={handleReplaceFileSelected}
+        accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
         className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && replacingBlockIndex !== null) {
+            replaceInlineImage(file, replacingBlockIndex);
+            setReplacingBlockIndex(null);
+          }
+          e.target.value = "";
+        }}
       />
 
-      {/* Header & Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+      <input
+        type="file"
+        ref={slotFileInputRef}
+        accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && pendingInsertIndexRef.current !== null) {
+            uploadAndInsertImage(file, pendingInsertIndexRef.current);
+            pendingInsertIndexRef.current = null;
+          }
+          e.target.value = "";
+        }}
+      />
+
+      {/* Editor Header & Mode Switcher */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-950 border border-slate-800 p-3 rounded-lg">
         <div>
-          <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-            Article Content <span className="text-red-400">*</span>
-          </label>
-          <p className="text-[11px] text-slate-500 mt-0.5">
-            Paste text → Format with AI → Insert inline images &amp; review blocks → Save
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <span>Article Content &amp; Formatting</span>
+            <span className="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded border border-slate-700">
+              AI-Powered
+            </span>
+          </h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Format plain text with AI, insert inline images, add SEO links (Ctrl+K), or edit blocks manually.
           </p>
         </div>
 
@@ -585,11 +909,34 @@ export function AdminArticleContentEditor({
             <textarea
               value={rawText}
               onChange={(e) => onRawTextChange(e.target.value)}
+              onSelect={(e) => handleTextSelect(0, "raw", e)}
+              onKeyDown={(e) => handleKeyDown(0, "raw", e)}
               rows={14}
-              placeholder="Paste or write your full article here...&#10;&#10;Normal paragraphs, section titles (e.g. Venue Details, Match Schedule), lists, quotes, and Q&A will be automatically recognized by AI when you click 'Format with AI'."
+              placeholder="Paste or write your full article here...&#10;&#10;Normal paragraphs, section titles, lists, quotes, and FAQs will be structured automatically by AI when you click 'Format with AI'.&#10;&#10;Highlight text & press Ctrl+K to add SEO internal/external links."
               className="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-3.5 text-xs sm:text-sm font-sans focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 leading-relaxed resize-y"
             />
           </div>
+
+          {currentSelection && currentSelection.fieldType === "raw" && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => openLinkModal(0, "raw")}
+                className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
+              >
+                <span>🔗 Link Selection:</span>
+                <span className="underline italic max-w-[180px] truncate">
+                  &ldquo;{currentSelection.text}&rdquo;
+                </span>
+                <span className="text-[10px] bg-emerald-700 px-1 py-0.2 rounded font-mono">
+                  Ctrl+K
+                </span>
+              </button>
+            </div>
+          )}
+
+          {renderActiveLinks(rawText, 0, "raw")}
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
             <p className="text-[11px] text-slate-500">
@@ -715,7 +1062,7 @@ export function AdminArticleContentEditor({
             <div className="bg-[#0c121e] border border-dashed border-slate-800 rounded-xl p-8 text-center space-y-3">
               <p className="text-sm text-slate-400">No structured blocks yet.</p>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Paste your article in the &ldquo;Raw / Paste&rdquo; tab and click &ldquo;Format with AI&rdquo;, or use the buttons above to manually add blocks and images.
+                Paste your article in the &ldquo;Raw / Paste&rdquo; tab and click &ldquo;Format with AI&rdquo;, or use the buttons above to manually add blocks, images, and links.
               </p>
               <button
                 type="button"
@@ -813,10 +1160,18 @@ export function AdminArticleContentEditor({
                           </span>
                         )}
 
-                        {block.type === "link" && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30">
-                            Hyperlink
-                          </span>
+                        {/* Link Tool Button in Block Toolbar */}
+                        {block.type !== "image" && (
+                          <button
+                            type="button"
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => openLinkModal(idx, block.type === "list" ? "list_item" : block.type === "faq" ? "faq_q" : block.type)}
+                            className="text-[10px] font-semibold text-emerald-400 hover:text-emerald-300 px-2 py-0.5 rounded bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800/40 flex items-center gap-1 transition-colors"
+                            title="Add or edit SEO link in this block (Ctrl+K)"
+                          >
+                            <span>🔗</span>
+                            <span>Link</span>
+                          </button>
                         )}
                       </div>
 
@@ -854,31 +1209,81 @@ export function AdminArticleContentEditor({
                     {/* Block Content Inputs */}
                     <div>
                       {block.type === "heading" && (
-                        <input
-                          type="text"
-                          value={block.text}
-                          onChange={(e) =>
-                            updateBlock(idx, { ...block, text: e.target.value })
-                          }
-                          placeholder={`Section heading text...`}
-                          className={`w-full bg-slate-900 border text-white rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
-                            block.level === 3
-                              ? "font-semibold border-sky-800/60"
-                              : "font-bold border-purple-800/60"
-                          }`}
-                        />
+                        <div className="space-y-1">
+                          <input
+                            type="text"
+                            value={block.text}
+                            onChange={(e) =>
+                              updateBlock(idx, { ...block, text: e.target.value })
+                            }
+                            onSelect={(e) => handleTextSelect(idx, "heading", e)}
+                            onKeyDown={(e) => handleKeyDown(idx, "heading", e)}
+                            placeholder={`Section heading text...`}
+                            className={`w-full bg-slate-900 border text-white rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 ${
+                              block.level === 3
+                                ? "font-semibold border-sky-800/60"
+                                : "font-bold border-purple-800/60"
+                            }`}
+                          />
+                          {currentSelection &&
+                            currentSelection.blockIndex === idx &&
+                            currentSelection.fieldType === "heading" && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <button
+                                  type="button"
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => openLinkModal(idx, "heading")}
+                                  className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
+                                >
+                                  <span>🔗 Link Selection:</span>
+                                  <span className="underline italic max-w-[160px] truncate">
+                                    &ldquo;{currentSelection.text}&rdquo;
+                                  </span>
+                                  <span className="text-[10px] bg-emerald-700 px-1 py-0.2 rounded font-mono">
+                                    Ctrl+K
+                                  </span>
+                                </button>
+                              </div>
+                            )}
+                          {renderActiveLinks(block.text, idx, "heading")}
+                        </div>
                       )}
 
                       {block.type === "paragraph" && (
-                        <textarea
-                          value={block.text}
-                          onChange={(e) =>
-                            updateBlock(idx, { ...block, text: e.target.value })
-                          }
-                          rows={3}
-                          placeholder="Paragraph text..."
-                          className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 leading-relaxed resize-y font-sans"
-                        />
+                        <div className="space-y-1">
+                          <textarea
+                            value={block.text}
+                            onChange={(e) =>
+                              updateBlock(idx, { ...block, text: e.target.value })
+                            }
+                            onSelect={(e) => handleTextSelect(idx, "paragraph", e)}
+                            onKeyDown={(e) => handleKeyDown(idx, "paragraph", e)}
+                            rows={3}
+                            placeholder="Paragraph text..."
+                            className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 leading-relaxed resize-y font-sans"
+                          />
+                          {currentSelection &&
+                            currentSelection.blockIndex === idx &&
+                            currentSelection.fieldType === "paragraph" && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <button
+                                  type="button"
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => openLinkModal(idx, "paragraph")}
+                                  className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
+                                >
+                                  <span>🔗 Link Selection:</span>
+                                  <span className="underline italic max-w-[160px] truncate">
+                                    &ldquo;{currentSelection.text}&rdquo;
+                                  </span>
+                                  <span className="text-[10px] bg-emerald-700 px-1 py-0.2 rounded font-mono">
+                                    Ctrl+K
+                                  </span>
+                                </button>
+                              </div>
+                            )}
+                          {renderActiveLinks(block.text, idx, "paragraph")}
+                        </div>
                       )}
 
                       {/* INLINE IMAGE BLOCK */}
@@ -961,33 +1366,60 @@ export function AdminArticleContentEditor({
                       )}
 
                       {block.type === "list" && (
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           {block.items.map((item, itemIdx) => (
-                            <div key={itemIdx} className="flex items-center gap-2">
-                              <span className="text-xs text-slate-500 w-5 text-right font-mono">
-                                {block.style === "ordered" ? `${itemIdx + 1}.` : "•"}
-                              </span>
-                              <input
-                                type="text"
-                                value={item}
-                                onChange={(e) => {
-                                  const newItems = [...block.items];
-                                  newItems[itemIdx] = e.target.value;
-                                  updateBlock(idx, { ...block, items: newItems });
-                                }}
-                                className="flex-1 bg-slate-900 border border-slate-700 text-white rounded-md px-2.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const newItems = block.items.filter((_, i) => i !== itemIdx);
-                                  updateBlock(idx, { ...block, items: newItems });
-                                }}
-                                className="text-xs text-slate-500 hover:text-red-400 px-1"
-                                title="Delete Item"
-                              >
-                                ✕
-                              </button>
+                            <div key={itemIdx} className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-slate-500 w-5 text-right font-mono">
+                                  {block.style === "ordered" ? `${itemIdx + 1}.` : "•"}
+                                </span>
+                                <input
+                                  type="text"
+                                  value={item}
+                                  onChange={(e) => {
+                                    const newItems = [...block.items];
+                                    newItems[itemIdx] = e.target.value;
+                                    updateBlock(idx, { ...block, items: newItems });
+                                  }}
+                                  onSelect={(e) => handleTextSelect(idx, "list_item", e, itemIdx)}
+                                  onKeyDown={(e) => handleKeyDown(idx, "list_item", e, itemIdx)}
+                                  className="flex-1 bg-slate-900 border border-slate-700 text-white rounded-md px-2.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const newItems = block.items.filter((_, i) => i !== itemIdx);
+                                    updateBlock(idx, { ...block, items: newItems });
+                                  }}
+                                  className="text-xs text-slate-500 hover:text-red-400 px-1"
+                                  title="Delete Item"
+                                >
+                                  ✕
+                                </button>
+                              </div>
+
+                              {currentSelection &&
+                                currentSelection.blockIndex === idx &&
+                                currentSelection.fieldType === "list_item" &&
+                                currentSelection.itemIndex === itemIdx && (
+                                  <div className="flex items-center gap-2 ml-7 mt-0.5">
+                                    <button
+                                      type="button"
+                                      onMouseDown={(e) => e.preventDefault()}
+                                      onClick={() => openLinkModal(idx, "list_item", itemIdx)}
+                                      className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-2.5 py-0.5 rounded shadow flex items-center gap-1 animate-pulse"
+                                    >
+                                      <span>🔗 Link:</span>
+                                      <span className="underline italic max-w-[140px] truncate">
+                                        &ldquo;{currentSelection.text}&rdquo;
+                                      </span>
+                                    </button>
+                                  </div>
+                                )}
+
+                              <div className="ml-7">
+                                {renderActiveLinks(item, idx, "list_item", itemIdx)}
+                              </div>
                             </div>
                           ))}
                           <button
@@ -1017,9 +1449,29 @@ export function AdminArticleContentEditor({
                               onChange={(e) =>
                                 updateBlock(idx, { ...block, question: e.target.value })
                               }
+                              onSelect={(e) => handleTextSelect(idx, "faq_q", e)}
+                              onKeyDown={(e) => handleKeyDown(idx, "faq_q", e)}
                               placeholder="e.g. When does NPL Season 3 start?"
                               className="w-full bg-slate-900 border border-emerald-900/60 text-white rounded-md px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500"
                             />
+                            {currentSelection &&
+                              currentSelection.blockIndex === idx &&
+                              currentSelection.fieldType === "faq_q" && (
+                                <div className="flex items-center gap-2 mt-1">
+                                  <button
+                                    type="button"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => openLinkModal(idx, "faq_q")}
+                                    className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
+                                  >
+                                    <span>🔗 Link Selection:</span>
+                                    <span className="underline italic max-w-[160px] truncate">
+                                      &ldquo;{currentSelection.text}&rdquo;
+                                    </span>
+                                  </button>
+                                </div>
+                              )}
+                            {renderActiveLinks(block.question, idx, "faq_q")}
                           </div>
                           <div>
                             <label className="block text-[10px] uppercase font-semibold text-slate-500 mb-1">
@@ -1030,10 +1482,30 @@ export function AdminArticleContentEditor({
                               onChange={(e) =>
                                 updateBlock(idx, { ...block, answer: e.target.value })
                               }
+                              onSelect={(e) => handleTextSelect(idx, "faq_a", e)}
+                              onKeyDown={(e) => handleKeyDown(idx, "faq_a", e)}
                               rows={2}
                               placeholder="Answer to the question..."
                               className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
                             />
+                            {currentSelection &&
+                              currentSelection.blockIndex === idx &&
+                              currentSelection.fieldType === "faq_a" && (
+                                <div className="flex items-center gap-2 mt-1">
+                                  <button
+                                    type="button"
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onClick={() => openLinkModal(idx, "faq_a")}
+                                    className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
+                                  >
+                                    <span>🔗 Link Selection:</span>
+                                    <span className="underline italic max-w-[160px] truncate">
+                                      &ldquo;{currentSelection.text}&rdquo;
+                                    </span>
+                                  </button>
+                                </div>
+                              )}
+                            {renderActiveLinks(block.answer, idx, "faq_a")}
                           </div>
                         </div>
                       )}
@@ -1045,10 +1517,31 @@ export function AdminArticleContentEditor({
                             onChange={(e) =>
                               updateBlock(idx, { ...block, text: e.target.value })
                             }
+                            onSelect={(e) => handleTextSelect(idx, "quote", e)}
+                            onKeyDown={(e) => handleKeyDown(idx, "quote", e)}
                             rows={2}
                             placeholder="Quoted text or callout note..."
                             className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-1.5 text-xs italic focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
                           />
+                          {currentSelection &&
+                            currentSelection.blockIndex === idx &&
+                            currentSelection.fieldType === "quote" && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <button
+                                  type="button"
+                                  onMouseDown={(e) => e.preventDefault()}
+                                  onClick={() => openLinkModal(idx, "quote")}
+                                  className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
+                                >
+                                  <span>🔗 Link Selection:</span>
+                                  <span className="underline italic max-w-[160px] truncate">
+                                    &ldquo;{currentSelection.text}&rdquo;
+                                  </span>
+                                </button>
+                              </div>
+                            )}
+                          {renderActiveLinks(block.text, idx, "quote")}
+
                           <input
                             type="text"
                             value={block.author || ""}
@@ -1057,29 +1550,6 @@ export function AdminArticleContentEditor({
                             }
                             placeholder="Author / Attribution (optional)"
                             className="w-full bg-slate-900 border border-slate-750 text-slate-300 rounded-md px-3 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                          />
-                        </div>
-                      )}
-
-                      {block.type === "link" && (
-                        <div className="grid grid-cols-2 gap-2">
-                          <input
-                            type="text"
-                            value={block.text}
-                            onChange={(e) =>
-                              updateBlock(idx, { ...block, text: e.target.value })
-                            }
-                            placeholder="Link text..."
-                            className="bg-slate-900 border border-slate-700 text-white rounded-md px-2.5 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                          />
-                          <input
-                            type="url"
-                            value={block.url}
-                            onChange={(e) =>
-                              updateBlock(idx, { ...block, url: e.target.value })
-                            }
-                            placeholder="https://..."
-                            className="bg-slate-900 border border-slate-700 text-white rounded-md px-2.5 py-1 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
                           />
                         </div>
                       )}
@@ -1094,6 +1564,34 @@ export function AdminArticleContentEditor({
           )}
         </div>
       )}
+
+      {/* Admin Link Modal Dialog */}
+      <AdminLinkModal
+        isOpen={isLinkModalOpen}
+        initialAnchorText={linkTarget?.anchorText || ""}
+        initialUrl={linkTarget?.url || ""}
+        isEditingExistingLink={linkTarget?.isEditingExistingLink || false}
+        extraArticles={availableArticles}
+        onApply={applyLink}
+        onRemove={
+          linkTarget?.isEditingExistingLink && linkTarget.rawLink
+            ? () => {
+                handleRemoveLink(
+                  linkTarget.blockIndex,
+                  linkTarget.fieldType,
+                  linkTarget.rawLink!,
+                  linkTarget.itemIndex
+                );
+                setIsLinkModalOpen(false);
+                setLinkTarget(null);
+              }
+            : undefined
+        }
+        onClose={() => {
+          setIsLinkModalOpen(false);
+          setLinkTarget(null);
+        }}
+      />
     </div>
   );
 }
