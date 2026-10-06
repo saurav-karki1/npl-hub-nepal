@@ -62,6 +62,7 @@ export function AdminArticleContentEditor({
   const [aiError, setAiError] = useState<string | null>(null);
   const [formatSuccess, setFormatSuccess] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [clipboardToast, setClipboardToast] = useState<string | null>(null);
 
   // Backup of original raw text in case user wants to restore
   const [rawBackup, setRawBackup] = useState<string>(rawText);
@@ -78,7 +79,7 @@ export function AdminArticleContentEditor({
   const pendingInsertIndexRef = useRef<number | null>(null);
 
   // ---------------------------------------------------------------------------
-  // SEO Linking State & Handlers
+  // Text Selection & Formatting State
   // ---------------------------------------------------------------------------
   const [linkTarget, setLinkTarget] = useState<LinkTargetState | null>(null);
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -90,6 +91,11 @@ export function AdminArticleContentEditor({
     end: number;
     text: string;
   } | null>(null);
+
+  const showToast = (msg: string) => {
+    setClipboardToast(msg);
+    setTimeout(() => setClipboardToast(null), 2000);
+  };
 
   const handleTextSelect = (
     blockIndex: number,
@@ -127,13 +133,231 @@ export function AdminArticleContentEditor({
     }
   };
 
+  /**
+   * Helper to wrap or unwrap text with markdown markers (e.g. "**" for bold, "*" for italic)
+   */
+  const toggleWrap = (
+    val: string,
+    start: number,
+    end: number,
+    marker: "**" | "*"
+  ): { newVal: string; newStart: number; newEnd: number } => {
+    const markerLen = marker.length;
+    const sel = val.substring(start, end);
+
+    // Case 1: The selection itself includes the markers (e.g. "**hello**")
+    if (sel.startsWith(marker) && sel.endsWith(marker) && sel.length >= markerLen * 2) {
+      const unwrapped = sel.slice(markerLen, sel.length - markerLen);
+      const newVal = val.substring(0, start) + unwrapped + val.substring(end);
+      return {
+        newVal,
+        newStart: start,
+        newEnd: start + unwrapped.length,
+      };
+    }
+
+    // Case 2: The markers are immediately outside the selection
+    if (
+      start >= markerLen &&
+      end + markerLen <= val.length &&
+      val.substring(start - markerLen, start) === marker &&
+      val.substring(end, end + markerLen) === marker
+    ) {
+      const newVal =
+        val.substring(0, start - markerLen) +
+        sel +
+        val.substring(end + markerLen);
+      return {
+        newVal,
+        newStart: start - markerLen,
+        newEnd: end - markerLen,
+      };
+    }
+
+    // Case 3: Wrap with marker
+    const wrapped = `${marker}${sel}${marker}`;
+    const newVal = val.substring(0, start) + wrapped + val.substring(end);
+    return {
+      newVal,
+      newStart: start,
+      newEnd: start + wrapped.length,
+    };
+  };
+
+  /**
+   * Toggles inline formatting (bold or italic) on active or selected text.
+   */
+  const applyInlineFormat = (
+    format: "bold" | "italic",
+    blockIdx?: number,
+    fType?: FieldType,
+    iIdx?: number,
+    inputEl?: HTMLInputElement | HTMLTextAreaElement
+  ) => {
+    const bIndex = blockIdx !== undefined ? blockIdx : currentSelection?.blockIndex;
+    const field = fType !== undefined ? fType : currentSelection?.fieldType;
+    const itemIdx = iIdx !== undefined ? iIdx : currentSelection?.itemIndex;
+
+    if (bIndex === undefined || !field) return;
+
+    const start = inputEl?.selectionStart ?? currentSelection?.start ?? 0;
+    const end = inputEl?.selectionEnd ?? currentSelection?.end ?? 0;
+    const marker = format === "bold" ? "**" : "*";
+
+    const updateFieldValue = (
+      currentVal: string
+    ): { newVal: string; newStart: number; newEnd: number } => {
+      if (start === end) {
+        // Nothing selected: insert pair and place cursor in middle
+        const newVal =
+          currentVal.substring(0, start) + `${marker}${marker}` + currentVal.substring(end);
+        return {
+          newVal,
+          newStart: start + marker.length,
+          newEnd: start + marker.length,
+        };
+      }
+      return toggleWrap(currentVal, start, end, marker);
+    };
+
+    let result: { newVal: string; newStart: number; newEnd: number } | null = null;
+
+    if (field === "raw") {
+      result = updateFieldValue(rawText);
+      onRawTextChange(result.newVal);
+    } else if (bIndex >= 0 && bIndex < blocks.length) {
+      const block = blocks[bIndex];
+      if (field === "heading" && block.type === "heading") {
+        result = updateFieldValue(block.text);
+        updateBlock(bIndex, { ...block, text: result.newVal });
+      } else if (field === "paragraph" && block.type === "paragraph") {
+        result = updateFieldValue(block.text);
+        updateBlock(bIndex, { ...block, text: result.newVal });
+      } else if (field === "quote" && block.type === "quote") {
+        result = updateFieldValue(block.text);
+        updateBlock(bIndex, { ...block, text: result.newVal });
+      } else if (field === "list_item" && block.type === "list" && itemIdx !== undefined) {
+        result = updateFieldValue(block.items[itemIdx] || "");
+        const newItems = [...block.items];
+        newItems[itemIdx] = result.newVal;
+        updateBlock(bIndex, { ...block, items: newItems });
+      } else if (field === "faq_q" && block.type === "faq") {
+        result = updateFieldValue(block.question);
+        updateBlock(bIndex, { ...block, question: result.newVal });
+      } else if (field === "faq_a" && block.type === "faq") {
+        result = updateFieldValue(block.answer);
+        updateBlock(bIndex, { ...block, answer: result.newVal });
+      } else if (field === "link" && block.type === "link") {
+        result = updateFieldValue(block.text);
+        updateBlock(bIndex, { ...block, text: result.newVal });
+      }
+    }
+
+    if (result) {
+      const { newStart, newEnd, newVal } = result;
+      setCurrentSelection({
+        blockIndex: bIndex,
+        fieldType: field,
+        itemIndex: itemIdx,
+        start: newStart,
+        end: newEnd,
+        text: newVal.substring(newStart, newEnd),
+      });
+
+      if (inputEl) {
+        setTimeout(() => {
+          inputEl.focus();
+          inputEl.setSelectionRange(newStart, newEnd);
+        }, 10);
+      }
+    }
+  };
+
+  /**
+   * Copies active selected text to clipboard.
+   */
+  const handleCopySelection = async () => {
+    if (!currentSelection || !currentSelection.text) return;
+    try {
+      await navigator.clipboard.writeText(currentSelection.text);
+      showToast("Copied!");
+    } catch {
+      showToast("Copy failed");
+    }
+  };
+
+  /**
+   * Cuts active selected text to clipboard and removes it from the input.
+   */
+  const handleCutSelection = async () => {
+    if (!currentSelection || !currentSelection.text) return;
+    const { blockIndex, fieldType, itemIndex, start, end, text } = currentSelection;
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast("Cut!");
+    } catch {
+      // Still proceed with deleting from input
+    }
+
+    const removeSlice = (currentVal: string) =>
+      currentVal.substring(0, start) + currentVal.substring(end);
+
+    if (fieldType === "raw") {
+      onRawTextChange(removeSlice(rawText));
+    } else if (blockIndex >= 0 && blockIndex < blocks.length) {
+      const block = blocks[blockIndex];
+      if (fieldType === "heading" && block.type === "heading") {
+        updateBlock(blockIndex, { ...block, text: removeSlice(block.text) });
+      } else if (fieldType === "paragraph" && block.type === "paragraph") {
+        updateBlock(blockIndex, { ...block, text: removeSlice(block.text) });
+      } else if (fieldType === "quote" && block.type === "quote") {
+        updateBlock(blockIndex, { ...block, text: removeSlice(block.text) });
+      } else if (
+        fieldType === "list_item" &&
+        block.type === "list" &&
+        itemIndex !== undefined
+      ) {
+        const newItems = [...block.items];
+        newItems[itemIndex] = removeSlice(newItems[itemIndex] || "");
+        updateBlock(blockIndex, { ...block, items: newItems });
+      } else if (fieldType === "faq_q" && block.type === "faq") {
+        updateBlock(blockIndex, {
+          ...block,
+          question: removeSlice(block.question),
+        });
+      } else if (fieldType === "faq_a" && block.type === "faq") {
+        updateBlock(blockIndex, {
+          ...block,
+          answer: removeSlice(block.answer),
+        });
+      } else if (fieldType === "link" && block.type === "link") {
+        updateBlock(blockIndex, {
+          ...block,
+          text: removeSlice(block.text),
+        });
+      }
+    }
+
+    setCurrentSelection(null);
+  };
+
+  /**
+   * Handles keyboard shortcuts: Ctrl+B (Bold), Ctrl+I (Italic), Ctrl+K (Link)
+   */
   const handleKeyDown = (
     blockIndex: number,
     fieldType: FieldType,
     e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
     itemIndex?: number
   ) => {
-    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+    const isMod = e.ctrlKey || e.metaKey;
+    if (isMod && (e.key === "b" || e.key === "B")) {
+      e.preventDefault();
+      applyInlineFormat("bold", blockIndex, fieldType, itemIndex, e.currentTarget);
+    } else if (isMod && (e.key === "i" || e.key === "I")) {
+      e.preventDefault();
+      applyInlineFormat("italic", blockIndex, fieldType, itemIndex, e.currentTarget);
+    } else if (isMod && (e.key === "k" || e.key === "K")) {
       e.preventDefault();
       openLinkModal(blockIndex, fieldType, itemIndex, e.currentTarget);
     }
@@ -313,6 +537,103 @@ export function AdminArticleContentEditor({
         });
       }
     }
+  };
+
+  /**
+   * Renders interactive selection toolbar with Bold, Italic, Link, Copy, and Cut actions.
+   */
+  const renderSelectionToolbar = (
+    blockIndex: number,
+    fieldType: FieldType,
+    itemIndex?: number
+  ) => {
+    if (
+      !currentSelection ||
+      currentSelection.blockIndex !== blockIndex ||
+      currentSelection.fieldType !== fieldType ||
+      currentSelection.itemIndex !== itemIndex ||
+      !currentSelection.text.trim()
+    ) {
+      return null;
+    }
+
+    const preview =
+      currentSelection.text.length > 22
+        ? `${currentSelection.text.slice(0, 22)}…`
+        : currentSelection.text;
+
+    return (
+      <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-900 border border-emerald-500/60 rounded-lg shadow-xl text-xs mt-1 animate-fadeIn">
+        <span className="text-[10px] font-bold text-slate-400 px-1 border-r border-slate-700">
+          Selected: <span className="text-white italic">&ldquo;{preview}&rdquo;</span>
+        </span>
+
+        {/* Bold Button */}
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => applyInlineFormat("bold", blockIndex, fieldType, itemIndex)}
+          className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-white font-black border border-slate-700 hover:border-slate-500 transition-colors"
+          title="Bold (Ctrl+B)"
+        >
+          B
+        </button>
+
+        {/* Italic Button */}
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => applyInlineFormat("italic", blockIndex, fieldType, itemIndex)}
+          className="px-2.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-white italic font-serif border border-slate-700 hover:border-slate-500 transition-colors"
+          title="Italic (Ctrl+I)"
+        >
+          I
+        </button>
+
+        {/* Link Button */}
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => openLinkModal(blockIndex, fieldType, itemIndex)}
+          className="px-2 py-0.5 rounded bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 font-semibold border border-emerald-500/40 transition-colors flex items-center gap-1"
+          title="Link / Edit Link (Ctrl+K)"
+        >
+          <span>🔗</span>
+          <span>Link</span>
+        </button>
+
+        <div className="h-3 w-px bg-slate-700 mx-0.5" />
+
+        {/* Copy Button */}
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={handleCopySelection}
+          className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[11px] transition-colors"
+          title="Copy (Ctrl+C)"
+        >
+          Copy
+        </button>
+
+        {/* Cut Button */}
+        <button
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={handleCutSelection}
+          className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[11px] transition-colors"
+          title="Cut (Ctrl+X)"
+        >
+          Cut
+        </button>
+
+        {/* Toast confirmation */}
+        {clipboardToast && (
+          <span className="text-[10px] text-emerald-300 font-bold px-1.5 py-0.5 rounded bg-emerald-950 border border-emerald-500/50">
+            {clipboardToast}
+          </span>
+        )}
+      </div>
+    );
   };
 
   const renderActiveLinks = (
@@ -813,11 +1134,11 @@ export function AdminArticleContentEditor({
           <h3 className="text-sm font-bold text-white flex items-center gap-2">
             <span>Article Content &amp; Formatting</span>
             <span className="text-[10px] bg-slate-800 text-slate-300 font-mono px-2 py-0.5 rounded border border-slate-700">
-              AI-Powered
+              Rich Text
             </span>
           </h3>
           <p className="text-xs text-slate-400 mt-0.5">
-            Format plain text with AI, insert inline images, add SEO links (Ctrl+K), or edit blocks manually.
+            Select text to format: <span className="text-slate-200 font-bold">Bold</span> (Ctrl+B), <span className="text-slate-200 italic">Italic</span> (Ctrl+I), <span className="text-emerald-400">Link</span> (Ctrl+K), Cut, or Copy.
           </p>
         </div>
 
@@ -912,30 +1233,12 @@ export function AdminArticleContentEditor({
               onSelect={(e) => handleTextSelect(0, "raw", e)}
               onKeyDown={(e) => handleKeyDown(0, "raw", e)}
               rows={14}
-              placeholder="Paste or write your full article here...&#10;&#10;Normal paragraphs, section titles, lists, quotes, and FAQs will be structured automatically by AI when you click 'Format with AI'.&#10;&#10;Highlight text & press Ctrl+K to add SEO internal/external links."
+              placeholder="Paste or write your full article here...&#10;&#10;Normal paragraphs, section titles, lists, quotes, and FAQs will be structured automatically by AI when you click 'Format with AI'.&#10;&#10;Select text to format: Bold (Ctrl+B), Italic (Ctrl+I), Link (Ctrl+K), Cut, or Copy."
               className="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-3.5 text-xs sm:text-sm font-sans focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600 leading-relaxed resize-y"
             />
           </div>
 
-          {currentSelection && currentSelection.fieldType === "raw" && (
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => openLinkModal(0, "raw")}
-                className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
-              >
-                <span>🔗 Link Selection:</span>
-                <span className="underline italic max-w-[180px] truncate">
-                  &ldquo;{currentSelection.text}&rdquo;
-                </span>
-                <span className="text-[10px] bg-emerald-700 px-1 py-0.2 rounded font-mono">
-                  Ctrl+K
-                </span>
-              </button>
-            </div>
-          )}
-
+          {renderSelectionToolbar(0, "raw")}
           {renderActiveLinks(rawText, 0, "raw")}
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
@@ -1160,18 +1463,67 @@ export function AdminArticleContentEditor({
                           </span>
                         )}
 
-                        {/* Link Tool Button in Block Toolbar */}
+                        {/* Inline Formatting Tools in Block Toolbar */}
                         {block.type !== "image" && (
-                          <button
-                            type="button"
-                            onMouseDown={(e) => e.preventDefault()}
-                            onClick={() => openLinkModal(idx, block.type === "list" ? "list_item" : block.type === "faq" ? "faq_q" : block.type)}
-                            className="text-[10px] font-semibold text-emerald-400 hover:text-emerald-300 px-2 py-0.5 rounded bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800/40 flex items-center gap-1 transition-colors"
-                            title="Add or edit SEO link in this block (Ctrl+K)"
-                          >
-                            <span>🔗</span>
-                            <span>Link</span>
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() =>
+                                applyInlineFormat(
+                                  "bold",
+                                  idx,
+                                  block.type === "list"
+                                    ? "list_item"
+                                    : block.type === "faq"
+                                    ? "faq_q"
+                                    : block.type
+                                )
+                              }
+                              className="text-[10px] font-black text-slate-300 hover:text-white px-1.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
+                              title="Bold selected text (Ctrl+B)"
+                            >
+                              B
+                            </button>
+                            <button
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() =>
+                                applyInlineFormat(
+                                  "italic",
+                                  idx,
+                                  block.type === "list"
+                                    ? "list_item"
+                                    : block.type === "faq"
+                                    ? "faq_q"
+                                    : block.type
+                                )
+                              }
+                              className="text-[10px] font-serif italic text-slate-300 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
+                              title="Italic selected text (Ctrl+I)"
+                            >
+                              I
+                            </button>
+                            <button
+                              type="button"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() =>
+                                openLinkModal(
+                                  idx,
+                                  block.type === "list"
+                                    ? "list_item"
+                                    : block.type === "faq"
+                                    ? "faq_q"
+                                    : block.type
+                                )
+                              }
+                              className="text-[10px] font-semibold text-emerald-400 hover:text-emerald-300 px-2 py-0.5 rounded bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800/40 flex items-center gap-1 transition-colors"
+                              title="Add or edit SEO link in this block (Ctrl+K)"
+                            >
+                              <span>🔗</span>
+                              <span>Link</span>
+                            </button>
+                          </div>
                         )}
                       </div>
 
@@ -1225,26 +1577,7 @@ export function AdminArticleContentEditor({
                                 : "font-bold border-purple-800/60"
                             }`}
                           />
-                          {currentSelection &&
-                            currentSelection.blockIndex === idx &&
-                            currentSelection.fieldType === "heading" && (
-                              <div className="flex items-center gap-2 mt-1">
-                                <button
-                                  type="button"
-                                  onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => openLinkModal(idx, "heading")}
-                                  className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
-                                >
-                                  <span>🔗 Link Selection:</span>
-                                  <span className="underline italic max-w-[160px] truncate">
-                                    &ldquo;{currentSelection.text}&rdquo;
-                                  </span>
-                                  <span className="text-[10px] bg-emerald-700 px-1 py-0.2 rounded font-mono">
-                                    Ctrl+K
-                                  </span>
-                                </button>
-                              </div>
-                            )}
+                          {renderSelectionToolbar(idx, "heading")}
                           {renderActiveLinks(block.text, idx, "heading")}
                         </div>
                       )}
@@ -1262,26 +1595,7 @@ export function AdminArticleContentEditor({
                             placeholder="Paragraph text..."
                             className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 leading-relaxed resize-y font-sans"
                           />
-                          {currentSelection &&
-                            currentSelection.blockIndex === idx &&
-                            currentSelection.fieldType === "paragraph" && (
-                              <div className="flex items-center gap-2 mt-1">
-                                <button
-                                  type="button"
-                                  onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => openLinkModal(idx, "paragraph")}
-                                  className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
-                                >
-                                  <span>🔗 Link Selection:</span>
-                                  <span className="underline italic max-w-[160px] truncate">
-                                    &ldquo;{currentSelection.text}&rdquo;
-                                  </span>
-                                  <span className="text-[10px] bg-emerald-700 px-1 py-0.2 rounded font-mono">
-                                    Ctrl+K
-                                  </span>
-                                </button>
-                              </div>
-                            )}
+                          {renderSelectionToolbar(idx, "paragraph")}
                           {renderActiveLinks(block.text, idx, "paragraph")}
                         </div>
                       )}
@@ -1398,26 +1712,8 @@ export function AdminArticleContentEditor({
                                 </button>
                               </div>
 
-                              {currentSelection &&
-                                currentSelection.blockIndex === idx &&
-                                currentSelection.fieldType === "list_item" &&
-                                currentSelection.itemIndex === itemIdx && (
-                                  <div className="flex items-center gap-2 ml-7 mt-0.5">
-                                    <button
-                                      type="button"
-                                      onMouseDown={(e) => e.preventDefault()}
-                                      onClick={() => openLinkModal(idx, "list_item", itemIdx)}
-                                      className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-2.5 py-0.5 rounded shadow flex items-center gap-1 animate-pulse"
-                                    >
-                                      <span>🔗 Link:</span>
-                                      <span className="underline italic max-w-[140px] truncate">
-                                        &ldquo;{currentSelection.text}&rdquo;
-                                      </span>
-                                    </button>
-                                  </div>
-                                )}
-
                               <div className="ml-7">
+                                {renderSelectionToolbar(idx, "list_item", itemIdx)}
                                 {renderActiveLinks(item, idx, "list_item", itemIdx)}
                               </div>
                             </div>
@@ -1454,23 +1750,7 @@ export function AdminArticleContentEditor({
                               placeholder="e.g. When does NPL Season 3 start?"
                               className="w-full bg-slate-900 border border-emerald-900/60 text-white rounded-md px-3 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500"
                             />
-                            {currentSelection &&
-                              currentSelection.blockIndex === idx &&
-                              currentSelection.fieldType === "faq_q" && (
-                                <div className="flex items-center gap-2 mt-1">
-                                  <button
-                                    type="button"
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    onClick={() => openLinkModal(idx, "faq_q")}
-                                    className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
-                                  >
-                                    <span>🔗 Link Selection:</span>
-                                    <span className="underline italic max-w-[160px] truncate">
-                                      &ldquo;{currentSelection.text}&rdquo;
-                                    </span>
-                                  </button>
-                                </div>
-                              )}
+                            {renderSelectionToolbar(idx, "faq_q")}
                             {renderActiveLinks(block.question, idx, "faq_q")}
                           </div>
                           <div>
@@ -1488,23 +1768,7 @@ export function AdminArticleContentEditor({
                               placeholder="Answer to the question..."
                               className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
                             />
-                            {currentSelection &&
-                              currentSelection.blockIndex === idx &&
-                              currentSelection.fieldType === "faq_a" && (
-                                <div className="flex items-center gap-2 mt-1">
-                                  <button
-                                    type="button"
-                                    onMouseDown={(e) => e.preventDefault()}
-                                    onClick={() => openLinkModal(idx, "faq_a")}
-                                    className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
-                                  >
-                                    <span>🔗 Link Selection:</span>
-                                    <span className="underline italic max-w-[160px] truncate">
-                                      &ldquo;{currentSelection.text}&rdquo;
-                                    </span>
-                                  </button>
-                                </div>
-                              )}
+                            {renderSelectionToolbar(idx, "faq_a")}
                             {renderActiveLinks(block.answer, idx, "faq_a")}
                           </div>
                         </div>
@@ -1523,23 +1787,7 @@ export function AdminArticleContentEditor({
                             placeholder="Quoted text or callout note..."
                             className="w-full bg-slate-900 border border-slate-700 text-white rounded-md px-3 py-1.5 text-xs italic focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
                           />
-                          {currentSelection &&
-                            currentSelection.blockIndex === idx &&
-                            currentSelection.fieldType === "quote" && (
-                              <div className="flex items-center gap-2 mt-1">
-                                <button
-                                  type="button"
-                                  onMouseDown={(e) => e.preventDefault()}
-                                  onClick={() => openLinkModal(idx, "quote")}
-                                  className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1 rounded-md shadow flex items-center gap-1.5 animate-pulse"
-                                >
-                                  <span>🔗 Link Selection:</span>
-                                  <span className="underline italic max-w-[160px] truncate">
-                                    &ldquo;{currentSelection.text}&rdquo;
-                                  </span>
-                                </button>
-                              </div>
-                            )}
+                          {renderSelectionToolbar(idx, "quote")}
                           {renderActiveLinks(block.text, idx, "quote")}
 
                           <input

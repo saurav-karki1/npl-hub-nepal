@@ -2,10 +2,63 @@ import React from "react";
 import Link from "next/link";
 
 /**
- * Parses markdown links [anchor text](url) in article text into semantic React elements:
+ * Parses markdown inline formatting (bold, italic) into semantic React elements.
+ */
+function renderInlineFormatting(str: string): React.ReactNode {
+  if (!str) return null;
+  if (!str.includes("*")) return str;
+
+  // Regex matching ***bold italic***, **bold**, and *italic*
+  const formatRegex = /(\*\*\*([^*]+)\*\*\*|\*\*([^*]+)\*\*|\*([^*]+)\*)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIdx = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = formatRegex.exec(str)) !== null) {
+    if (match.index > lastIdx) {
+      parts.push(str.slice(lastIdx, match.index));
+    }
+
+    if (match[2]) {
+      // ***bold italic***
+      parts.push(
+        <strong key={`bi-${key++}`} className="font-bold text-[var(--color-ink)]">
+          <em className="italic">{match[2]}</em>
+        </strong>
+      );
+    } else if (match[3]) {
+      // **bold**
+      parts.push(
+        <strong key={`b-${key++}`} className="font-bold text-[var(--color-ink)]">
+          {match[3]}
+        </strong>
+      );
+    } else if (match[4]) {
+      // *italic*
+      parts.push(
+        <em key={`i-${key++}`} className="italic">
+          {match[4]}
+        </em>
+      );
+    }
+
+    lastIdx = formatRegex.lastIndex;
+  }
+
+  if (lastIdx < str.length) {
+    parts.push(str.slice(lastIdx));
+  }
+
+  return <>{parts}</>;
+}
+
+/**
+ * Parses markdown links [anchor text](url) and inline formatting (bold, italic)
+ * in article text into semantic React elements:
  * - Internal URLs (starting with "/") render as Next.js <Link> elements.
  * - External URLs (http:// or https://) render as secure <a> tags with target="_blank" and rel="noopener noreferrer".
- * - Unsafe or unparseable URLs fall back to plain text.
+ * - Inline formatting (**bold**, *italic*) renders as <strong> and <em> tags.
  * - Zero dangerouslySetInnerHTML used — fully immune to XSS.
  */
 export function renderRichText(text: string): React.ReactNode {
@@ -14,9 +67,9 @@ export function renderRichText(text: string): React.ReactNode {
   // Regex matching [anchor](url)
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
 
-  // Check if there are any links
+  // Check if there are any links; if none, parse inline formatting directly
   if (!linkRegex.test(text)) {
-    return text;
+    return renderInlineFormatting(text);
   }
 
   // Reset regex index after test()
@@ -31,13 +84,18 @@ export function renderRichText(text: string): React.ReactNode {
     const matchStart = match.index;
     const matchEnd = linkRegex.lastIndex;
 
-    // Push plain text before the link
+    // Push formatted text before the link
     if (matchStart > lastIndex) {
-      elements.push(text.slice(lastIndex, matchStart));
+      elements.push(
+        <React.Fragment key={`pre-${keyCounter++}`}>
+          {renderInlineFormatting(text.slice(lastIndex, matchStart))}
+        </React.Fragment>
+      );
     }
 
     const anchorText = match[1];
     const rawUrl = match[2].trim();
+    const formattedAnchor = renderInlineFormatting(anchorText);
 
     // Determine if internal or external
     if (rawUrl.startsWith("/")) {
@@ -48,7 +106,7 @@ export function renderRichText(text: string): React.ReactNode {
           href={rawUrl}
           className="text-[var(--color-brand)] hover:underline font-medium underline-offset-2 transition-colors"
         >
-          {anchorText}
+          {formattedAnchor}
         </Link>
       );
     } else if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
@@ -61,7 +119,7 @@ export function renderRichText(text: string): React.ReactNode {
           rel="noopener noreferrer"
           className="text-[var(--color-brand)] hover:underline font-medium underline-offset-2 transition-colors inline-flex items-baseline gap-0.5"
         >
-          <span>{anchorText}</span>
+          <span>{formattedAnchor}</span>
           <span
             className="text-[10px] text-[var(--color-brand)]/80 select-none"
             aria-hidden="true"
@@ -71,8 +129,12 @@ export function renderRichText(text: string): React.ReactNode {
         </a>
       );
     } else {
-      // Fallback: render plain anchor text
-      elements.push(anchorText);
+      // Fallback: render formatted anchor text
+      elements.push(
+        <React.Fragment key={`fb-${keyCounter++}`}>
+          {formattedAnchor}
+        </React.Fragment>
+      );
     }
 
     lastIndex = matchEnd;
@@ -80,7 +142,11 @@ export function renderRichText(text: string): React.ReactNode {
 
   // Push any remaining text after the last link
   if (lastIndex < text.length) {
-    elements.push(text.slice(lastIndex));
+    elements.push(
+      <React.Fragment key={`post-${keyCounter++}`}>
+        {renderInlineFormatting(text.slice(lastIndex))}
+      </React.Fragment>
+    );
   }
 
   return <>{elements}</>;
