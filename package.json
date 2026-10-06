@@ -10,7 +10,8 @@
     "validate:playoff": "node scripts/validate-playoff-invariant.mjs",
     "verify:supabase": "node --env-file=.env.local scripts/verify-supabase-connection.mjs",
     "seed:generate": "npx tsx scripts/generate-seed-sql.ts",
-    "seed:run": "node --env-file=.env.local scripts/run-seed.mjs"
+    "seed:run": "node --env-file=.env.local scripts/run-seed.mjs",
+    "sync:news": "npx tsx scripts/sync-news-to-supabase.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
