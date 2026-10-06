@@ -14,6 +14,7 @@
     "sync:news": "npx tsx scripts/sync-news-to-supabase.ts"
   },
   "dependencies": {
+    "@next/third-parties": "^16.3.8",
     "@supabase/supabase-js": "^2.117.2",
     "clsx": "^2.1.1",
     "nepali-date-converter": "^3.4.0",
