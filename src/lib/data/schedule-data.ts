@@ -156,7 +156,7 @@ export const TOURNAMENT_INFO: TournamentInfo = {
   primaryVenue: "TU International Cricket Stadium, Kirtipur",
   status: "Upcoming",
   projectedDates: "26 October – 21 November 2026",
-  isConfirmed: false,
+  isConfirmed: true,
 };
 
 /* ── NPL Season 3 Complete 32-Fixture Dataset (28 League + 4 Playoffs) ── */

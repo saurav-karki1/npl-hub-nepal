@@ -70,7 +70,7 @@ export function PreTournamentStatsState({ dataset }: PreTournamentStatsStateProp
                 {summary.dates}
               </span>
               <span className="text-xs text-[var(--color-ink-muted)] block">
-                ९ कार्तिक – ६ मंसिर २०८३ (BS)
+                ९ कार्तिक – ५ मंसिर २०८३ (BS)
               </span>
             </CardBody>
           </Card>

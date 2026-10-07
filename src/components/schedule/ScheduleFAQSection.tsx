@@ -14,7 +14,7 @@ const FAQS: FAQItem[] = [
   {
     question: "Are the NPL Season 3 fixtures and match dates on this page officially confirmed?",
     answer:
-      "The fixtures currently listed on this page represent the latest available schedule structure. Official NPL match dates, broadcast channels, and timings are subject to formal announcement by the Cricket Association of Nepal (CAN) and will be updated here live as soon as they are ratified.",
+      "Yes, the tournament dates (26 October – 21 November 2026 / ९ कार्तिक – ५ मंसिर २०८३ BS) and the 32-fixture schedule structure have been officially announced by the Cricket Association of Nepal (CAN) and authorized sources. Match dates, opening clash (Lumbini Lions vs Sudurpaschim Royals), and the TU Cricket Stadium venue are set.",
   },
   {
     question: "Where will the official NPL Season 3 schedule be published?",

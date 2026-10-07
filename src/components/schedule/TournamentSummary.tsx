@@ -1,4 +1,4 @@
-﻿import { Card, CardBody } from "@/components/ui/Card";
+import { Card, CardBody } from "@/components/ui/Card";
 import { TOURNAMENT_INFO } from "@/lib/repository/matches";
 
 export function TournamentSummary() {
@@ -87,22 +87,8 @@ export function TournamentSummary() {
                 26 Oct – 21 Nov 2026
               </span>
               <span className="text-xs text-[var(--color-ink-muted)]">
-                ३ कार्तिक – ५ मंसिर २०८३
+                ९ कार्तिक – ५ मंसिर २०८३
               </span>
-            </div>
-          </div>
-
-          {/* Prominent Schedule Accuracy Notice */}
-          <div className="mt-5 rounded-[var(--radius-md)] border border-amber-300 bg-amber-50/80 p-4 flex items-start gap-3 text-xs text-amber-950 leading-relaxed shadow-2xs">
-            <span
-              className="inline-flex w-5 h-5 rounded-full bg-amber-200 text-amber-900 font-bold items-center justify-center shrink-0 mt-0.5 text-xs"
-              aria-hidden="true"
-            >
-              !
-            </span>
-            <div>
-              <strong className="font-bold text-amber-950">Schedule Accuracy Notice:</strong>{" "}
-              The Nepal Premier League Season 3 fixtures and projected match dates shown below represent the latest available provisional tournament schedule. Official NPL match dates, local Nepal times (NPT), broadcast channels, and NPL venues will be verified and updated in real time immediately following official announcement by the Cricket Association of Nepal (CAN).
             </div>
           </div>
         </CardBody>
