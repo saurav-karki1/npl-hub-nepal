@@ -13,7 +13,9 @@ export type ArticleBlockType =
   | "quote"
   | "faq"
   | "link"
-  | "image";
+  | "image"
+  | "table"
+  | "match";
 
 export interface ParagraphBlock {
   type: "paragraph";
@@ -59,6 +61,19 @@ export interface ImageBlock {
   height?: number;
 }
 
+export interface TableBlock {
+  type: "table";
+  caption?: string;
+  headers: string[];
+  rows: string[][];
+}
+
+export interface MatchBlock {
+  type: "match";
+  matchSlug: string;
+  title?: string;
+}
+
 export type ArticleBlock =
   | ParagraphBlock
   | HeadingBlock
@@ -66,7 +81,9 @@ export type ArticleBlock =
   | QuoteBlock
   | FaqBlock
   | LinkBlock
-  | ImageBlock;
+  | ImageBlock
+  | TableBlock
+  | MatchBlock;
 
 export interface ArticleStructuredContent {
   blocks: ArticleBlock[];
@@ -208,6 +225,34 @@ export function sanitizeBlock(raw: unknown): ArticleBlock | null {
         ...(height ? { height } : {}),
       };
     }
+    case "table": {
+      const caption = obj.caption ? String(obj.caption).trim() : undefined;
+      const headers = Array.isArray(obj.headers)
+        ? obj.headers.map((h) => String(h ?? "").trim())
+        : [];
+      const rows = Array.isArray(obj.rows)
+        ? (obj.rows as unknown[]).map((r) =>
+            Array.isArray(r) ? r.map((c) => String(c ?? "").trim()) : []
+          )
+        : [];
+      if (headers.length === 0 && rows.length === 0) return null;
+      return {
+        type: "table",
+        headers,
+        rows,
+        ...(caption ? { caption } : {}),
+      };
+    }
+    case "match": {
+      const matchSlug = String(obj.matchSlug || obj.match_slug || "").trim();
+      if (!matchSlug) return null;
+      const title = obj.title ? String(obj.title).trim() : undefined;
+      return {
+        type: "match",
+        matchSlug,
+        ...(title ? { title } : {}),
+      };
+    }
     case "paragraph":
     default: {
       const text = String(obj.text || "").trim();
@@ -240,6 +285,13 @@ export function blocksToPlainText(blocks: ArticleBlock[]): string {
           return `[${block.text}](${block.url})`;
         case "image":
           return `![${block.alt}](${block.src})${block.caption ? `\n*${block.caption}*` : ""}`;
+        case "table": {
+          const headerLine = block.headers.length > 0 ? `| ${block.headers.join(" | ")} |` : "";
+          const rowLines = block.rows.map((r) => `| ${r.join(" | ")} |`).join("\n");
+          return `${headerLine}\n${rowLines}`.trim();
+        }
+        case "match":
+          return `[Match Preview: ${block.matchSlug}]`;
         case "paragraph":
         default:
           return block.text;

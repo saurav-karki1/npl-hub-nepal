@@ -363,6 +363,150 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     readTime: "6 min read",
     displayDate: "3 Oct 2026",
   },
+  {
+    id: "article-08",
+    slug: "npl-season-3-first-match-date-time-venue-nepali-date",
+    title: "NPL Season 3 First Match: Date, Time, Venue, Nepali Date",
+    excerpt:
+      "The npl season 3 first match is Lumbini Lions vs Sudurpaschim Royals on Oct 26, 2026 at 4:30 PM NPT in Kirtipur, Kartik 9, 2083 in Nepali calendar.",
+    content: [
+      {
+        type: "paragraph",
+        text: "The npl season 3 first match will be played between defending champions Lumbini Lions and two-time runners-up Sudurpaschim Royals on Monday, October 26, 2026, which is Kartik 9, 2083 in the Nepali calendar, at 4:30 PM Nepal Standard Time at the TU International Cricket Ground in Kirtipur, Kathmandu.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Introduction: When does NPL Season 3 start?",
+      },
+      {
+        type: "paragraph",
+        text: "NPL Season 3, officially Siddhartha Bank NPL 2026, starts on October 26 and runs through November 21, 2026. The Cricket Association of Nepal has confirmed an 8-team, 32-match tournament, with all matches at the TU International Cricket Ground in Kirtipur. The full day-by-day fixture list was released by CAN on September 20, 2026. This season shifts from the usual December window to the period between Dashain and Tihar.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Opening match details: teams, date, time and venue",
+      },
+      {
+        type: "paragraph",
+        text: "The opening match is Match 1 of the season: Lumbini Lions vs Sudurpaschim Royals on Monday, October 26, 2026, at 4:30 PM NST. The venue is TU International Cricket Stadium, Kirtipur, the home of Nepali cricket and the sole venue for the third consecutive season. According to the official schedule, single-header days will have one evening game at 4:30 PM, while double-header days will have games at 12:30 PM and 4:30 PM. The tournament opens with a single-header evening fixture under lights.",
+      },
+      {
+        type: "match",
+        matchSlug: "match-1-lumbini-lions-vs-sudurpaschim-royals",
+        title: "Match #1 Showcase: Lumbini Lions vs Sudurpaschim Royals",
+      },
+      {
+        type: "table",
+        caption: "Official NPL Season 3 Match 1 Specification & Schedule Table",
+        headers: ["Match Parameter", "Official Specification"],
+        rows: [
+          ["Fixture", "Match #1 · Lumbini Lions vs Sudurpaschim Royals"],
+          ["Date (English)", "Monday, 26 October 2026"],
+          ["Nepali Date (BS)", "सोमबार, ९ कार्तिक २०८३ (Kartik 9, 2083 BS)"],
+          ["Start Time (NPT)", "4:30 PM Nepal Time (UTC +5:45)"],
+          ["Venue", "TU International Cricket Stadium, Kirtipur, Kathmandu"],
+          ["Session Type", "Single-header evening clash under floodlights"],
+          ["Format", "Twenty20 (20 Overs per side) · White Ball"],
+          ["Captains", "Rohit Paudel (Lumbini) vs Dipendra Singh Airee (Sudurpaschim)"],
+          ["Context", "Rematch of 2025 NPL Final (Lumbini won by 6 wickets)"],
+          ["Broadcast (TV)", "Himalaya TV HD (Nepal)"],
+          ["Live Stream", "NetTV App & Web (Worldwide OTT)"],
+          ["Digital Ticketing", "eSewa Official Partner"],
+        ],
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "NPL first match date in the Nepali calendar",
+      },
+      {
+        type: "paragraph",
+        text: "The verified Nepali date for the first match is Monday, Kartik 9, 2083. This has been confirmed by checking Hamro Patro and independent Nepali calendar tables. Kartik 1, 2083 falls on Sunday, October 18, 2026, which corrects an earlier calendar bug that showed October 17. Dashain ends on Kartik 8, 2083, which is Sunday, October 25, 2026, so the next day October 26 is Kartik 9. CAN also announced the tournament window as Kartik 9 to Mangsir 5. Some outlets reported the opener as Kartik 10, 2083, due to the older incorrect month-length data, but the corrected Hamro Patro calendar and CAN announcement confirm Kartik 9. The tournament window is Kartik 9, 2083 to Mangsir 5, 2083, which is October 26 to November 21, 2026. Kartik 2083 has 30 days from October 18 to November 16, so Mangsir 1 is November 17 and the final on November 21 is Mangsir 5, 2083, a Saturday.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Lumbini Lions vs Sudurpaschim Royals: what fans should know",
+      },
+      {
+        type: "paragraph",
+        text: "This opener is a rematch of the NPL Season 2 final. Lumbini Lions beat Sudurpaschim Royals by six wickets in the final on December 13, 2025, at Kirtipur to win their first title after bowling the Royals out for 85. Sudurpaschim Royals have finished as runners-up in both seasons so far, losing to Janakpur Bolts in the 2024 final and to Lumbini Lions in 2025. For 2026, captains are confirmed as Rohit Paudel for Lumbini Lions and Dipendra Singh Airee for Sudurpaschim Royals. Head coaches are Nandan Phadnis for Lumbini Lions and Jagat Tamata for Sudurpaschim Royals, with Brad Hodge as mentor for the Royals. Verified overseas signings for Lumbini Lions include Namibia fast bowler Ruben Trumpelmann, who was Player of the Series in 2025, Sri Lankan wicketkeeper Niroshan Dickwella and Australian opener D'Arcy Short, all retained from last season. For Sudurpaschim Royals, verified overseas signings include England all-rounder Saif Zaib, New Zealand pacer Scott Kuggeleijn and Scotland all-rounder Brandon McMullen, with UAE all-rounder Rohan Mustafa also listed in the squad.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Match timings in other countries",
+      },
+      {
+        type: "paragraph",
+        text: "The opening match starts at 4:30 PM NPT, which is UTC plus 5:45. For diaspora fans on October 26, 2026, that is 4:15 PM in India, 4:45 PM in Bangladesh, 2:45 PM in the UAE, 10:45 AM in the UK, 6:45 AM US Eastern Daylight Time and 9:45 PM in Sydney. Day-night games at Kirtipur are played under floodlights, so the evening slot is the prime time slot in Nepal.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Where to find the full NPL 2026 schedule",
+      },
+      {
+        type: "paragraph",
+        text: "You can find the full NPL 2026 fixture list, match timings, venues and points table on the NPL Hub Nepal schedule page, which will be updated with live scores once the tournament starts.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Frequently asked questions",
+      },
+      {
+        type: "faq",
+        question: "When is the first match of NPL Season 3?",
+        answer:
+          "The first match of NPL Season 3 is on Monday, October 26, 2026, at 4:30 PM NPT. The tournament runs until November 21, 2026, with 32 matches at Kirtipur.",
+      },
+      {
+        type: "faq",
+        question: "Which teams play in the opening match?",
+        answer:
+          "Defending champions Lumbini Lions play Sudurpaschim Royals in the opening match. It is a rematch of the 2025 final that Lumbini Lions won.",
+      },
+      {
+        type: "faq",
+        question: "What time does the first match start?",
+        answer:
+          "The first match starts at 4:30 PM Nepal Standard Time. On double-header days, the first game starts at 12:30 PM and the second at 4:30 PM.",
+      },
+      {
+        type: "faq",
+        question: "Where is the first match played?",
+        answer:
+          "The first match is played at the TU International Cricket Ground in Kirtipur, Kathmandu. All 32 matches of NPL Season 3 are scheduled at this venue.",
+      },
+      {
+        type: "faq",
+        question: "What is the date of the first NPL match in the Nepali calendar?",
+        answer:
+          "The first NPL match date in the Nepali calendar is Kartik 9, 2083, Monday. The final on November 21, 2026 is Mangsir 5, 2083. The date has been verified against Hamro Patro and CAN's announcement of Kartik 9 to Mangsir 5.",
+      },
+      {
+        type: "paragraph",
+        text: "The schedule, match timings and broadcast information are based on CAN's official announcements and the fixture list released on September 20, 2026. No postponement or venue change has been announced as of publication. Live television in Nepal is on Himalaya TV, worldwide streaming is on NetTV and digital tickets are issued on eSewa. Schedules can change due to weather or operational reasons, so fans should check the official CAN channels before match day. Last updated: October 9, 2026.",
+      },
+    ],
+    category: "Matches",
+    publishedAt: "2026-10-09T05:15:00+00:00",
+    updatedAt: "2026-10-09T05:15:00+00:00",
+    featured: true,
+    imageUrl:
+      "https://zohmcgjixebuiconrven.supabase.co/storage/v1/object/public/article-images/articles/article-1791521388205-g2x1w2/1791522050648-mhasx55q.png",
+    imageAlt: "NPL Season 3 First Match: Date, Time, Venue, Nepali Date",
+    author: "NPL Hub Nepal Editorial",
+    source: "NPL Hub Nepal Editorial",
+    relatedTeamIds: ["lumbini-lions", "sudurpaschim-royals"],
+    relatedMatchSlug: "match-1-lumbini-lions-vs-sudurpaschim-royals",
+    status: "published",
+    readTime: "4 min read",
+    displayDate: "9 Oct 2026",
+  },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────── */

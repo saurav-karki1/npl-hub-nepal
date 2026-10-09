@@ -1464,7 +1464,7 @@ export function AdminArticleContentEditor({
                         )}
 
                         {/* Inline Formatting Tools in Block Toolbar */}
-                        {block.type !== "image" && (
+                        {block.type !== "image" && block.type !== "table" && block.type !== "match" && (
                           <div className="flex items-center gap-1">
                             <button
                               type="button"
@@ -1799,6 +1799,26 @@ export function AdminArticleContentEditor({
                             placeholder="Author / Attribution (optional)"
                             className="w-full bg-slate-900 border border-slate-750 text-slate-300 rounded-md px-3 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-emerald-500"
                           />
+                        </div>
+                      )}
+
+                      {block.type === "table" && (
+                        <div className="p-3 bg-slate-900 border border-slate-700 rounded-md text-xs space-y-1.5">
+                          <p className="font-semibold text-slate-300">
+                            📊 Table Block ({block.rows.length} rows, {block.headers.length} headers)
+                          </p>
+                          {block.caption && (
+                            <p className="italic text-slate-500 text-[11px]">{block.caption}</p>
+                          )}
+                        </div>
+                      )}
+
+                      {block.type === "match" && (
+                        <div className="p-3 bg-slate-900 border border-emerald-800/60 rounded-md text-xs space-y-1">
+                          <p className="font-bold text-emerald-400">
+                            🏏 Match Showcase Widget: {block.matchSlug}
+                          </p>
+                          {block.title && <p className="text-slate-400 text-[11px]">{block.title}</p>}
                         </div>
                       )}
                     </div>

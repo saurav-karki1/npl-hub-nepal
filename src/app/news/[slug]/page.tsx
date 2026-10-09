@@ -13,6 +13,7 @@ import {
 } from "@/lib/repository/news";
 import { normalizeArticleBlocks } from "@/lib/types/article-blocks";
 import { renderRichText } from "@/lib/seo/rich-text";
+import { ArticleMatchShowcase } from "@/components/news/ArticleMatchShowcase";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -299,6 +300,68 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                       </figcaption>
                     )}
                   </figure>
+                );
+
+              case "table":
+                return (
+                  <div key={i} className="my-6 space-y-2">
+                    <div className="overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--color-rule)] shadow-2xs">
+                      <table className="w-full text-left text-xs sm:text-sm border-collapse">
+                        {block.headers.length > 0 && (
+                          <thead className="bg-[var(--color-surface)] border-b border-[var(--color-rule)]">
+                            <tr>
+                              {block.headers.map((h, hIdx) => (
+                                <th
+                                  key={hIdx}
+                                  scope="col"
+                                  className="py-3 px-4 font-bold uppercase tracking-wider text-[11px] text-[var(--color-ink-muted)]"
+                                >
+                                  {renderRichText(h)}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                        )}
+                        <tbody className="divide-y divide-[var(--color-rule)] bg-[var(--color-canvas)]">
+                          {block.rows.map((row, rIdx) => (
+                            <tr
+                              key={rIdx}
+                              className={
+                                rIdx % 2 === 0
+                                  ? "bg-[var(--color-canvas)]"
+                                  : "bg-[var(--color-surface)]/60"
+                              }
+                            >
+                              {row.map((cell, cIdx) => (
+                                <td
+                                  key={cIdx}
+                                  className={`py-2.5 px-4 text-[var(--color-ink)] ${
+                                    cIdx === 0 ? "font-semibold" : ""
+                                  }`}
+                                >
+                                  {renderRichText(cell)}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {block.caption && (
+                      <p className="text-center text-xs text-[var(--color-ink-muted)] italic px-2">
+                        {block.caption}
+                      </p>
+                    )}
+                  </div>
+                );
+
+              case "match":
+                return (
+                  <ArticleMatchShowcase
+                    key={i}
+                    matchSlug={block.matchSlug}
+                    title={block.title}
+                  />
                 );
 
               case "paragraph":
