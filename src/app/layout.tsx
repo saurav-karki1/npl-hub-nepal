@@ -28,6 +28,20 @@ const siteUrl =
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   applicationName: "NPL Hub Nepal",
+  appleWebApp: {
+    title: "NPL Hub Nepal",
+  },
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/images/logo.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/images/logo.png", sizes: "180x180" },
+    ],
+    shortcut: "/favicon.ico",
+  },
   title: {
     default: "NPL Hub Nepal — Nepal Premier League Cricket",
     template: "%s | NPL Hub Nepal",
@@ -35,7 +49,7 @@ export const metadata: Metadata = {
   description:
     "Independent information platform for the Nepal Premier League. Live scores, schedules, points table standings, team profiles, player rosters, statistics, and NPL news.",
   alternates: {
-    canonical: "./",
+    canonical: "/",
   },
   openGraph: {
     title: "NPL Hub Nepal — Nepal Premier League Cricket",
@@ -77,6 +91,26 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://nplhubnepal.vercel.app/#website",
+      url: "https://nplhubnepal.vercel.app/",
+      name: "NPL Hub Nepal",
+      alternateName: ["NPL Hub", "Nepal Premier League Hub"],
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://nplhubnepal.vercel.app/#organization",
+      name: "NPL Hub Nepal",
+      url: "https://nplhubnepal.vercel.app/",
+      logo: "https://nplhubnepal.vercel.app/images/logo.png",
+    },
+  ],
+};
+
 const gaId = process.env.NEXT_PUBLIC_GA_ID || "G-VBLLG090FH";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -86,6 +120,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[var(--color-canvas)] text-[var(--color-ink)]">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd),
+          }}
+        />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

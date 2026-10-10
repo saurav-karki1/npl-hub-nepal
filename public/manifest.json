@@ -1,0 +1,13 @@
+{
+  "name": "NPL Hub Nepal",
+  "short_name": "NPL Hub Nepal",
+  "description": "Nepal Premier League - Scores, Schedule, Teams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#16a34a",
+  "icons": [
+    { "src": "/images/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }
+  ]
+}
