@@ -126,7 +126,14 @@ export function normalizeArticleBlocks(content: unknown): ArticleBlock[] {
 
   // 3. If it's a legacy array of strings (e.g. ["## Heading", "paragraph", ...])
   if (Array.isArray(content)) {
-    return content
+    const flattened = content.flatMap((item) => {
+      if (typeof item === "string" && (item.includes("\n\n") || item.includes("\r\n\r\n"))) {
+        return item.split(/\r?\n\s*\r?\n/).map((s) => s.trim()).filter(Boolean);
+      }
+      return [item];
+    });
+
+    return flattened
       .map((item): ArticleBlock | null => {
         const text = String(item ?? "").trim();
         if (!text) return null;
@@ -157,7 +164,11 @@ export function normalizeArticleBlocks(content: unknown): ArticleBlock[] {
 
   // 4. If it's a single string
   if (typeof content === "string" && content.trim()) {
-    return [{ type: "paragraph", text: content.trim() }];
+    const paras = content
+      .split(/\r?\n\s*\r?\n/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    return normalizeArticleBlocks(paras);
   }
 
   return [];

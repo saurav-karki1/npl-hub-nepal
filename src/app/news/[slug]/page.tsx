@@ -11,9 +11,21 @@ import {
   getAllArticles,
   type NewsArticle,
 } from "@/lib/repository/news";
+import {
+  getAllMatches,
+  getStandingsAsync,
+  type ScheduleMatch,
+  type StandingsData,
+} from "@/lib/repository/matches";
 import { normalizeArticleBlocks } from "@/lib/types/article-blocks";
 import { renderRichText } from "@/lib/seo/rich-text";
 import { ArticleMatchShowcase } from "@/components/news/ArticleMatchShowcase";
+import {
+  TodayMatch,
+  PointsTableWidget,
+  LatestResults,
+  UpcomingFixtures,
+} from "@/components/news/LiveHubWidgets";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -97,11 +109,38 @@ const TEAM_NAMES: Record<string, string> = {
 };
 
 /* ── Article body renderer ──────────────────────────────────────────────── */
-function ArticleBody({ article }: { article: NewsArticle }) {
+function ArticleBody({
+  article,
+  standings,
+  fixtures,
+}: {
+  article: NewsArticle;
+  standings: StandingsData;
+  fixtures: ScheduleMatch[];
+}) {
   const categoryClass =
     categoryColors[article.category] ?? "text-[var(--color-brand)]";
 
   const isDraft = article.status === "draft";
+
+  const lastUpdatedDisplay = (() => {
+    try {
+      const dt = article.updatedAt || article.publishedAt;
+      return (
+        new Intl.DateTimeFormat("en-GB", {
+          timeZone: "Asia/Kathmandu",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        }).format(new Date(dt)) + " NPT"
+      );
+    } catch {
+      return null;
+    }
+  })();
 
   return (
     <article className="max-w-2xl mx-auto">
@@ -119,8 +158,8 @@ function ArticleBody({ article }: { article: NewsArticle }) {
         </div>
       )}
 
-      {/* Category + date */}
-      <div className="flex items-center gap-3 mb-4 text-xs">
+      {/* Category + date + last updated */}
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 text-xs">
         <span className={`font-bold uppercase tracking-wider ${categoryClass}`}>
           {article.category}
         </span>
@@ -131,6 +170,14 @@ function ArticleBody({ article }: { article: NewsArticle }) {
         >
           {article.displayDate}
         </time>
+        {lastUpdatedDisplay && (
+          <>
+            <span className="text-[var(--color-ink-faint)]">·</span>
+            <span className="text-[var(--color-ink-muted)]">
+              Last updated: {lastUpdatedDisplay}
+            </span>
+          </>
+        )}
         <span className="text-[var(--color-ink-faint)]">·</span>
         <span className="text-[var(--color-ink-muted)]">{article.readTime}</span>
       </div>
@@ -365,12 +412,26 @@ function ArticleBody({ article }: { article: NewsArticle }) {
                 );
 
               case "paragraph":
-              default:
+              default: {
+                const trimmed = block.text.trim();
+                if (trimmed === "[[TODAY_MATCH]]") {
+                  return <TodayMatch key={i} fixtures={fixtures} />;
+                }
+                if (trimmed === "[[POINTS_TABLE]]") {
+                  return <PointsTableWidget key={i} standings={standings} />;
+                }
+                if (trimmed === "[[LATEST_RESULTS]]") {
+                  return <LatestResults key={i} fixtures={fixtures} />;
+                }
+                if (trimmed === "[[UPCOMING_FIXTURES]]") {
+                  return <UpcomingFixtures key={i} fixtures={fixtures} />;
+                }
                 return (
                   <p key={i} className="leading-relaxed">
                     {renderRichText(block.text)}
                   </p>
                 );
+              }
             }
           });
         })()}
@@ -475,7 +536,11 @@ async function MoreArticles({ currentSlug }: { currentSlug: string }) {
 /* ── Page ──────────────────────────────────────────────────────────────── */
 export default async function ArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const [article, standings, fixtures] = await Promise.all([
+    getArticleBySlug(slug),
+    getStandingsAsync(),
+    getAllMatches(),
+  ]);
 
   if (!article) {
     notFound();
@@ -517,20 +582,74 @@ export default async function ArticlePage({ params }: PageProps) {
     }),
   };
 
+  /* Schema.org FAQPage structured data for live hub article */
+  const hubFaqs = [
+    {
+      q: "When does NPL 2026 start?",
+      a: "NPL Season 3 starts on Monday, October 26, 2026, and the final is on November 21, 2026.",
+    },
+    {
+      q: "Which teams play in the first match of NPL 2026?",
+      a: "Lumbini Lions, the defending champions, play Sudurpaschim Royals in the opening match at 4:30 PM Nepal time.",
+    },
+    {
+      q: "How many teams qualify for the NPL playoffs?",
+      a: "The top four teams in the points table qualify for the playoffs.",
+    },
+    {
+      q: "What time do NPL matches start?",
+      a: "Single-match days start at 4:30 PM Nepal time. Double-header days are reported to start at 12:30 PM and 4:30 PM.",
+    },
+    {
+      q: "Where can I watch NPL 2026 live?",
+      a: "NetTV streams the matches worldwide, and Himalaya Television Network broadcasts them on television in Nepal.",
+    },
+    {
+      q: "Where is NPL 2026 played?",
+      a: "All 32 matches are played at TU International Cricket Ground in Kirtipur, Kathmandu.",
+    },
+  ];
+
+  const faqPageSchema =
+    article.slug === "npl-2026-points-table-live-score"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: hubFaqs.map((item) => ({
+            "@type": "Question",
+            name: item.q,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: item.a,
+            },
+          })),
+        }
+      : null;
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
+      {faqPageSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageSchema) }}
+        />
+      )}
 
       <div className="py-8 sm:py-10">
         <Container className="space-y-8">
           {/* Breadcrumb (includes its own BreadcrumbList JSON-LD) */}
           <NewsBreadcrumb articleTitle={article.title} />
 
-          {/* Article body */}
-          <ArticleBody article={article} />
+          {/* Article body with server-rendered live components */}
+          <ArticleBody
+            article={article}
+            standings={standings}
+            fixtures={fixtures}
+          />
 
           {/* Related team / match links */}
           <RelatedLinks article={article} />

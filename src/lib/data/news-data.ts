@@ -77,6 +77,12 @@ export interface NewsArticle {
   /** Source attribution label (shown in article, for editorial transparency) */
   source: string;
 
+  /** Source URL */
+  sourceUrl?: string;
+
+  /** Article tags */
+  tags?: string[];
+
   /** IDs of related teams (from teams-data.ts) */
   relatedTeamIds?: string[];
 
@@ -506,6 +512,86 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     status: "published",
     readTime: "4 min read",
     displayDate: "9 Oct 2026",
+  },
+
+  /* ── 9. Evergreen Live Hub Article ───────────────────────────────────────── */
+  {
+    id: "article-09",
+    slug: "npl-2026-points-table-live-score",
+    title: "NPL 2026 Points Table, Live Score & Today's Match",
+    excerpt:
+      "Follow the NPL 2026 points table, live score and today's match for Season 3, with standings, fixtures, results and how to watch, updated every match day.",
+    content: [
+      "The NPL 2026 points table will start to fill up on Monday, October 26, when Lumbini Lions face Sudurpaschim Royals in the opening match of Nepal Premier League Season 3 at TU International Cricket Ground in Kirtipur, Kathmandu. The first ball is scheduled for 4:30 PM Nepal time. This page tracks the NPL points table, the live score, today's NPL match, the latest results and the upcoming fixtures, and it is updated after every match day.",
+      "## Today's NPL match",
+      "[[TODAY_MATCH]]",
+      "Before the tournament starts, the next match is the season opener: Lumbini Lions against Sudurpaschim Royals on Monday, October 26, 2026, at 4:30 PM Nepal time at TU International Cricket Ground. It is a rematch of last season's final, which Lumbini won by six wickets to take their first NPL title.",
+      "## NPL 2026 points table",
+      "All eight teams start the season on zero points. The table below is sorted by points and then by net run rate, and it highlights the four teams currently in the playoff places.",
+      "[[POINTS_TABLE]]",
+      "## Latest NPL results",
+      "[[LATEST_RESULTS]]",
+      "Results appear here after every match day.",
+      "## Upcoming NPL matches",
+      "[[UPCOMING_FIXTURES]]",
+      "The complete list of fixtures is on the NPL 2026 schedule page.",
+      "## How the NPL points table works",
+      "The league stage has 28 matches, and every team plays the other seven teams once. The top four teams in the table qualify for the playoffs, which are Qualifier 1, the Eliminator, Qualifier 2 and the final. A win earns a team two points, while a tie or no result earns one point. If two or more teams finish level on points, net run rate decides their order in the table.",
+      "## How to watch NPL 2026 live",
+      "NetTV holds the worldwide streaming rights for NPL Season 3. Reports put the price at Rs 400 for viewers in Nepal, $4 in the Middle East and $10 in Europe, the United States, Australia, Japan and South Korea. Himalaya Television Network holds the television rights in Nepal. Tickets for matches at the TU ground are sold through eSewa. Official Season 3 ticket prices and sale dates had not been announced at the time of writing, so check the official channels for the latest details.",
+      "## NPL 2026 schedule at a glance",
+      "NPL Season 3 runs from October 26 to November 21, 2026, with 32 matches in total: 28 league matches and four playoff matches. All matches are played at TU International Cricket Ground in Kirtipur. Matches on single-match days start at 4:30 PM Nepal time, and double-header days are reported to start at 12:30 PM and 4:30 PM.",
+      "## Frequently asked questions",
+      "When does NPL 2026 start?",
+      "NPL Season 3 starts on Monday, October 26, 2026, and the final is on November 21, 2026.",
+      "Which teams play in the first match of NPL 2026?",
+      "Lumbini Lions, the defending champions, play Sudurpaschim Royals in the opening match at 4:30 PM Nepal time.",
+      "How many teams qualify for the NPL playoffs?",
+      "The top four teams in the points table qualify for the playoffs.",
+      "What time do NPL matches start?",
+      "Single-match days start at 4:30 PM Nepal time. Double-header days are reported to start at 12:30 PM and 4:30 PM.",
+      "Where can I watch NPL 2026 live?",
+      "NetTV streams the matches worldwide, and Himalaya Television Network broadcasts them on television in Nepal.",
+      "Where is NPL 2026 played?",
+      "All 32 matches are played at TU International Cricket Ground in Kirtipur, Kathmandu.",
+      "This page is updated after every match day, and the \"Last updated\" time at the top of the page shows when the table was last refreshed.",
+    ],
+    category: "Tournament",
+    publishedAt: "2026-10-12T18:19:23+05:45",
+    updatedAt: "2026-10-12T18:19:23+05:45",
+    featured: true,
+    imageUrl: "/images/articles/npl-2026-points-table.jpg",
+    imageAlt: "NPL 2026 Points Table, Live Score & Today's Match",
+    author: "NPL Hub Nepal Editorial",
+    source: "NPL Hub Nepal Editorial",
+    sourceUrl:
+      "https://kathmandupost.com/cricket/2026/09/20/lumbini-lions-to-face-sudurpaschim-royals-in-npl-opener",
+    tags: [
+      "NPL 2026 points table",
+      "NPL points table",
+      "NPL live score",
+      "NPL today match",
+      "NPL Season 3",
+      "Nepal Premier League",
+      "NPL 2026 schedule",
+      "NPL standings",
+      "NPL results",
+      "TU Cricket Ground",
+    ],
+    relatedTeamIds: [
+      "biratnagar-kings",
+      "chitwan-rhinos",
+      "janakpur-bolts",
+      "karnali-yaks",
+      "kathmandu-gorkhas",
+      "lumbini-lions",
+      "pokhara-avengers",
+      "sudurpaschim-royals",
+    ],
+    relatedMatchSlug: "match-1-lumbini-lions-vs-sudurpaschim-royals",
+    status: "draft",
+    readTime: "3 min read",
+    displayDate: "12 Oct 2026",
   },
 ];
 
