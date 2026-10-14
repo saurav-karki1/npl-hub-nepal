@@ -593,6 +593,348 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     readTime: "3 min read",
     displayDate: "12 Oct 2026",
   },
+
+  /* ── 10. Squad Rankings Editorial ─────────────────────────────────────── */
+  {
+    id: "article-10",
+    slug: "npl-season-3-squad-rankings-strongest-team",
+    title: "NPL Season 3 Squad Rankings: Which Team Looks Strongest on Paper?",
+    metaTitle: "NPL Season 3 Squad Rankings: Which Team Looks Strongest?",
+    metaDescription:
+      "Our comprehensive Nepal Premier League Season 3 squad rankings analyze all eight franchise rosters on paper ahead of the Kirtipur tournament opener on 26 October.",
+    excerpt:
+      "An independent editorial ranking of all eight Nepal Premier League Season 3 franchise squads — assessed on batting, bowling, overseas power and squad depth, with every score backed by confirmed player data.",
+    imageUrl: "/images/news/npl-season-3-overseas-stars.webp",
+    imageAlt:
+      "NPL Season 3 Squad Rankings — night view of TU International Cricket Stadium, Kirtipur",
+    imageCaption:
+      "All 32 NPL Season 3 matches take place at TU International Cricket Stadium, Kirtipur.",
+    content: [],
+    blocks: [
+      {
+        type: "paragraph",
+        text: "With twelve days remaining until the Nepal Premier League Season 3 opener on 26 October 2026 at TU International Cricket Stadium, Kirtipur, all eight franchises have their core squads in place. Overseas signings are confirmed, marquee retentions are locked in, and auction buys are complete. Ranking the eight teams at this stage is an editorial exercise, not a prophecy — T20 cricket rewards adaptability, pitch conditions and individual brilliance in ways that pre-season analysis cannot anticipate. What follows is NPL Hub Nepal's independent assessment of how every NPL Season 3 squad looks on paper, before a ball is bowled.",
+      },
+      {
+        type: "paragraph",
+        text: "Editorial analysis — this article reflects the editorial opinion of NPL Hub Nepal. NPL Hub Nepal is independent and not affiliated with the Nepal Premier League, Cricket Association of Nepal, or any franchise. Every score and observation below is grounded in confirmed squad data only. Where squad information is incomplete, the ranking for that team is marked provisional.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "How we ranked the teams",
+      },
+      {
+        type: "paragraph",
+        text: "Each team is assessed on four criteria. Batting (1–10): quality and depth of batting resources, including top-order class, strike power and middle-order stability. Bowling (1–10): pace variety, spin depth, experience of bowling unit and economy threats. Overseas power (1–10): quality and versatility of confirmed overseas signings, including international pedigree and role balance. Squad depth (1–10): overall size of confirmed squad, cover for key roles, and the presence of experienced domestic options beyond the headline names.",
+      },
+      {
+        type: "paragraph",
+        text: "Scores are editorial opinions based on the confirmed roster data from franchise articles, Supabase player records, and the NPL 2026 foreign players list published on this site. No invented statistics, auction prices, or unconfirmed names are used. The total of the four scores determines rank order. Equal totals are broken by the overseas power score, then batting.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Summary ranking table",
+      },
+      {
+        type: "table",
+        caption: "NPL Season 3 squad rankings — editorial opinion, NPL Hub Nepal, 14 October 2026",
+        headers: ["Rank", "Team", "Batting", "Bowling", "Overseas", "Depth", "Total"],
+        rows: [
+          ["1", "Janakpur Bolts", "8", "8", "10", "7", "33"],
+          ["2", "Lumbini Lions", "8", "9", "8", "8", "33"],
+          ["3", "Kathmandu Gorkhas", "9", "7", "8", "7", "31"],
+          ["4", "Sudurpaschim Royals", "7", "8", "7", "7", "29"],
+          ["5", "Chitwan Rhinos", "7", "8", "7", "6", "28"],
+          ["6", "Biratnagar Kings", "7", "8", "6", "6", "27"],
+          ["7 (Provisional)", "Pokhara Avengers", "7", "6", "6", "6", "25"],
+          ["8 (Provisional)", "Karnali Yaks", "5", "6", "6", "5", "22"],
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Janakpur Bolts and Lumbini Lions are tied on 33 points. Bolts rank first on overseas power (10 vs 8). Pokhara Avengers and Karnali Yaks are marked provisional because their domestic batting depth and coaching staff could not be fully assessed from available confirmed data.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#8 (Provisional) — Karnali Yaks",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (reported): Sompal Kami. Overseas confirmed: Mark Watt (Scotland), Akbar Ali (Bangladesh), Ariful Islam (Bangladesh). Domestic retained core: Sompal Kami, Gulshan Jha, Nandan Yadav, Deepak Dumre, Pawan Sarraf, Unish Bikram Singh, Yuvraj Khatri.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (5/10):** The confirmed batting resources are thin. Sompal Kami and Gulshan Jha can contribute with the bat, and Ariful Islam arrives on the back of a 219-run Top End T20 campaign, but the top-order depth beyond these names has not been confirmed in available reporting.",
+          "**Bowling (6/10):** Sompal Kami is a proven international seamer, Sagar Nandan Yadav and Yuvraj Khatri add spin options, and Scotland's Mark Watt — well-known for extraordinary variations — gives the attack genuine international quality. The bowling unit is more developed on paper than the batting.",
+          "**Overseas power (6/10):** Watt is an elite T20 spinner with extensive franchise experience and the Karnali Yaks' standout overseas asset. Akbar Ali is a capable ICC Under-19 World Cup-winning wicketkeeper-batter, and Ariful Islam is a promising emerging bat. The trio is solid but not of the headline-name variety found at the top franchises.",
+          "**Squad depth (5/10):** Only seven domestic players are confirmed in the Supabase player records, and the full auction list is not publicly available. This squad is ranked provisional because significant gaps remain in confirmed batting and bowling cover.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: Sompal Kami's left-arm seam and Mark Watt's creative spin form one of the more interesting bowling combinations in the competition. Weakness: The batting lineup lacks confirmed depth. Players to watch: Sompal Kami and Mark Watt.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#7 (Provisional) — Pokhara Avengers",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (reported): Kushal Bhurtel. Overseas confirmed: Shakib Al Hasan (Bangladesh), Dhananjaya Lakshan (Sri Lanka). Domestic retained core: Kushal Bhurtel, Sagar Dhakal, Arjun Kumal, Bipin Khatri, Aakash Chand, Kiran Thagunna, Dinesh Kharel.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (7/10):** Kushal Bhurtel is Nepal's most naturally gifted attacking batter and Shakib Al Hasan — with over 2,500 T20 international runs — provides world-class middle-order firepower. The concern is confirmed depth beyond these two names.",
+          "**Bowling (6/10):** Shakib's 149 T20I wickets make him the most accomplished bowler in the tournament on international record alone. Dhananjaya Lakshan adds seam pace. Sagar Dhakal and Aakash Chand supply domestic spin and seam options. The bowling has class at the top and limited confirmed depth behind it.",
+          "**Overseas power (6/10):** Shakib is one of cricket's greatest all-rounders, and his presence alone elevates the Avengers. The franchise has only two confirmed overseas names, however, compared to the three or four that rival teams carry. If a third or fourth signing is confirmed before October 26, this score should rise.",
+          "**Squad depth (6/10):** Seven domestic players are confirmed. The squad is provisionally rated because the coaching setup and full auction buys have not been published in available confirmed reporting.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: Shakib Al Hasan is the most experienced all-rounder in the entire competition. Weakness: Only two confirmed overseas signings leaves the Avengers short of the three-to-four overseas firepower carried by the highest-ranked teams. Players to watch: Kushal Bhurtel and Shakib Al Hasan.",
+      },
+      {
+        type: "paragraph",
+        text: "Provisional note: Pokhara Avengers' domestic batting and bowling depth beyond the confirmed core has not been fully verified. This ranking will be updated if additional squad information is published before the tournament begins.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#6 — Biratnagar Kings",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (reported): Sandeep Lamichhane. Overseas confirmed: Charith Asalanka (Sri Lanka, batting all-rounder), Jishan Alam (Bangladesh, batter). Domestic retained core: Sandeep Lamichhane, Lokesh Bam, Basir Ahamad, Narayan Joshi, Pratish GC, Subash Bhandari. Auction buy confirmed: Shubham Ranjane (USA).",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (7/10):** Charith Asalanka — a Sri Lanka international with five ODI centuries — gives the Kings a genuine top-order bat with franchise experience worldwide. Jishan Alam's Bangladesh domestic record is solid, and Sandeep Lamichhane is an underrated lower-order hitter. Lokesh Bam adds wicketkeeping-batting reliability at the top.",
+          "**Bowling (8/10):** This is where Biratnagar are seriously dangerous. Sandeep Lamichhane is arguably Nepal's best bowler across any format, accumulating 23 wickets at an average of 16 across NPL Seasons 1 and 2. Charith Asalanka's off-break can hold an end, Basir Ahamad's left-arm orthodoxy stretches bowling resources further, and Pratish GC and Subash Bhandari offer left-arm pace variety.",
+          "**Overseas power (6/10):** Asalanka is a quality international bat, but neither overseas name has the headline profile of Warner, Shakib, Neesham or Moeen Ali. The bowling dimension of the overseas group (Asalanka's off-break) is a tactical bonus.",
+          "**Squad depth (6/10):** Six domestic players are confirmed in the database, augmented by known auction additions. The squad is functional but could be stretched by injuries.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: The bowling unit anchored by Sandeep Lamichhane is the most consistent wicket-taking threat of any franchise. Weakness: Batting firepower outside Asalanka and the top three depends on players whose confirmed roles are not fully detailed in current reporting. Players to watch: Sandeep Lamichhane and Charith Asalanka.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#5 — Chitwan Rhinos",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (reported): Kushal Malla. Overseas confirmed: Sikandar Raza (Zimbabwe, all-rounder), Ravi Bopara (England, all-rounder), Kaleem Sana (Canada, left-arm fast bowler). Domestic retained core: Kushal Malla, Rijan Dhakal, Deepak Bohara, Ranjeet Kumar, Kamal Singh Airee, Dev Khanal, Arjun Saud.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (7/10):** Kushal Malla is one of Nepal's most technically accomplished batters. Ravi Bopara — an England international with extensive IPL, PSL and CPL experience — covers the middle order. Sikandar Raza's destructive batting at four or five has been match-winning in T20 competitions worldwide. Deepak Bohara and Dev Khanal offer further domestic batting.",
+          "**Bowling (8/10):** Sikandar Raza's off-spin, Kaleem Sana's left-arm pace and Ravi Bopara's medium pace give the attack three international bowling options across all phases. Rijan Dhakal, Ranjeet Kumar and Kamal Singh Airee add domestic seam and spin variety. This is one of the most versatile bowling attacks in the competition.",
+          "**Overseas power (7/10):** Three confirmed overseas signings of genuine calibre. Raza alone — one of the most decorated T20 all-rounders in the game — is worth a premium score. Bopara and Sana each bring franchise tournament experience. The combination covers batting, pace bowling and spin at international level.",
+          "**Squad depth (6/10):** Seven confirmed domestic players. The squad size is adequate but not deep in confirmed batting cover.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: The overseas trio of Raza, Bopara and Sana gives Chitwan one of the most tactically flexible bowling attacks in the competition. Weakness: Domestic batting depth outside Kushal Malla and the international contributions relies on players with limited publicly confirmed NPL records. Players to watch: Sikandar Raza and Kushal Malla.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#4 — Sudurpaschim Royals",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (reported): Dipendra Singh Airee. Overseas confirmed: Saif Zaib (England, batting all-rounder), Scott Kuggeleijn (New Zealand, bowling all-rounder), Brandon McMullen (Scotland, all-rounder). Domestic retained core: Dipendra Singh Airee, Binod Bhandari, Aarif Sheikh, Ishan Pandey, Abinash Bohara, Hemant Dhami, Hikmat Mahara.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (7/10):** Saif Zaib was the best player of the inaugural NPL, scoring 275 runs across the season. Dipendra Singh Airee — Nepal's most explosive T20 batter — leads a Nepali core that includes Binod Bhandari and Ishan Pandey. The top order is experienced and dangerous when conditions suit.",
+          "**Bowling (8/10):** Scott Kuggeleijn has taken 27 wickets across NPL Seasons 1 and 2, making him the most proven overseas pace bowler returning to the competition. Brandon McMullen's right-arm all-round options and Dipendra Singh Airee's explosive lower-order hitting add depth. Abinash Bohara and Hemant Dhami provide Nepali pace variety.",
+          "**Overseas power (7/10):** Three confirmed overseas players with strong track records across T20 franchise cricket. Kuggeleijn's NPL record is outstanding. Zaib won the inaugural best-player award. McMullen has Scotland international pedigree. This is a proven, if not marquee-headlined, overseas group.",
+          "**Squad depth (7/10):** Seven confirmed domestic players plus three proven overseas signings. The Royals have appeared in both previous NPL finals — that institutional knowledge of tournament structures adds a non-statistical form of depth.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: Proven performers who know Kirtipur conditions from two previous seasons. Kuggeleijn in particular has demonstrated that he can take wickets on these tracks consistently. Weakness: The squad lacks a global headline name at the tier of Warner, Shakib or Moeen Ali — meaning the Royals must win through collective excellence rather than individual marquee moments. Players to watch: Scott Kuggeleijn and Dipendra Singh Airee.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#3 — Kathmandu Gorkhas",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (reported): Karan KC. Overseas confirmed: David Warner (Australia, opening batter), K. S. Bharat (India, wicketkeeper-batter), Sahan Arachchige (Sri Lanka, all-rounder). Retained domestic core: Karan KC, Bhim Sharki, Mohammad Aadil Alam, Rashid Khan, Santosh Yadav, Shahab Alam. Auction buys include: Sahil Patel, Prashiddha Jaisi, Dayanand Mandal, Krishna Paudel, Dev Shah, Suryanshu Koirala, Sonu Devkota.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (9/10):** David Warner is the highest-profile batting name at any NPL Season 3 franchise — a two-time ODI World Cup winner and T20 World Cup champion with over 3,277 T20I runs for Australia. K. S. Bharat adds tested international technique behind the stumps. Mohammad Aadil Alam — the only player at the July 2026 auction to attract maximum bids from all eight franchises — is an elite domestic batting asset. Bhim Sharki and Sahan Arachchige add further batting options.",
+          "**Bowling (7/10):** Karan KC is a high-quality seam all-rounder who opens the bowling regularly. Shahab Alam's spin, Santosh Yadav's all-round contributions, and Sahan Arachchige's off-break provide variety. The bowling attack is competent but lacks a global headline wicket-taker in the mould of Raza or Sandeep Lamichhane.",
+          "**Overseas power (8/10):** Warner alone justifies a high score — he is statistically one of the best T20 openers in cricket history. Bharat's wicketkeeping pedigree and Arachchige's dual-role value make the overseas trio well-balanced across three distinct skills.",
+          "**Squad depth (7/10):** The full confirmed squad is one of the largest in the competition, stretching to 16 named players between retentions and auction buys. Depth behind the overseas trio is good domestically.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: The batting lineup — Warner, Aadil Alam, Bhim Sharki and Bharat — is the most star-studded top-order combination in the competition. Weakness: The bowling relies heavily on Karan KC with Arachchige and Shahab Alam as support. If Karan KC is ineffective or unavailable, the attack loses its most experienced pace threat. Players to watch: David Warner and Mohammad Aadil Alam.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#2 — Lumbini Lions",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (reported): Rohit Paudel. Overseas confirmed: Ruben Trumpelmann (Namibia, fast bowler), Niroshan Dickwella (Sri Lanka, wicketkeeper-batter), D'Arcy Short (Australia, batting all-rounder). Retained domestic core: Rohit Paudel, Sher Malla, Dilip Nath, Sundeep Jora, Dinesh Adhikari, Abhishesh Gautam, Tilak Bhandari. Auction buys: Aasif Sheikh, Kishor Mahato, Durgesh Gupta, Aakash Tripathi, Ajay Chauhan, Arniko Prasad Yadav.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (8/10):** Rohit Paudel scored 276 runs and took 10 wickets across 10 matches in NPL 2025 while leading the side to the title — an extraordinary all-round campaign. D'Arcy Short is a left-handed top-order bat who scored heavily in Season 2. Niroshan Dickwella's aggressive wicketkeeping-batting at the top of the order works as a second-phase opener. Aasif Sheikh — the most expensive domestic signing at the July 2026 auction — adds further batting security.",
+          "**Bowling (9/10):** Ruben Trumpelmann won Player of the Series in 2025 with 15 wickets across the tournament. Sher Malla claimed 17 wickets in Season 2, the joint-highest in the competition. The combination of Trumpelmann's left-arm pace and Malla's spin across the two phases is the most proven wicket-taking partnership at any franchise heading into Season 3. Tilak Bhandari and Abhishesh Gautam add domestic bowling backup.",
+          "**Overseas power (8/10):** Trumpelmann is the best-performing overseas bowler in NPL history by wickets in a single season. Short's batting and Dickwella's glovework and stroke play complete a balanced three-player group with proven contributions across both batting and bowling phases.",
+          "**Squad depth (8/10):** Thirteen confirmed players between retentions, auction buys and overseas signings. The squad has genuine cover across all roles and reproduces the core that won the 2025 title. Coaching continuity — Tinu Yohannan retained as head coach — adds further stability.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: The Lumbini Lions carry the most proven bowling pair in the competition — Trumpelmann and Sher Malla — alongside a captain in Rohit Paudel who has demonstrated he can win a title while contributing with both bat and ball. Weakness: If Trumpelmann, who is the fulcrum of the bowling attack, is off-form or unavailable, the bowling unit becomes more conventional. Players to watch: Ruben Trumpelmann and Rohit Paudel.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "#1 — Janakpur Bolts",
+      },
+      {
+        type: "paragraph",
+        text: "Captain (confirmed): Harmeet Singh. Overseas confirmed: Harmeet Singh (USA, left-arm spin all-rounder), Jimmy Neesham (New Zealand, all-rounder), Iftikhar Ahmed (Pakistan, all-rounder), Moeen Ali (England, all-rounder). Retained domestic core: Anil Sah, Lalit Rajbanshi, Bikash Aagri, Mayan Yadav, Aaditya Mahata. Auction buys include: Trit Raj Das, Abhisekh Tiwari, Bishal Patel, Amar Routela, Rit Gautam, Santosh Karki, Aashutosh Pandey, Bishal Shusling.",
+      },
+      {
+        type: "list",
+        style: "unordered",
+        items: [
+          "**Batting (8/10):** Moeen Ali's aggressive left-handed batting and Iftikhar Ahmed's destructive middle-order hitting give the Bolts two overseas batters capable of winning matches alone. Jimmy Neesham scored 247 runs at a strike rate above 196 during the 2024 championship run. Trit Raj Das — the most expensive domestic batting acquisition at the July 2026 auction — slots in alongside proven NPL performers Anil Sah and Mayan Yadav.",
+          "**Bowling (8/10):** Four overseas all-rounders means the Bolts can choose different bowling combinations depending on conditions. Moeen Ali's right-arm off-spin at the top or middle of an innings, Harmeet Singh's left-arm spin, Neesham's seam and Iftikhar's off-break give the captain unmatched variety. Lalit Rajbanshi's 21 NPL wickets in 15 matches provide a proven domestic seam option behind the overseas rotation.",
+          "**Overseas power (10/10):** The Janakpur Bolts are the only franchise to confirm all four overseas slots, and every one of them is a genuine match-winner. Moeen Ali is a two-time World Cup winner with England (2019 ODI, 2022 T20). Neesham has an NPL record that stands comparison with any overseas performer in the competition's history. Iftikhar Ahmed is one of Pakistan's most reliable middle-order T20 batters. Harmeet Singh brings USA captain experience with franchise tournament success at Sudurpaschim Royals over two seasons.",
+          "**Squad depth (7/10):** Fifteen confirmed players spanning retentions, auction buys and four overseas signings. The head coach position had not been publicly confirmed in available reporting ahead of publication — an unusual gap for a championship-challenging squad — and this limits the depth score slightly.",
+        ],
+      },
+      {
+        type: "paragraph",
+        text: "Strength: Having four confirmed overseas all-rounders gives the Janakpur Bolts tactical flexibility that no other team in this competition can match. Regardless of pitch conditions, conditions for pace or spin, they have match-winning options in both departments. Weakness: The coaching appointment remains publicly unconfirmed. A strong coaching structure is often the glue that converts paper talent into coordinated tournament performance. Players to watch: Jimmy Neesham and Moeen Ali.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Biggest surprises in this ranking",
+      },
+      {
+        type: "paragraph",
+        text: "Pokhara Avengers rank seventh. Many supporters will place them considerably higher given the presence of Shakib Al Hasan — statistically one of the great all-rounders in T20 history. The ranking reflects the fact that only two overseas signings are confirmed for the Avengers, while rival teams carry three or four. If Pokhara sign one or two additional overseas players before 26 October, this assessment should be revisited. Fans who know the franchise's domestic batting depth may also reasonably challenge a seventh-place ranking.",
+      },
+      {
+        type: "paragraph",
+        text: "Chitwan Rhinos ranking fifth may surprise those who associate the franchise with a modest league record in Seasons 1 and 2. The three-player overseas group of Raza, Bopara and Sana is the most tactically complete overseas bowling attack in the competition, and Sikandar Raza's reputation across franchise cricket globally is first-rate. On paper, this squad has the firepower to reach the playoffs.",
+      },
+      {
+        type: "paragraph",
+        text: "Karnali Yaks ranking eighth is not a commentary on their ambition or regional cricket culture. It reflects a data gap: the confirmed squad information available from current public sources is the least comprehensive of any franchise, and the squad is provisionally ranked at the bottom as a result. Fans following Karnali closely will likely know more than this article can responsibly confirm.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "What the rankings cannot tell us",
+      },
+      {
+        type: "paragraph",
+        text: "Pre-season squad rankings are informative but structurally limited. TU International Cricket Stadium at Kirtipur sits at an altitude of around 1,300 metres. In late October and November, the surface typically offers pace and bounce early in the tournament, with spin becoming more influential as November progresses. A bowling attack rated well on paper may underperform on a batter-friendly surface, and vice versa. No pre-tournament analysis can reliably predict how each team will adapt.",
+      },
+      {
+        type: "paragraph",
+        text: "Injuries and national-duty conflicts are the great levellers of franchise cricket. Several players in these squads are active international cricketers. A national call-up or an injury during the group stage can transform a team's prospects overnight. The squads ranked here reflect the positions confirmed as of 14 October 2026, and changes remain possible right up to the tournament opener.",
+      },
+      {
+        type: "paragraph",
+        text: "T20 cricket is the format most susceptible to individual brilliance reshaping a match or a series in the space of 30 balls. A player ranked provisionally in this analysis may be the competition's standout performer, while a marquee signing may fire just once in seven league matches. The format rewards nerve and execution in specific match moments — qualities that are impossible to rank from a pre-season squad sheet.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Conclusion",
+      },
+      {
+        type: "paragraph",
+        text: "On paper, the Janakpur Bolts carry the deepest overseas roster and the widest range of match-winning options across all phases. The Lumbini Lions — defending champions with the most proven bowling duo in the competition — are a serious challenger for the title and arguably the team the Bolts must beat. Kathmandu Gorkhas carry the most explosive batting lineup around David Warner and Mohammad Aadil Alam. The rest of the field is competitive in ways that resist easy ranking: Sudurpaschim Royals bring tournament experience, Chitwan Rhinos bring overseas bowling class, and Biratnagar Kings bring the most consistent bowling threat from Sandeep Lamichhane. How does your own ranking of the eight squads compare to ours?",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Related coverage",
+      },
+      {
+        type: "paragraph",
+        text: "Read more on NPL Hub Nepal: the full [NPL Season 3 overseas signings article](/news/npl-season-3-overseas-signings-warner-shakib), the complete [NPL foreign players confirmed list](/news/npl-foreign-players-season-3-confirmed-list), the [Kathmandu Gorkhas squad and captain article](/news/kathmandu-gorkhas-npl-2026-squad-and-captain), the [Lumbini Lions captain and squad article](/news/lumbini-lions-npl-2026-captain-and-squad), the [Janakpur Bolts squad 2026 article](/news/janakpur-bolts-squad-2026-full-player-list), the [Season 3 schedule](/news/npl-season-3-schedule-venues-announced), the [format explained](/news/npl-season-3-format-playoff-structure-explained) guide, and [who plays in the first match](/news/npl-season-3-first-match-date-time-venue-nepali-date).",
+      },
+    ],
+    category: "Teams",
+    publishedAt: "2026-10-14T10:00:00+05:45",
+    updatedAt: "2026-10-14T10:00:00+05:45",
+    featured: true,
+    author: "NPL Hub Nepal Editorial Team",
+    source:
+      "NPL Hub Nepal — Supabase player_seasons, news_articles (kathmandu-gorkhas-npl-2026-squad-and-captain, lumbini-lions-npl-2026-captain-and-squad, janakpur-bolts-squad-2026-full-player-list, npl-foreign-players-season-3-confirmed-list, npl-season-3-overseas-signings-warner-shakib)",
+    relatedTeamIds: [
+      "lumbini-lions",
+      "janakpur-bolts",
+      "kathmandu-gorkhas",
+      "sudurpaschim-royals",
+      "chitwan-rhinos",
+      "biratnagar-kings",
+      "pokhara-avengers",
+      "karnali-yaks",
+    ],
+    relatedMatchSlug: "match-1-lumbini-lions-vs-sudurpaschim-royals",
+    status: "published",
+    readTime: "8 min read",
+    displayDate: "14 Oct 2026",
+    tags: [
+      "NPL Season 3 squad rankings",
+      "Nepal Premier League",
+      "NPL 2026 squads",
+      "Lumbini Lions",
+      "Janakpur Bolts",
+      "Kathmandu Gorkhas",
+      "Sudurpaschim Royals",
+      "Chitwan Rhinos",
+      "Biratnagar Kings",
+      "Pokhara Avengers",
+      "Karnali Yaks",
+      "David Warner NPL",
+      "Shakib Al Hasan NPL",
+      "Moeen Ali NPL",
+    ],
+  },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────── */
