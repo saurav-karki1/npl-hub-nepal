@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import {
   InternalLinkCategory,
-  InternalLinkItem,
   searchInternalLinks,
   validateExternalUrl,
 } from "@/lib/seo/internal-links";
@@ -67,6 +66,7 @@ export function AdminLinkModal({
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setAnchorText(initialAnchorText);
       const isExt =
         initialUrl.startsWith("http://") || initialUrl.startsWith("https://");

@@ -5,7 +5,7 @@ import {
   ScheduleMatch,
   resolveMatchTeams,
 } from "@/lib/data/schedule-data";
-import { StandingsData, StandingsRow } from "@/lib/data/standings";
+import { StandingsData } from "@/lib/data/standings";
 
 // ---------------------------------------------------------------------------
 // Helpers

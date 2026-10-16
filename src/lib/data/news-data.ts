@@ -305,11 +305,11 @@ export const NEWS_ARTICLES: NewsArticle[] = [
 
       "## The Headline Blockbusters: David Warner and Shakib Al Hasan Arrive in Nepal",
 
-      "Leading the roster of marquee international arrivals is Australian cricket legend David Warner, whose signing with the Kathmandu Gorkhas was officially announced on September 15, 2026. A two-time ODI World Cup winner (2015, 2023) and 2021 T20 World Cup champion, Warner brings over 12,000 international runs and extensive franchise pedigree worldwide. His David Warner NPL arrival gives Gorkhas fans a world-class opening batter alongside national team captain Rohit Paudel.",
+      "Leading the roster of marquee international arrivals is Australian cricket legend David Warner, whose signing with the Kathmandu Gorkhas was officially announced on September 15, 2026. A two-time ODI World Cup winner (2015, 2023) and 2021 T20 World Cup champion, Warner brings over 12,000 international runs and extensive franchise pedigree worldwide. His David Warner NPL arrival gives Gorkhas fans a world-class opening batter, setting up marquee clashes against defending champions Lumbini Lions led by Nepal national team captain Rohit Paudel.",
 
       "The capital franchise also secured Sri Lankan all-rounder Sahan Arachchige, whose top-order batting and off-break spin provide middle-overs stability, and Indian international wicketkeeper-batter K. S. Bharat, adding proven top-level glovework and technique.",
 
-      "Equally seismic is the signing of Bangladeshi legend Shakib Al Hasan by the Pokhara Avengers, confirmed on July 27, 2026. Regarded as one of the finest all-rounders in cricket history, Shakib Al Hasan NPL participation gives Pokhara an elite performer with over 7,000 international runs and nearly 700 wickets across formats. His ability to control match tempo on spin-friendly pitches makes him an invaluable asset for captain Kushal Malla's side.",
+      "Equally seismic is the signing of Bangladeshi legend Shakib Al Hasan by the Pokhara Avengers, confirmed on July 27, 2026. Regarded as one of the finest all-rounders in cricket history, Shakib Al Hasan NPL participation gives Pokhara an elite performer with over 7,000 international runs and nearly 700 wickets across formats. His ability to control match tempo on spin-friendly pitches makes him an invaluable asset for Kushal Bhurtel's Pokhara Avengers side.",
 
       "To complement Shakib, the Avengers re-signed Sri Lankan pace-bowling all-rounder Dhananjaya Lakshan. Guiding Pokhara's dugout is legendary Sri Lankan mystery spinner Ajantha Mendis as head coach.",
 
@@ -319,7 +319,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
 
       "Kathmandu Gorkhas: David Warner (Australia), Sahan Arachchige (Sri Lanka), K. S. Bharat (India) — all confirmed. Pokhara Avengers: Shakib Al Hasan (Bangladesh), Dhananjaya Lakshan (Sri Lanka) — all confirmed. Janakpur Bolts: Jimmy Neesham (New Zealand), returning champion. Sudurpaschim Royals: Scott Kuggeleijn (New Zealand) and Saif Ali Zaib (England), both returning. Lumbini Lions: Niroshan Dickwella (Sri Lanka), retained. Biratnagar Kings: Charith Asalanka (Sri Lanka, confirmed September 17, 2026) and Shubham Ranjane (USA, confirmed September 29, 2026). Chitwan Rhinos: Sikandar Raza (Zimbabwe, confirmed August 27, 2026) and Kaleem Sana (Canada, confirmed September 2026). Karnali Yaks: Akbar Ali (Bangladesh) and Mark Watt (Scotland), both confirmed September 27, 2026.",
 
-      "Reigning titleholders Janakpur Bolts have retained Kiwi powerhouse Jimmy Neesham, whose death-overs power hitting and dependable seam bowling were crucial to the franchise's championship run under captain Dipendra Singh Airee.",
+      "Reigning titleholders Janakpur Bolts have retained Kiwi powerhouse Jimmy Neesham, whose death-overs power hitting and dependable seam bowling were crucial to the franchise's championship run in the tournament's inaugural edition.",
 
       "Sudurpaschim Royals bring back Kiwi express pacer Scott Kuggeleijn, whose hit-the-deck pace offers real hostility on Kirtipur's true bounce, alongside English domestic standout Saif Ali Zaib.",
 
@@ -415,11 +415,11 @@ export const NEWS_ARTICLES: NewsArticle[] = [
           ["Venue", "TU International Cricket Stadium, Kirtipur, Kathmandu"],
           ["Session Type", "Single-header evening clash under floodlights"],
           ["Format", "Twenty20 (20 Overs per side) · White Ball"],
-          ["Captains", "Rohit Paudel (Lumbini) vs Dipendra Singh Airee (Sudurpaschim)"],
+          ["Captains", "Rohit Paudel (Lumbini, reported) vs Dipendra Singh Airee (Sudurpaschim)"],
           ["Context", "Rematch of 2025 NPL Final (Lumbini won by 6 wickets)"],
-          ["Broadcast (TV)", "Himalaya TV HD (Nepal)"],
-          ["Live Stream", "NetTV App & Web (Worldwide OTT)"],
-          ["Digital Ticketing", "eSewa Official Partner"],
+          ["Broadcast (TV)", "Himalaya TV HD (Provisional / Past Season Partner)"],
+          ["Live Stream", "NetTV App & Web (Provisional / Past Season Partner)"],
+          ["Digital Ticketing", "eSewa (Provisional / Past Season Partner)"],
         ],
       },
       {
@@ -438,7 +438,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
       },
       {
         type: "paragraph",
-        text: "This opener is a rematch of the NPL Season 2 final. Lumbini Lions beat Sudurpaschim Royals by six wickets in the final on December 13, 2025, at Kirtipur to win their first title after bowling the Royals out for 85. Sudurpaschim Royals have finished as runners-up in both seasons so far, losing to Janakpur Bolts in the 2024 final and to Lumbini Lions in 2025. For 2026, captains are confirmed as Rohit Paudel for Lumbini Lions and Dipendra Singh Airee for Sudurpaschim Royals. Head coaches are Nandan Phadnis for Lumbini Lions and Jagat Tamata for Sudurpaschim Royals, with Brad Hodge as mentor for the Royals. Verified overseas signings for Lumbini Lions include Namibia fast bowler Ruben Trumpelmann, who was Player of the Series in 2025, Sri Lankan wicketkeeper Niroshan Dickwella and Australian opener D'Arcy Short, all retained from last season. For Sudurpaschim Royals, verified overseas signings include England all-rounder Saif Zaib, New Zealand pacer Scott Kuggeleijn and Scotland all-rounder Brandon McMullen, with UAE all-rounder Rohan Mustafa also listed in the squad.",
+        text: "This opener is a rematch of the NPL Season 2 final. Lumbini Lions beat Sudurpaschim Royals by six wickets in the final on December 13, 2025, at Kirtipur to win their first title after bowling the Royals out for 85. Sudurpaschim Royals have finished as runners-up in both seasons so far, losing to Janakpur Bolts in the 2024 final and to Lumbini Lions in 2025. For 2026, Rohit Paudel (who captained Lumbini Lions to the 2025 championship) is the reported captain for Lumbini Lions, alongside Dipendra Singh Airee as captain for Sudurpaschim Royals. Head coaches are Nandan Phadnis for Lumbini Lions and Jagat Tamata for Sudurpaschim Royals, with Brad Hodge as mentor for the Royals. Verified overseas signings for Lumbini Lions include Namibia fast bowler Ruben Trumpelmann, who was Player of the Series in 2025, Sri Lankan wicketkeeper Niroshan Dickwella and Australian opener D'Arcy Short, all retained from last season. For Sudurpaschim Royals, verified overseas signings include England all-rounder Saif Zaib, New Zealand pacer Scott Kuggeleijn and Scotland all-rounder Brandon McMullen, with UAE all-rounder Rohan Mustafa also listed in the squad.",
       },
       {
         type: "heading",
@@ -894,7 +894,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
       },
       {
         type: "paragraph",
-        text: "Read more on NPL Hub Nepal: the full [NPL Season 3 overseas signings article](/news/npl-season-3-overseas-signings-warner-shakib), the complete [NPL foreign players confirmed list](/news/npl-foreign-players-season-3-confirmed-list), the [Kathmandu Gorkhas squad and captain article](/news/kathmandu-gorkhas-npl-2026-squad-and-captain), the [Lumbini Lions captain and squad article](/news/lumbini-lions-npl-2026-captain-and-squad), the [Janakpur Bolts squad 2026 article](/news/janakpur-bolts-squad-2026-full-player-list), the [Season 3 schedule](/news/npl-season-3-schedule-venues-announced), the [format explained](/news/npl-season-3-format-playoff-structure-explained) guide, and [who plays in the first match](/news/npl-season-3-first-match-date-time-venue-nepali-date).",
+        text: "Read more on NPL Hub Nepal: the full [NPL Season 3 overseas signings article](/news/npl-season-3-overseas-signings-warner-shakib), the [squad registration overview](/news/marquee-players-draft-highlights), the [eight franchise teams overview](/news/npl-season-3-eight-franchise-teams-overview), the [Season 3 schedule](/news/npl-season-3-schedule-venues-announced), the [format explained](/news/npl-season-3-format-playoff-structure-explained) guide, and [who plays in the first match](/news/npl-season-3-first-match-date-time-venue-nepali-date).",
       },
     ],
     category: "Teams",
@@ -903,7 +903,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     featured: true,
     author: "NPL Hub Nepal Editorial Team",
     source:
-      "NPL Hub Nepal — Supabase player_seasons, news_articles (kathmandu-gorkhas-npl-2026-squad-and-captain, lumbini-lions-npl-2026-captain-and-squad, janakpur-bolts-squad-2026-full-player-list, npl-foreign-players-season-3-confirmed-list, npl-season-3-overseas-signings-warner-shakib)",
+      "NPL Hub Nepal Editorial — Verified Franchise Squads, Player Registrations, and Official CAN Announcements",
     relatedTeamIds: [
       "lumbini-lions",
       "janakpur-bolts",
@@ -980,6 +980,13 @@ export function getLatestArticles(n: number): NewsArticle[] {
 /** All slugs — used by generateStaticParams. */
 export function getAllArticleSlugs(): { slug: string }[] {
   return NEWS_ARTICLES.map((a) => ({ slug: a.slug }));
+}
+
+/** Slugs of published articles only — for sitemap generation. */
+export function getPublishedArticleSlugs(): { slug: string }[] {
+  return NEWS_ARTICLES.filter((a) => a.status === "published").map((a) => ({
+    slug: a.slug,
+  }));
 }
 
 /** Articles related to a specific team. */

@@ -75,7 +75,6 @@ export function FullPointsTable({ standings }: FullPointsTableProps) {
                 {standings.rows.map((row: StandingsRow) => {
                   const isTopTwo = row.position <= 2;
                   const isTopFour = row.position <= 4;
-                  const isCutoffRow = row.position === 4;
 
                   return (
                     <TableRow

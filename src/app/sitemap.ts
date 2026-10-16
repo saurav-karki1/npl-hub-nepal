@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllMatchSlugs } from "@/lib/repository/matches";
 import { getAllTeams } from "@/lib/repository/teams";
 import { getAllPlayerSlugs } from "@/lib/repository/players";
-import { getAllArticleSlugs } from "@/lib/repository/news";
+import { getPublishedArticleSlugs } from "@/lib/repository/news";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl =
@@ -59,6 +59,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    {
+      url: `${baseUrl}/editorial-policy`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/privacy-policy`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
   const teams = await getAllTeams();
@@ -89,7 +113,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  const articleSlugs = await getAllArticleSlugs();
+  // Strictly include only published editorial articles
+  const articleSlugs = await getPublishedArticleSlugs();
   const newsRoutes: MetadataRoute.Sitemap = articleSlugs.map(
     ({ slug }) => ({
       url: `${baseUrl}/news/${slug}`,

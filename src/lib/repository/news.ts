@@ -17,12 +17,8 @@ import {
   ArticleStatus,
   getAllArticles as getAllArticlesData,
   getArticleBySlug as getArticleBySlugData,
-  getFeaturedArticles as getFeaturedArticlesData,
-  getArticlesByCategory as getArticlesByCategoryData,
-  getLatestArticles as getLatestArticlesData,
   getAllArticleSlugs as getAllArticleSlugsData,
-  getArticlesByTeam as getArticlesByTeamData,
-  getAvailableCategories as getAvailableCategoriesData,
+  getPublishedArticleSlugs as getPublishedArticleSlugsData,
 } from "@/lib/data/news-data";
 import {
   type ArticleBlock,
@@ -309,6 +305,38 @@ export async function getAllArticleSlugs(): Promise<{ slug: string }[]> {
   }
 
   return staticSlugs;
+}
+
+/**
+ * Get all published article slugs for sitemap generation.
+ * Strictly excludes drafts, unlisted, or provisional articles.
+ */
+export async function getPublishedArticleSlugs(): Promise<{ slug: string }[]> {
+  const staticPublished = getPublishedArticleSlugsData();
+
+  if (!isSupabaseConfigured()) {
+    return staticPublished;
+  }
+
+  try {
+    const client = getSupabaseClient();
+    const { data, error } = await client
+      .from("news_articles")
+      .select("slug")
+      .eq("status", "published");
+
+    if (!error && data && data.length > 0) {
+      const seen = new Set(staticPublished.map((s) => s.slug));
+      const extra = data
+        .map((r: { slug: string }) => ({ slug: r.slug }))
+        .filter((s: { slug: string }) => !seen.has(s.slug));
+      return [...staticPublished, ...extra];
+    }
+  } catch {
+    // Fall back to static published slugs
+  }
+
+  return staticPublished;
 }
 
 /**

@@ -28,7 +28,7 @@ interface LiveCommentaryFeedProps {
   matchStatus: string;
 }
 
-export function LiveCommentaryFeed({ matchSlug, matchId, isLive, matchStatus }: LiveCommentaryFeedProps) {
+export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveCommentaryFeedProps) {
   const [commentary, setCommentary] = useState<CommentaryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [simulating, setSimulating] = useState(false);
@@ -54,6 +54,7 @@ export function LiveCommentaryFeed({ matchSlug, matchId, isLive, matchStatus }: 
   }, [matchSlug, loading]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCommentary();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchSlug]);

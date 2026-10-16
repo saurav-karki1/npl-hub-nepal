@@ -14,7 +14,7 @@ export function Footer() {
   }
   return (
     <footer className="mt-auto border-t border-[var(--color-rule)] bg-[var(--color-surface)] text-[var(--color-ink)]">
-      {/* ── Main footer content ── */}
+      {/* Main footer content */}
       <Container className="py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand & Mission */}
@@ -83,10 +83,10 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Platform & About */}
+          {/* Platform & Legal */}
           <div className="space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink)]">
-              Platform
+              Platform &amp; Legal
             </h4>
             <ul className="space-y-2 text-sm text-[var(--color-ink-secondary)]">
               <li>
@@ -95,17 +95,22 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about#privacy" className="hover:text-[var(--color-brand)] transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/about#disclaimer" className="hover:text-[var(--color-brand)] transition-colors">
+                <Link href="/editorial-policy" className="hover:text-[var(--color-brand)] transition-colors">
                   Editorial Policy
                 </Link>
               </li>
               <li>
-                <Link href="/about#contact" className="hover:text-[var(--color-brand)] transition-colors">
+                <Link href="/privacy-policy" className="hover:text-[var(--color-brand)] transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-[var(--color-brand)] transition-colors">
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-[var(--color-brand)] transition-colors">
                   Contact Us
                 </Link>
               </li>
@@ -114,10 +119,10 @@ export function Footer() {
         </div>
       </Container>
 
-      {/* ── Sub-footer / Copyright ── */}
+      {/* Sub-footer / Copyright */}
       <div className="border-t border-[var(--color-rule)] bg-[var(--color-canvas)] py-6 text-xs text-[var(--color-ink-muted)]">
         <Container className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} NPL Hub Nepal. Independent cricket media platform. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} NPL Hub Nepal. Independent cricket media platform. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/" className="hover:text-[var(--color-brand)] transition-colors">
               Home
@@ -127,6 +132,12 @@ export function Footer() {
             </Link>
             <Link href="/schedule" className="hover:text-[var(--color-brand)] transition-colors">
               Schedule
+            </Link>
+            <Link href="/privacy-policy" className="hover:text-[var(--color-brand)] transition-colors">
+              Privacy
+            </Link>
+            <Link href="/terms" className="hover:text-[var(--color-brand)] transition-colors">
+              Terms
             </Link>
           </div>
         </Container>

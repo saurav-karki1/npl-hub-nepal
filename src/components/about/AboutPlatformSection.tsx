@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody } from "@/components/ui/Card";
 
@@ -75,7 +76,7 @@ export function AboutPlatformSection() {
         <Card className="border-[var(--color-rule)] h-full">
           <CardBody className="p-5 sm:p-6 space-y-4">
             <h3
-              id="privacy"
+              id="editorial-policy"
               className="text-base font-bold text-[var(--color-ink)]"
             >
               Editorial & Data Accuracy Standards
@@ -99,6 +100,22 @@ export function AboutPlatformSection() {
                   </p>
                 </div>
               ))}
+            </div>
+
+            <div className="pt-2 flex flex-wrap items-center gap-3 text-xs">
+              <Link
+                href="/editorial-policy"
+                className="text-[var(--color-brand)] hover:underline font-semibold"
+              >
+                Full Editorial Policy &amp; Corrections &rarr;
+              </Link>
+              <span className="text-[var(--color-ink-faint)]">&middot;</span>
+              <Link
+                href="/privacy-policy"
+                className="text-[var(--color-brand)] hover:underline font-semibold"
+              >
+                Privacy Policy &rarr;
+              </Link>
             </div>
           </CardBody>
         </Card>

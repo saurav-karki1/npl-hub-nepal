@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const metaDesc = article.metaDescription ?? article.excerpt;
   const ogImage = article.imageUrl
     ? `${siteUrl}${article.imageUrl}`
-    : `${siteUrl}/images/og-default.png`;
+    : `${siteUrl}/images/logo.png`;
 
   return {
     title: metaTitle,
@@ -84,6 +84,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: metaDesc,
       images: [ogImage],
     },
+    robots:
+      article.status === "draft"
+        ? {
+            index: false,
+            follow: false,
+          }
+        : {
+            index: true,
+            follow: true,
+          },
   };
 }
 
@@ -425,6 +435,10 @@ function ArticleBody({
                 }
                 if (trimmed === "[[UPCOMING_FIXTURES]]") {
                   return <UpcomingFixtures key={i} fixtures={fixtures} />;
+                }
+                if (trimmed.startsWith("[[") && trimmed.endsWith("]]")) {
+                  // Suppress unhandled or draft placeholder tokens from visitor view
+                  return null;
                 }
                 return (
                   <p key={i} className="leading-relaxed">

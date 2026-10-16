@@ -15,7 +15,7 @@ import type { ScheduleMatch, MatchTeamInfo } from "@/lib/data/schedule-data";
 // Constants
 // ---------------------------------------------------------------------------
 
-const DEFAULT_OG_IMAGE = "https://nplhubnepal.vercel.app/og-image.png";
+const DEFAULT_OG_IMAGE = "https://nplhubnepal.vercel.app/images/logo.png";
 const SITE_URL = "https://nplhubnepal.vercel.app";
 
 const ORGANIZER = {

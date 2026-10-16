@@ -16,9 +16,7 @@ import {
   SeasonStats,
   getPlayerBySlug as getPlayerBySlugData,
   getPlayersByTeam as getPlayersByTeamData,
-  getPlayersByRole as getPlayersByRoleData,
   getAllPlayers as getAllPlayersData,
-  getAllPlayerSlugs as getAllPlayerSlugsData,
 } from "@/lib/data/players-data";
 import { TeamDetail, getTeamBySlug } from "@/lib/repository/teams";
 

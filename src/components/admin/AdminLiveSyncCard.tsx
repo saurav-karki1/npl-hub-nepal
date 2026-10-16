@@ -43,6 +43,7 @@ export function AdminLiveSyncCard() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.access_token]);

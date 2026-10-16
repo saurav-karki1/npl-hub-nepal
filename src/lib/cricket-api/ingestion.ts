@@ -9,6 +9,7 @@
  * - Resilient error handling, logging, and metrics
  */
 
+import { SupabaseClient } from "@supabase/supabase-js";
 import { ICricketDataProvider, NormalizedCricketMatch } from "./types";
 import { getCricketProvider } from "./index";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
@@ -79,9 +80,9 @@ export async function ingestLiveCricketData(
   return summary;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function syncMatchRecord(
-  admin: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  admin: SupabaseClient<any>,
   match: NormalizedCricketMatch
 ): Promise<{ updated: boolean; matchId?: string }> {
   // 1. Try to find match by external ID or match number or team pairs
