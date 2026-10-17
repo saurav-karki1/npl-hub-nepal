@@ -16,10 +16,12 @@ export const metadata: Metadata = {
   },
 };
 
-const LAST_UPDATED = "16 October 2026";
+const LAST_UPDATED = "17 October 2026";
 const SITE_NAME = "NPL Hub Nepal";
 const SITE_URL = "https://nplhubnepal.vercel.app";
 const CONTACT_EMAIL = "nplhubnepal@gmail.com";
+const CONTACT_PHONE_DISPLAY = "+977 9814996840";
+const CONTACT_PHONE_TEL = "+9779814996840";
 
 export default function PrivacyPolicyPage() {
   return (
@@ -113,9 +115,13 @@ export default function PrivacyPolicyPage() {
                   and requested URLs for security, DDoS protection, and operational diagnostics.
                 </li>
                 <li>
-                  <strong className="text-[var(--color-ink)]">Voluntary Correspondence:</strong> If you choose
-                  to email us regarding factual corrections, feedback, or inquiries, we receive your email
-                  address, name (if provided), and the content of your message.
+                  <strong className="text-[var(--color-ink)]">Contact Form Submissions &amp; Voluntary Correspondence:</strong> When
+                  you submit an inquiry via our website contact form or send us an email directly, we collect your
+                  name, email address, subject, and the contents of your message. This data is transmitted securely
+                  to our editorial desk (using email delivery infrastructure, such as Formspree) and is utilized solely
+                  to review, evaluate, and respond to your communication (such as investigating reported factual corrections,
+                  addressing copyright inquiries, or incorporating user feedback). We do not sell, rent, monetize, or
+                  disclose your contact details to third-party marketers.
                 </li>
               </ul>
             </section>
@@ -382,6 +388,12 @@ export default function PrivacyPolicyPage() {
                   Primary Email:{" "}
                   <a href={`mailto:${CONTACT_EMAIL}`} className="text-[var(--color-brand)] hover:underline font-semibold">
                     {CONTACT_EMAIL}
+                  </a>
+                </p>
+                <p className="text-[var(--color-ink-secondary)]">
+                  Phone / Editorial Desk:{" "}
+                  <a href={`tel:${CONTACT_PHONE_TEL}`} className="text-[var(--color-brand)] hover:underline font-semibold">
+                    {CONTACT_PHONE_DISPLAY}
                   </a>
                 </p>
                 <p className="text-[var(--color-ink-secondary)]">

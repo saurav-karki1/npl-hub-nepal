@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/Layout";
 import { LinkButton } from "@/components/ui/Button";
 import Link from "next/link";
+import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -17,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 const CONTACT_EMAIL = "nplhubnepal@gmail.com";
+const CONTACT_PHONE_DISPLAY = "+977 9814996840";
+const CONTACT_PHONE_TEL = "+9779814996840";
 const SITE_URL = "https://nplhubnepal.vercel.app";
 
 export default function ContactPage() {
@@ -77,9 +80,10 @@ export default function ContactPage() {
           {/* Contact details card */}
           <div className="rounded-[var(--radius-lg)] border border-[var(--color-rule)] bg-[var(--color-surface)] overflow-hidden mb-8 shadow-xs">
             <div className="border-b border-[var(--color-rule)] px-6 py-4 bg-[var(--color-canvas)]">
-              <h2 className="text-base font-bold text-[var(--color-ink)]">Official Editorial Contact</h2>
+              <h2 className="text-base font-bold text-[var(--color-ink)]">Official Editorial Contact Details</h2>
             </div>
             <div className="px-6 py-5 space-y-4 text-sm">
+              {/* Email */}
               <div className="flex items-start gap-4">
                 <span className="shrink-0 mt-0.5 text-[var(--color-brand)] font-bold text-xs uppercase tracking-wider w-20">
                   Email
@@ -96,6 +100,26 @@ export default function ContactPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Phone */}
+              <div className="flex items-start gap-4 pt-3 border-t border-[var(--color-rule)]">
+                <span className="shrink-0 mt-0.5 text-[var(--color-brand)] font-bold text-xs uppercase tracking-wider w-20">
+                  Phone
+                </span>
+                <div>
+                  <a
+                    href={`tel:${CONTACT_PHONE_TEL}`}
+                    className="text-[var(--color-brand)] hover:underline font-bold text-base"
+                  >
+                    {CONTACT_PHONE_DISPLAY}
+                  </a>
+                  <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">
+                    Direct editorial desk &amp; urgent correction line (Nepal / +977).
+                  </p>
+                </div>
+              </div>
+
+              {/* Website */}
               <div className="flex items-start gap-4 pt-3 border-t border-[var(--color-rule)]">
                 <span className="shrink-0 mt-0.5 text-[var(--color-brand)] font-bold text-xs uppercase tracking-wider w-20">
                   Website
@@ -115,6 +139,11 @@ export default function ContactPage() {
             </div>
           </div>
 
+          {/* Interactive Contact Form */}
+          <div className="mb-8">
+            <ContactForm />
+          </div>
+
           {/* Reasons to contact */}
           <section aria-labelledby="contact-reasons" className="mb-8">
             <h2 id="contact-reasons" className="text-xl font-bold text-[var(--color-ink)] mb-4">
@@ -124,7 +153,7 @@ export default function ContactPage() {
               {[
                 {
                   title: "Factual & Schedule Corrections",
-                  body: "If you spot an inaccurate match time, Bikram Sambat date mismatch, typographical error, or squad change, please email us with a reference link. We prioritize immediate verified corrections.",
+                  body: "If you spot an inaccurate match time, Bikram Sambat date mismatch, typographical error, or squad change, please submit via the form or email us with a reference link. We prioritize immediate verified corrections.",
                 },
                 {
                   title: "Editorial Feedback & Analysis",
@@ -132,7 +161,7 @@ export default function ContactPage() {
                 },
                 {
                   title: "Copyright & Intellectual Property",
-                  body: "If you are a copyright owner and believe content on our platform infringes upon your intellectual property, please email us directly with specific details for prompt review and resolution.",
+                  body: "If you are a copyright owner and believe content on our platform infringes upon your intellectual property, please contact us directly with specific details for prompt review and resolution.",
                 },
                 {
                   title: "Press & Media Inquiries",
