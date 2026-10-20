@@ -54,7 +54,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "2025 season; unconfirmed for S3",
     captainConfirmedAt: null,
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "16 Confirmed Squad Members",
     established: "2024",
     description:
       "Representing the historic Lumbini Province, the Lions feature strong regional cricket backing across Rupandehi and Bhairahawa.",
@@ -77,7 +77,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "2025 season; unconfirmed for S3",
     captainConfirmedAt: null,
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "15 Confirmed Squad Members",
     established: "2024",
     description:
       "Rooted in the far-western cricket hotbed of Dhangadhi, the Royals draw passionate support across Sudurpaschim Province.",
@@ -100,7 +100,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "2025 season; unconfirmed for S3",
     captainConfirmedAt: null,
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "16 Confirmed Squad Members",
     established: "2024",
     description:
       "Representing Koshi Province and eastern Nepal's industrial hub of Biratnagar, the Kings feature a competitive T20 pedigree.",
@@ -123,7 +123,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "2025 season; unconfirmed for S3",
     captainConfirmedAt: null,
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "17 Confirmed Squad Members",
     established: "2024",
     description:
       "Proudly representing the fertile Terai plains and Bagmati Province, the Rhinos command an enthusiastic fan base in Bharatpur.",
@@ -146,7 +146,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "2025 season; unconfirmed for S3",
     captainConfirmedAt: null,
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "14 Confirmed Squad Members",
     established: "2024",
     description:
       "Representing the mountainous Karnali Province, the Yaks embody resilience and rising cricket passion from Surkhet and western Nepal.",
@@ -169,7 +169,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "2025 season; unconfirmed for S3",
     captainConfirmedAt: null,
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "16 Confirmed Squad Members",
     established: "2024",
     description:
       "The capital franchise representing Kathmandu Valley, drawing strong fan support from cricket enthusiasts across the capital region.",
@@ -192,7 +192,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "2025 season; unconfirmed for S3",
     captainConfirmedAt: null,
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "16 Confirmed Squad Members",
     established: "2024",
     description:
       "Set against the backdrop of the Annapurna range, the Avengers represent Gandaki Province with an energetic brand of T20 cricket.",
@@ -215,7 +215,7 @@ export const NPL_TEAM_DETAILS: TeamDetail[] = [
     captainSource: "Officially announced August 2026 for Season 3, replacing Anil Sah",
     captainConfirmedAt: "2026-08",
     coach: "Not yet available",
-    squadStatus: "Squad to be announced",
+    squadStatus: "17 Confirmed Squad Members",
     established: "2024",
     description:
       "Representing the cultural heartland of Madhesh Province, the Bolts boast passionate support from across Janakpur and the Mithila region.",

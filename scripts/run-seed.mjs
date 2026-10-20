@@ -61,10 +61,14 @@ console.log(`   Size: ${seedSql.length} bytes`);
 const startTime = Date.now();
 
 try {
-  const { data, error } = await supabase.rpc('exec_sql_seed', { sql: seedSql }).catch(() => ({
-    data: null,
-    error: { message: 'rpc exec_sql_seed not found — using direct REST API instead' },
-  }));
+  let data, error;
+  try {
+    const res = await supabase.rpc('exec_sql_seed', { sql: seedSql });
+    data = res.data;
+    error = res.error;
+  } catch {
+    error = { message: 'rpc exec_sql_seed not found — using direct REST API instead' };
+  }
 
   if (error && error.message.includes('rpc exec_sql_seed not found')) {
     // Use Supabase Management API /pg/query endpoint instead

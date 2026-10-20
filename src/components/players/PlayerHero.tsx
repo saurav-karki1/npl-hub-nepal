@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Player, getPlayerTeam } from "@/lib/data/players-data";
 import { ConstellationBackground } from "@/components/ui/ConstellationBackground";
 import { TeamLogo } from "@/components/ui/TeamLogo";
+import { PlayerAvatar } from "@/components/players/PlayerAvatar";
 
 interface PlayerHeroProps {
   player: Player;
@@ -10,13 +11,6 @@ interface PlayerHeroProps {
 export function PlayerHero({ player }: PlayerHeroProps) {
   const team = getPlayerTeam(player);
 
-  const initials = player.name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   return (
     <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-emerald-950/60 shadow-sm">
       <ConstellationBackground className="bg-[#052618] text-white px-6 py-8 sm:px-10 sm:py-12">
@@ -24,16 +18,14 @@ export function PlayerHero({ player }: PlayerHeroProps) {
           {/* Left: Avatar & Basic Information */}
           <div className="flex items-start sm:items-center gap-4 sm:gap-6">
             {/* Player Avatar */}
-            <div
-              style={{
-                backgroundColor: team ? team.crestBg : "var(--color-brand)",
-                color: team ? team.crestText : "#ffffff",
-              }}
-              className="w-18 h-18 sm:w-22 sm:h-22 rounded-full font-black text-2xl sm:text-3xl flex items-center justify-center shrink-0 ring-4 ring-white/10 shadow-md select-none"
-              aria-label={player.name}
-            >
-              {initials}
-            </div>
+            <PlayerAvatar
+              name={player.name}
+              image={player.profileImage}
+              size="lg"
+              crestBg={team ? team.crestBg : "var(--color-brand)"}
+              crestText={team ? team.crestText : "#ffffff"}
+              className="ring-4 ring-white/10 shadow-md"
+            />
 
             <div>
               {/* Badges / Eyebrow */}

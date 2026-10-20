@@ -57,11 +57,24 @@ export async function generateMetadata({
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "profile",
+      ...(player.profileImage
+        ? {
+            images: [
+              {
+                url: player.profileImage,
+                width: 480,
+                height: 640,
+                alt: player.name,
+              },
+            ],
+          }
+        : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      ...(player.profileImage ? { images: [player.profileImage] } : {}),
     },
   };
 }
@@ -85,6 +98,9 @@ export default async function PlayerProfilePage({ params }: PlayerPageProps) {
     name: player.name,
     jobTitle: `${player.role} in Nepal Premier League`,
     nationality: player.nationality,
+    ...(player.profileImage
+      ? { image: `${siteUrl}${player.profileImage}` }
+      : {}),
     ...(player.dateOfBirth ? { birthDate: player.dateOfBirth } : {}),
     ...(player.birthPlace ? { homeLocation: player.birthPlace } : {}),
     ...(team

@@ -262,7 +262,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_lumbini-lions', 'season-3', 'lumbini-lions', 'Rohit Paudel', 'reported',
-  '2025 season; unconfirmed for S3', NULL, 'Not yet available', 'Squad to be announced',
+  '2025 season; unconfirmed for S3', NULL, 'Not yet available', '16 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -274,7 +274,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_sudurpaschim-royals', 'season-3', 'sudurpaschim-royals', 'Dipendra Singh Airee', 'reported',
-  '2025 season; unconfirmed for S3', NULL, 'Not yet available', 'Squad to be announced',
+  '2025 season; unconfirmed for S3', NULL, 'Not yet available', '15 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -286,7 +286,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_biratnagar-kings', 'season-3', 'biratnagar-kings', 'Sandeep Lamichhane', 'reported',
-  '2025 season; unconfirmed for S3', NULL, 'Not yet available', 'Squad to be announced',
+  '2025 season; unconfirmed for S3', NULL, 'Not yet available', '16 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -298,7 +298,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_chitwan-rhinos', 'season-3', 'chitwan-rhinos', 'Kushal Malla', 'reported',
-  '2025 season; unconfirmed for S3', NULL, 'Not yet available', 'Squad to be announced',
+  '2025 season; unconfirmed for S3', NULL, 'Not yet available', '17 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -310,7 +310,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_karnali-yaks', 'season-3', 'karnali-yaks', 'Sompal Kami', 'reported',
-  '2025 season; unconfirmed for S3', NULL, 'Not yet available', 'Squad to be announced',
+  '2025 season; unconfirmed for S3', NULL, 'Not yet available', '14 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -322,7 +322,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_kathmandu-gorkhas', 'season-3', 'kathmandu-gorkhas', 'Karan KC', 'reported',
-  '2025 season; unconfirmed for S3', NULL, 'Not yet available', 'Squad to be announced',
+  '2025 season; unconfirmed for S3', NULL, 'Not yet available', '16 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -334,7 +334,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_pokhara-avengers', 'season-3', 'pokhara-avengers', 'Kushal Bhurtel', 'reported',
-  '2025 season; unconfirmed for S3', NULL, 'Not yet available', 'Squad to be announced',
+  '2025 season; unconfirmed for S3', NULL, 'Not yet available', '16 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -346,7 +346,7 @@ INSERT INTO public.team_seasons (
   captain_confirmed_at, coach, squad_status, played, won, lost, no_result, points
 ) VALUES (
   'season-3_janakpur-bolts', 'season-3', 'janakpur-bolts', 'Harmeet Singh', 'confirmed',
-  'Officially announced August 2026 for Season 3, replacing Anil Sah', '2026-08-01T00:00:00Z', 'Not yet available', 'Squad to be announced',
+  'Officially announced August 2026 for Season 3, replacing Anil Sah', '2026-08-01T00:00:00Z', 'Not yet available', '17 Confirmed Squad Members',
   0, 0, 0, 0, 0
 ) ON CONFLICT (season_id, team_id) DO UPDATE SET
   captain_name = EXCLUDED.captain_name, captain_confidence = EXCLUDED.captain_confidence,
@@ -355,7 +355,7 @@ INSERT INTO public.team_seasons (
   updated_at = timezone('utc'::text, now());
 
 -- ------------------------------------------------------------------------------
--- 4. PLAYERS (53 Canonical Season 3 Retained Players)
+-- 4. PLAYERS (127 Canonical Season 3 Retained Players)
 -- ------------------------------------------------------------------------------
 INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
@@ -364,7 +364,7 @@ INSERT INTO public.players (
   'sandeep-lamichhane', 'sandeep-lamichhane', 'Sandeep Lamichhane', 'S. Lamichhane',
   'Nepalese', '2000-08-02', 'Aruchaur, Syangja District, Nepal',
   'Right-hand bat', 'Right-arm leg break, googly',
-  NULL, 'Nepal''s premier leg-spinner and all-time leading international wicket-taker. Serves as captain and marquee player for Biratnagar Kings in NPL Season 3.'
+  '/images/players/sandeep-lamichhane.webp', 'Nepal''s premier leg-spinner and all-time leading international wicket-taker. Serves as captain and marquee player for Biratnagar Kings in NPL Season 3.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -375,10 +375,24 @@ INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
-  'lokesh-bam', 'lokesh-bam', 'Lokesh Bam', 'L. Bam',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', NULL,
-  NULL, 'Dynamic wicketkeeper-batter known for aggressive top-order striking and agile glovework for Biratnagar Kings.'
+  'andre-russell', 'andre-russell', 'Andre Russell', 'A. Russell',
+  'West Indian', '1988-04-29', 'Kingston, Jamaica',
+  'Right-hand bat', 'Right-arm fast',
+  '/images/players/andre-russell.webp', 'Andre Dwayne Russell is a Jamaican former West Indies all-rounder, born in Kingston on 29 April 1988. Known as Dre Russ, he bats right-handed and bowls right-arm fast. He played one Test, 56 ODIs, and 86 T20Is for the West Indies, winning the T20 ...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'aparajit-poudel', 'aparajit-poudel', 'Aprajit Poudel', 'A. Poudel',
+  'Nepalese', '2007-07-08', 'Nawalparasi, Nepal',
+  'Aprajit Poudel', 'Slow left-arm orthodox (left-arm spin)',
+  '/images/players/aparajit-poudel.webp', 'Aparajit Poudel is a young Nepalese left-arm orthodox spinner from Nawalparasi, signed by Biratnagar Kings for NPR 200,000 in the NPL Season 3 (2026) auction.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -392,7 +406,65 @@ INSERT INTO public.players (
   'basir-ahamad', 'basir-ahamad', 'Basir Ahamad', 'B. Ahamad',
   'Nepalese', NULL, NULL,
   'Left-hand bat', 'Slow left-arm orthodox',
-  NULL, 'Left-handed all-rounder providing middle-order batting stability and accurate left-arm orthodox spin for Biratnagar Kings.'
+  '/images/players/basir-ahamad.webp', 'Left-handed all-rounder providing middle-order batting stability and accurate left-arm orthodox spin for Biratnagar Kings.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'charith-asalanka', 'charith-asalanka', 'Charith Asalanka', 'C. Asalanka',
+  'Sri Lankan', '1997-06-29', 'Elpitiya, Sri Lanka',
+  'Left-handed', 'Right-arm off-break',
+  '/images/players/charith-asalanka.webp', 'Charith Asalanka, born in Elpitiya on 29 June 1997, is a Sri Lankan batting all-rounder and the country’s ODI captain. He bats left-handed in the middle order and bowls useful right-arm off-spin.
+
+He made his ODI debut against England on his 24th ...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dilsad-ali', 'dilsad-ali', 'Dilsad Ali', 'D. Ali',
+  'Nepalese', '2007-05-03', 'Nepal',
+  'Right-hand bat', 'Does not bowl',
+  '/images/players/dilsad-ali.webp', 'Dilsad Ali is a Nepali wicketkeeper-batter (born 3 May 2007) who bats right-handed and does not bowl.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'imran-sheikh', 'imran-sheikh', 'Imran Sheikh', 'I. Sheikh',
+  'Nepalese', '2005-10-22', 'Birgunj, Parsa, Nepal',
+  'Right-hand bat', 'Right-arm offbreak',
+  '/images/players/imran-sheikh.webp', 'Imran Sheikh is a Nepali cricketer (born 22 October 2005, Birgunj) who also bowls right-arm off-break.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'lokesh-bam', 'lokesh-bam', 'Lokesh Bam', 'L. Bam',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', NULL,
+  '/images/players/lokesh-bam.webp', 'Dynamic wicketkeeper-batter known for aggressive top-order striking and agile glovework for Biratnagar Kings.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -406,7 +478,35 @@ INSERT INTO public.players (
   'narayan-joshi', 'narayan-joshi', 'Narayan Joshi', 'N. Joshi',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm medium',
-  NULL, 'Seam-bowling all-rounder capable of lower-order hitting and economical middle-overs bowling.'
+  '/images/players/narayan-joshi.webp', 'Seam-bowling all-rounder capable of lower-order hitting and economical middle-overs bowling.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'naren-saud', 'naren-saud', 'Naren Saud', 'N. Saud',
+  'Nepalese', '2006-01-28', 'Badikedar, Doti District, Nepal',
+  'Left-handed', 'Slow left-arm orthodox (left-arm spin)',
+  '/images/players/naren-saud.webp', 'Naren Saud is a Nepalese all-rounder who plays for Biratnagar Kings in the Nepal Premier League (NPL).'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'pratik-shrestha', 'pratik-shrestha', 'Pratik Shrestha', 'P. Shrestha',
+  'Nepalese', NULL, 'Sawanpur, Chitwan, Nepal',
+  'Right-hand bat', 'Right-arm offbreak',
+  '/images/players/pratik-shrestha.webp', 'Pratik Shrestha is a Nepali all-rounder best known for representing Kathmandu''s NPL franchise in the first two editions of the Nepal Premier League before switching allegiance to Biratnagar Kings ahead of the 2026 season.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -420,7 +520,35 @@ INSERT INTO public.players (
   'pratish-gc', 'pratish-gc', 'Pratish GC', 'P. GC',
   'Nepalese', NULL, NULL,
   'Left-hand bat', 'Left-arm fast-medium',
-  NULL, 'Promising left-arm pace bowler offering seam variety and handy lower-order power for the Kings.'
+  '/images/players/pratish-gc.webp', 'Promising left-arm pace bowler offering seam variety and handy lower-order power for the Kings.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'rupesh-kumar-singh', 'rupesh-kumar-singh', 'Rupesh Kumar Singh', 'R. Kumar Singh',
+  'Nepalese', '2000-07-14', 'Siraha, Madhesh Province, Nepal',
+  'Right-hand bat', 'Right-arm medium-fast',
+  '/images/players/rupesh-kumar-singh.webp', 'Rupesh Kumar Singh is a Nepali all-rounder (born 14 July 2000, Siraha) who bats right-handed and bowls right-arm medium-fast.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'shubham-ranjane', 'shubham-ranjane', 'Shubham Ranjane', 'S. Ranjane',
+  'Indian', '1994-03-26', 'Pune, Maharashtra, India',
+  'Right-handed', 'Right-arm medium',
+  '/images/players/shubham-ranjane.webp', 'Shubham Ranjane was born in Pune on 26 March 1994. He came through Maharashtra cricket, has played for Mumbai and Goa, and later moved into USA cricket and Major League Cricket. His grandfather, Vasant Ranjane, played for India, and his father, Su...'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -434,7 +562,21 @@ INSERT INTO public.players (
   'subash-bhandari', 'subash-bhandari', 'Subash Bhandari', 'S. Bhandari',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm off break',
-  NULL, 'Off-spin bowler retained in the Biratnagar Kings spin contingent for NPL Season 3.'
+  '/images/players/subash-bhandari.webp', 'Off-spin bowler retained in the Biratnagar Kings spin contingent for NPL Season 3.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sujan-thapaliya', 'sujan-thapaliya', 'Sujan Thapaliya', 'S. Thapaliya',
+  'Nepalese', NULL, NULL,
+  'Left-handed', 'Not applicable',
+  '/images/players/sujan-thapaliya.webp', 'Sujan Thapaliya is a left-handed wicketkeeper-batter from Nepal who has spent the last few years building his reputation in domestic and provincial cricket before earning his breakthrough at the Nepal Premier League (NPL) Season 3 auction, where B...'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -448,7 +590,7 @@ INSERT INTO public.players (
   'kushal-malla', 'kushal-malla', 'Kushal Malla', 'K. Malla',
   'Nepalese', NULL, NULL,
   'Left-hand bat', 'Slow left-arm orthodox',
-  NULL, 'Power-hitting left-handed all-rounder and national record holder. Captains Chitwan Rhinos for NPL Season 3.'
+  '/images/players/kushal-malla.webp', 'Power-hitting left-handed all-rounder and national record holder. Captains Chitwan Rhinos for NPL Season 3.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -459,66 +601,10 @@ INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
-  'rijan-dhakal', 'rijan-dhakal', 'Rijan Dhakal', 'R. Dhakal',
-  'Nepalese', NULL, NULL,
-  'Left-hand bat', 'Left-arm medium-fast',
-  NULL, 'Left-arm pace bowler spearheading the Chitwan Rhinos new-ball attack with natural swing and discipline.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'deepak-bohara', 'deepak-bohara', 'Deepak Bohara', 'D. Bohara',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', NULL,
-  NULL, 'Top-order batter with solid domestic credentials, retained to build strong innings foundations for Chitwan.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'ranjeet-kumar', 'ranjeet-kumar', 'Ranjeet Kumar', 'R. Kumar',
-  'Nepalese', NULL, NULL,
-  'Left-hand bat', 'Left-arm medium',
-  NULL, 'Left-arm seam bowler providing variety and disciplined line-and-length bowling for the Rhinos.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'kamal-singh-airee', 'kamal-singh-airee', 'Kamal Singh Airee', 'K. S. Airee',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm medium-fast',
-  NULL, 'Experienced Nepal international seam bowler renowned for death-overs execution and pace control.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'dev-khanal', 'dev-khanal', 'Dev Khanal', 'D. Khanal',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm off break',
-  NULL, 'Former Nepal U-19 captain and technically accomplished top-order batter providing composure to the Rhinos lineup.'
+  'sikandar-raza', 'sikandar-raza', 'Sikandar Raza', 'S. Raza',
+  'Zimbabwean', NULL, NULL,
+  'Right-hand bat', 'Right-arm off-break',
+  '/images/players/sikandar-raza.webp', 'Zimbabwe all-rounder Sikandar Raza is set to play for Chitwan Rhinos in the third season of the Nepal Premier League. Raza, born in Sialkot, Pakistan, in 1986, is the current captain of Zimbabwe''s T20I team. He joins an overseas group that also fe...'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -532,7 +618,203 @@ INSERT INTO public.players (
   'arjun-saud', 'arjun-saud', 'Arjun Saud', 'A. Saud',
   'Nepalese', NULL, NULL,
   'Right-hand bat', NULL,
-  NULL, 'Wicketkeeper-batter with international experience providing energetic fielding and middle-overs scoring.'
+  '/images/players/arjun-saud.webp', 'Wicketkeeper-batter with international experience providing energetic fielding and middle-overs scoring.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ashok-dhami', 'ashok-dhami', 'Ashok Dhami', 'A. Dhami',
+  'Nepalese', '2007-02-17', 'Bajhang, Masta, Nepal',
+  'Right-hand bat', 'Slow left-arm orthodox',
+  '/images/players/ashok-dhami.webp', 'Ashok Dhami (born 17 February 2007, Bajhang) is a Nepalese all-rounder who bats right-handed and bowls slow left-arm orthodox spin.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bibek-kumar-yadav', 'bibek-kumar-yadav', 'Bibek Kumar Yadav', 'B. Kumar Yadav',
+  'Nepalese', '2003-10-07', 'Rajbiraj, Saptari District, Madhesh Province, Nepal',
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/bibek-kumar-yadav.webp', 'Bibek Kumar Yadav (born 7 October 2003) is a Nepali all-rounder who bats right-handed and bowls right-arm medium.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bipin-rawal', 'bipin-rawal', 'Bipin Rawal', 'B. Rawal',
+  'Nepalese', '2004-09-25', 'Dhangadhi, Kailali, Nepal',
+  'Left-hand bat', 'N/A',
+  '/images/players/bipin-rawal.webp', 'Bipin Rawal is a Nepalese left-handed wicketkeeper-batsman, born 25 September 2004 in Dhangadhi.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'deepak-bohara', 'deepak-bohara', 'Deepak Bohara', 'D. Bohara',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', NULL,
+  '/images/players/deepak-bohara.webp', 'Top-order batter with solid domestic credentials, retained to build strong innings foundations for Chitwan.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dev-khanal', 'dev-khanal', 'Dev Khanal', 'D. Khanal',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm off break',
+  '/images/players/dev-khanal.webp', 'Former Nepal U-19 captain and technically accomplished top-order batter providing composure to the Rhinos lineup.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'gautam-kc', 'gautam-kc', 'Gautam KC', 'G. KC',
+  'Nepalese', '2001-06-25', 'Chitwan, Nepal',
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/gautam-kc.webp', 'Gautam KC (born 25 June 2001, Chitwan) is a Nepalese right-arm medium-pace bowler and lower-order batter who represents Bagmati Province domestically.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'kalim-sana', 'kalim-sana', 'Kalim Sana', 'K. Sana',
+  'Canadian', '1994-01-01', 'Rawalpindi, Punjab, Pakistan',
+  'Right-handed', 'Left-arm medium-fast',
+  '/images/players/kalim-sana.webp', 'Kaleem Sana is a Pakistan-born Canadian international fast-medium bowler signed by Chitwan Rhinos for the Nepal Premier League. He is one of Canada’s leading wicket-takers in T20Is.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'kamal-singh-airee', 'kamal-singh-airee', 'Kamal Singh Airee', 'K. S. Airee',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm medium-fast',
+  '/images/players/kamal-singh-airee.webp', 'Experienced Nepal international seam bowler renowned for death-overs execution and pace control.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'mousom-dhakal', 'mousom-dhakal', 'Mousom Dhakal', 'M. Dhakal',
+  'Nepalese', '2001-01-27', 'Bhalwari, Rupandehi District, Nepal',
+  'Right-hand bat', 'Right-arm spin — sources vary between off-break and leg-break',
+  '/images/players/mousom-dhakal.webp', 'Mousom Dhakal (born 27 January 2001) is a Nepalese right-arm spinner who made his T20I debut for Nepal in October 2023 and featured in the 2023 Asia Cup squad.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ranjeet-kumar', 'ranjeet-kumar', 'Ranjeet Kumar', 'R. Kumar',
+  'Nepalese', NULL, NULL,
+  'Left-hand bat', 'Left-arm medium',
+  '/images/players/ranjeet-kumar.webp', 'Left-arm seam bowler providing variety and disciplined line-and-length bowling for the Rhinos.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ravi-bopara', 'ravi-bopara', 'Ravi Bopara', 'R. Bopara',
+  'International', '1985-05-04', 'Forest Gate, London, England',
+  'Right-handed', 'Right-arm medium',
+  '/images/players/ravi-bopara.webp', 'Ravi Bopara (full name Ravinder Singh Bopara) is an experienced English all-rounder who represents Chitwan Rhinos in the Nepal Premier League 2026. He has played for England in Tests, ODIs, and T20Is.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'rijan-dhakal', 'rijan-dhakal', 'Rijan Dhakal', 'R. Dhakal',
+  'Nepalese', NULL, NULL,
+  'Left-hand bat', 'Left-arm medium-fast',
+  '/images/players/rijan-dhakal.webp', 'Left-arm pace bowler spearheading the Chitwan Rhinos new-ball attack with natural swing and discipline.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'salahuddin-khan', 'salahuddin-khan', 'Salahuddin Khan', 'S. Khan',
+  'Nepalese', NULL, 'N/A',
+  'Right-hand bat', 'N/A',
+  '/images/players/salahuddin-khan.webp', 'Salahuddin Khan is a Nepali all-rounder who plays for Chitwan Rhinos in the Nepal Premier League.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'usama-mir', 'usama-mir', 'Usama Mir', 'U. Mir',
+  'Pakistani', '1995-12-23', 'Sialkot, Punjab, Pakistan',
+  'Right-handed', 'Right-arm leg spin',
+  '/images/players/usama-mir.webp', 'Usama Mir is a Pakistan international leg-spinner signed by Chitwan Rhinos for the Nepal Premier League. He is known for his height, bounce, and wicket-taking ability in T20 cricket.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -546,63 +828,7 @@ INSERT INTO public.players (
   'harmeet-singh', 'harmeet-singh', 'Harmeet Singh', 'H. Singh',
   'USA', NULL, NULL,
   'Left-hand bat', 'Slow left-arm orthodox',
-  NULL, 'Experienced international all-rounder appointed captain of defending champions Janakpur Bolts for NPL Season 3.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'anil-sah', 'anil-sah', 'Anil Sah', 'A. Sah',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm off break',
-  NULL, 'Explosive top-order batter and wicketkeeper who captained Janakpur Bolts during their successful Season 2 campaign.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'lalit-rajbanshi', 'lalit-rajbanshi', 'Lalit Rajbanshi', 'L. Rajbanshi',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Slow left-arm orthodox',
-  NULL, 'Premier Nepali international left-arm orthodox spinner celebrated for miserly economy and match-winning spells.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'bikash-aagri', 'bikash-aagri', 'Bikash Aagri', 'B. Aagri',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm fast',
-  NULL, 'Young fast bowler offering raw pace and seam movement for Janakpur Bolts.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'mayan-yadav', 'mayan-yadav', 'Mayan Yadav', 'M. Yadav',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', NULL,
-  NULL, 'Promising domestic top-order batter retained to bolster Janakpur''s batting depth.'
+  '/images/players/harmeet-singh.webp', 'Experienced international all-rounder appointed captain of defending champions Janakpur Bolts for NPL Season 3.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -616,7 +842,217 @@ INSERT INTO public.players (
   'aaditya-mahata', 'aaditya-mahata', 'Aaditya Mahata', 'A. Mahata',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm medium',
-  NULL, 'Energetic all-rounder providing seam support and late-innings acceleration for the Bolts.'
+  '/images/players/aaditya-mahata.webp', 'Energetic all-rounder providing seam support and late-innings acceleration for the Bolts.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'abhishek-tiwari', 'abhishek-tiwari', 'Abhishek Tiwari', 'A. Tiwari',
+  'Nepalese', NULL, 'Siswa Kataiya, Mahottari, Nepal',
+  'Right-hand bat', 'Right-arm medium-fast',
+  '/images/players/abhishek-tiwari.webp', 'Abhishek Tiwari is a Nepali all-rounder (right-hand bat, right-arm medium-fast) born September 6, 2007, in Mahottari.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'amar-singh-rautela', 'amar-singh-rautela', 'Amar Singh Rautela', 'A. Singh Rautela',
+  'Nepalese', NULL, 'Nepalgunj, Nepal',
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/amar-singh-rautela.webp', 'Amar Singh Rautela is a Nepali bowling all-rounder (right-hand bat, right-arm medium) born September 5, 1993, in Nepalgunj.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'anil-sah', 'anil-sah', 'Anil Sah', 'A. Sah',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm off break',
+  '/images/players/anil-sah.webp', 'Explosive top-order batter and wicketkeeper who captained Janakpur Bolts during their successful Season 2 campaign.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ashutosh-pandey', 'ashutosh-pandey', 'Ashutosh Pandey', 'A. Pandey',
+  'Nepalese', NULL, 'N/A',
+  'N/A', 'N/A',
+  '/images/players/ashutosh-pandey.webp', 'Ashutosh Pandey is a Nepal Premier League cricketer signed by Janakpur Bolts for NPR 200,000 at the July 2026 Season 3 auction.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bikash-aagri', 'bikash-aagri', 'Bikash Aagri', 'B. Aagri',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm fast',
+  '/images/players/bikash-aagri.webp', 'Young fast bowler offering raw pace and seam movement for Janakpur Bolts.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bishal-patel', 'bishal-patel', 'Bishal Patel', 'B. Patel',
+  'Nepalese', NULL, 'Malangwa, Sarlahi District, Nepal',
+  'Left-hand bat', 'Left-arm medium',
+  '/images/players/bishal-patel.webp', 'Bishal Patel is a Nepalese left-arm medium pacer and left-hand lower-order batter, born October 30, 2003, in Sarlahi.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bishal-shusling', 'bishal-shusling', 'Bishal Shusling', 'B. Shusling',
+  'Nepalese', NULL, 'Bardibas, Mahottari, Nepal',
+  'Right-hand bat', 'Right-arm offbreak',
+  '/images/players/bishal-shusling.webp', 'Bishal Shusling (also spelled Susling) is a Nepali all-rounder (right-hand bat, right-arm offbreak) born December 12, 1999, in Bardibas, Mahottari.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'iftikhar-ahmed', 'iftikhar-ahmed', 'Iftikhar Ahmed', 'I. Ahmed',
+  'Pakistani', '1990-09-03', 'Peshawar, Khyber Pakhtunkhwa',
+  'Right-handed', 'Right-arm off break',
+  '/images/players/iftikhar-ahmed.webp', 'Ahmed is a Pakistani all-rounder who debuted in ODIs in 2015 and T20Is in 2016. A right-handed middle-order batter and right-arm off-break bowler, he joins the Janakpur Bolts for NPL 2026. He is well known to Nepali fans for his 2023 Asia Cup cent...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'james-neesham', 'james-neesham', 'James Neesham', 'J. Neesham',
+  'New Zealander', '1990-09-17', 'Auckland, New Zealand',
+  'Left-handed', 'Right-arm medium-fast',
+  '/images/players/james-neesham.webp', 'James Neesham is a New Zealand international all-rounder returning to Janakpur Bolts for the Nepal Premier League. He was a key player in their 2024 championship win and brings power-hitting and seam bowling experience.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'lalit-rajbanshi', 'lalit-rajbanshi', 'Lalit Rajbanshi', 'L. Rajbanshi',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Slow left-arm orthodox',
+  '/images/players/lalit-rajbanshi.webp', 'Premier Nepali international left-arm orthodox spinner celebrated for miserly economy and match-winning spells.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'mayan-yadav', 'mayan-yadav', 'Mayan Yadav', 'M. Yadav',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', NULL,
+  '/images/players/mayan-yadav.webp', 'Promising domestic top-order batter retained to bolster Janakpur''s batting depth.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'moeen-ali', 'moeen-ali', 'Moeen Ali', 'M. Ali',
+  'English', '1987-06-18', 'Birmingham, England',
+  'Left-handed', 'Right-arm off-break',
+  '/images/players/moeen-ali.webp', 'Moeen Ali (full name Moeen Munir Ali) is a former England international all-rounder signed by Janakpur Bolts for the Nepal Premier League. He is a two-time World Cup winner and brings extensive experience from international and franchise cricket.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'rit-gautam', 'rit-gautam', 'Rit Gautam', 'R. Gautam',
+  'Nepalese', '2001-09-17', 'Kathmandu, Nepal',
+  'Right-hand bat', 'Right-arm medium (occasional)',
+  '/images/players/rit-gautam.webp', 'Rit Gautam is a Nepali right-hand batter born 17 September 2001 in Kathmandu.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'santosh-karki', 'santosh-karki', 'Santosh Karki', 'S. Karki',
+  'Nepalese', '2003-07-20', 'Parsa, Nepal',
+  'Right-hand bat', 'Right-arm offbreak',
+  '/images/players/santosh-karki.webp', 'Santosh Karki is a Nepali right-hand batter and off-spin bowler born 20 July 2003 in Parsa.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'trit-raj-das', 'trit-raj-das', 'Trit Raj Das', 'T. Raj Das',
+  'Nepalese', '2002-10-18', 'Kalaiya, Nepal',
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/trit-raj-das.webp', 'Trit Raj Das is a Nepali right-hand middle-order batter born 18 October 2002 in Kalaiya.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -630,7 +1066,7 @@ INSERT INTO public.players (
   'sompal-kami', 'sompal-kami', 'Sompal Kami', 'S. Kami',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm fast-medium',
-  NULL, 'Veteran Nepal national fast-bowling all-rounder and inspirational captain of Karnali Yaks for NPL Season 3.'
+  '/images/players/sompal-kami.webp', 'Veteran Nepal national fast-bowling all-rounder and inspirational captain of Karnali Yaks for NPL Season 3.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -641,10 +1077,10 @@ INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
-  'gulshan-jha', 'gulshan-jha', 'Gulshan Jha', 'G. Jha',
-  'Nepalese', NULL, NULL,
-  'Left-hand bat', 'Right-arm medium-fast',
-  NULL, 'Dynamic young international pace-bowling all-rounder capable of aggressive batting and crucial wickets.'
+  'ariful-islam', 'ariful-islam', 'Ariful Islam', 'A. Islam',
+  'Bangladeshi', '2004-12-08', 'Kishoreganj, Bangladesh',
+  'Right-handed', 'Right-arm off-break',
+  '/images/players/ariful-islam.webp', 'Ariful Islam is a Bangladeshi right-handed batsman who has joined Karnali Yaks for the Nepal Premier League. This is his first overseas franchise tournament outside Bangladesh.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -655,10 +1091,10 @@ INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
-  'nandan-yadav', 'nandan-yadav', 'Nandan Yadav', 'N. Yadav',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm medium',
-  NULL, 'Disciplined medium-pace bowler contributing tight spells during the middle overs for Karnali.'
+  'bipin-sharma', 'bipin-sharma', 'Bipin Sharma', 'B. Sharma',
+  'Nepalese', NULL, 'Surkhet, Karnali Province, Nepal',
+  'Right Handed Batsman', 'Left Arm Orthodox',
+  '/images/players/bipin-sharma.webp', 'Bipin Sharma is a Nepali slow left-arm orthodox spinner, born October 25, 2008, who plays for Karnali Yaks in the Nepal Premier League.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -672,7 +1108,63 @@ INSERT INTO public.players (
   'deepak-dumre', 'deepak-dumre', 'Deepak Dumre', 'D. Dumre',
   'Nepalese', NULL, NULL,
   'Right-hand bat', NULL,
-  NULL, 'Gloveman and middle-order batter retained to manage wicketkeeping duties for the Yaks.'
+  '/images/players/deepak-dumre.webp', 'Gloveman and middle-order batter retained to manage wicketkeeping duties for the Yaks.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dipendra-rawat', 'dipendra-rawat', 'Dipendra Rawat', 'D. Rawat',
+  'Nepalese', NULL, 'Nepal; specific city or district not publicly confirmed',
+  'Not conclusively confirmed', 'Not conclusively confirmed',
+  '/images/players/dipendra-rawat.webp', 'Dipendra Rawat is a Nepali domestic cricketer who plays for Karnali Province and Karnali Yaks in the Nepal Premier League.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'gulshan-jha', 'gulshan-jha', 'Gulshan Jha', 'G. Jha',
+  'Nepalese', NULL, NULL,
+  'Left-hand bat', 'Right-arm medium-fast',
+  '/images/players/gulshan-jha.webp', 'Dynamic young international pace-bowling all-rounder capable of aggressive batting and crucial wickets.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'mark-watt', 'mark-watt', 'Mark Watt', 'M. Watt',
+  'International', '1996-07-29', 'Edinburgh, Scotland',
+  'Left Handed Batsman', 'Left Arm Orthodox',
+  '/images/players/mark-watt.webp', 'Mark Watt is a Scottish spin bowler who bats left-handed. He plays for Karnali Yaks in the Nepal Premier League and has also played for Scotland in international matches.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'nandan-yadav', 'nandan-yadav', 'Nandan Yadav', 'N. Yadav',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/nandan-yadav.webp', 'Disciplined medium-pace bowler contributing tight spells during the middle overs for Karnali.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -686,7 +1178,49 @@ INSERT INTO public.players (
   'pawan-sarraf', 'pawan-sarraf', 'Pawan Sarraf', 'P. Sarraf',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm off break',
-  NULL, 'Hard-hitting batting all-rounder with international experience bowling economical off-spin.'
+  '/images/players/pawan-sarraf.webp', 'Hard-hitting batting all-rounder with international experience bowling economical off-spin.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sachin-sharma', 'sachin-sharma', 'Sachin Sharma', 'S. Sharma',
+  'Nepalese', NULL, 'Not publicly disclosed',
+  'Right Handed Batsman', 'Not publicly recorded',
+  '/images/players/sachin-sharma.webp', 'Sachin Sharma is a Nepali right-hand batter, born August 22, 2000, who plays domestic cricket for Tribhuwan Army Club.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'shubh-kansakar', 'shubh-kansakar', 'Shubh Kansakar', 'S. Kansakar',
+  'Nepalese', NULL, 'Makwanpur, Nepal',
+  'Right Handed Batsman', 'N/A',
+  '/images/players/shubh-kansakar.webp', 'Shubh Kansakar is a Nepali right-hand batter, born May 15, 2000, in Makwanpur.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'surya-tamang', 'surya-tamang', 'Surya Tamang', 'S. Tamang',
+  'Nepalese', NULL, 'Bhaktapur, Nepal; some profiles state he grew up in Kathmandu',
+  'Left Handed Batsman', 'Left Arm Orthodox',
+  '/images/players/surya-tamang.webp', 'Surya Tamang is a Nepali slow left-arm orthodox spinner and left-hand batter, born September 30, 2001, in Bhaktapur.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -700,7 +1234,7 @@ INSERT INTO public.players (
   'unish-bikram-singh', 'unish-bikram-singh', 'Unish Bikram Singh', 'U. B. Singh',
   'Nepalese', NULL, NULL,
   'Right-hand bat', NULL,
-  NULL, 'Emerging top-order batter retained to represent Karnali Province in the batting lineup.'
+  '/images/players/unish-bikram-singh.webp', 'Emerging top-order batter retained to represent Karnali Province in the batting lineup.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -714,7 +1248,7 @@ INSERT INTO public.players (
   'yuvraj-khatri', 'yuvraj-khatri', 'Yuvraj Khatri', 'Y. Khatri',
   'Nepalese', NULL, NULL,
   'Left-hand bat', 'Slow left-arm orthodox',
-  NULL, 'Specialist left-arm spinner adding turn and tactical control to the Karnali bowling attack.'
+  '/images/players/yuvraj-khatri.webp', 'Specialist left-arm spinner adding turn and tactical control to the Karnali bowling attack.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -728,7 +1262,21 @@ INSERT INTO public.players (
   'karan-kc', 'karan-kc', 'Karan KC', 'Karan KC',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm fast-medium',
-  NULL, 'Legendary Nepal fast bowler and match-winning lower-order hitter, captaining the Kathmandu Gorkhas franchise.'
+  '/images/players/karan-kc.webp', 'Legendary Nepal fast bowler and match-winning lower-order hitter, captaining the Kathmandu Gorkhas franchise.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'david-warner', 'david-warner', 'David Warner', 'D. Warner',
+  'Australian', '1986-10-27', 'Paddington, New South Wales, Australia',
+  'Left-handed', NULL,
+  '/images/players/david-warner.webp', 'David Warner has joined Kathmandu Gorkhas as a marquee overseas player for the third Nepal Premier League. The franchise announced the signing on 15 September 2026 through a video message in which Warner said he was looking forward to playing in N...'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -742,7 +1290,63 @@ INSERT INTO public.players (
   'bhim-sharki', 'bhim-sharki', 'Bhim Sharki', 'B. Sharki',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm off break',
-  NULL, 'Reliable top-order international batter renowned for composure, strike rotation, and sharp fielding.'
+  '/images/players/bhim-sharki.webp', 'Reliable top-order international batter renowned for composure, strike rotation, and sharp fielding.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dayanand-mandal', 'dayanand-mandal', 'Dayanand Mandal', 'D. Mandal',
+  'Nepalese', NULL, 'Biratnagar (per Cricnepal; not corroborated elsewhere)',
+  'Sources differ: ESPNcricinfo lists right-hand bat; Cricnepal lists left-hand bat', 'Left-arm medium-fast (confirmed by both ESPNcricinfo and Cricnepal)',
+  '/images/players/dayanand-mandal.webp', 'Dayanand Mandal is a Nepalese left-arm medium-fast bowler who plays for Nepal Under-19.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dev-shah', 'dev-shah', 'Dev Shah', 'D. Shah',
+  'Nepalese', NULL, 'Nepal (specific city not publicly confirmed)',
+  'Left-hand bat', 'Slow left-arm orthodox',
+  '/images/players/dev-shah.webp', 'Dev Shah is a Nepalese Cricketer born on February 24, 2005.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'krishna-paudel', 'krishna-paudel', 'Krishna Paudel', 'K. Paudel',
+  'Nepalese', NULL, NULL,
+  'Right-handed', 'Right-arm medium',
+  '/images/players/krishna-paudel.webp', 'Krishna Paudel is a Nepali right-arm medium bowler bought by Kathmandu Gorkhas in the NPL 2026 auction. He has limited prior NPL experience.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ks-bharat', 'ks-bharat', 'KS Bharat', 'K. Bharat',
+  'Indian', '1993-10-03', 'Visakhapatnam, Andhra Pradesh, India',
+  'Right-handed', 'N/A',
+  '/images/players/ks-bharat.webp', 'KS Bharat is a former India Test wicketkeeper-batter signed by Kathmandu Gorkhas for the Nepal Premier League. He brings extensive domestic and international experience behind the stumps and with the bat.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -756,7 +1360,21 @@ INSERT INTO public.players (
   'mohammad-aadil-alam', 'mohammad-aadil-alam', 'Mohammad Aadil Alam', 'M. A. Alam',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm medium',
-  NULL, 'Explosive all-rounder capable of clearance hitting and breakthrough overs for Kathmandu.'
+  '/images/players/mohammad-aadil-alam.webp', 'Explosive all-rounder capable of clearance hitting and breakthrough overs for Kathmandu.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'prasiddha-jaishi', 'prasiddha-jaishi', 'Prasiddha Jaishi', 'P. Jaishi',
+  'Nepalese', NULL, 'Nepal (school-affiliated with Kathmandu; exact birthplace not confirmed)',
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/prasiddha-jaishi.webp', 'Prasiddha Jaishi is a Nepalese right-hand batting all-rounder and right-arm medium bowler.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -770,7 +1388,35 @@ INSERT INTO public.players (
   'rashid-khan', 'rashid-khan-nepal', 'Rashid Khan', 'R. Khan',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm medium-fast',
-  NULL, 'Skilled medium-fast bowler who provides swing with the new ball and discipline in the death overs.'
+  '/images/players/rashid-khan-nepal.webp', 'Skilled medium-fast bowler who provides swing with the new ball and discipline in the death overs.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sahan-arachchige', 'sahan-arachchige', 'Sahan Arachchige', 'S. Arachchige',
+  'Sri Lankan', '1996-05-13', 'Ragama, Sri Lanka',
+  'Left-handed', 'Right-arm off-break',
+  '/images/players/sahan-arachchige.webp', 'Sahan Arachchige is a left-handed batter and right-arm off-break bowler from Sri Lanka. He has played ODI and T20I cricket for Sri Lanka and has long experience in the Lanka Premier League. He joins the Kathmandu Gurkhas squad for NPL 2026.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sahil-patel', 'sahil-patel', 'Sahil Patel', 'S. Patel',
+  'Nepalese', NULL, 'Kalaiya, Bara District, Nepal',
+  'Right-hand bat', NULL,
+  '/images/players/sahil-patel.webp', 'Sahil Patel is a Nepalese wicketkeeper-batter born on October 5, 2007, in Kalaiya, Bara.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -784,7 +1430,7 @@ INSERT INTO public.players (
   'santosh-yadav', 'santosh-yadav', 'Santosh Yadav', 'S. Yadav',
   'Nepalese', NULL, NULL,
   'Left-hand bat', 'Slow left-arm orthodox',
-  NULL, 'Young spinning all-rounder offering depth with both bat and ball for the Gorkhas.'
+  '/images/players/santosh-yadav.webp', 'Young spinning all-rounder offering depth with both bat and ball for the Gorkhas.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -798,7 +1444,35 @@ INSERT INTO public.players (
   'shahab-alam', 'shahab-alam', 'Shahab Alam', 'S. Alam',
   'Nepalese', NULL, NULL,
   'Left-hand bat', 'Slow left-arm orthodox',
-  NULL, 'Proven domestic left-arm spinner celebrated for high accuracy and tactical flight variation.'
+  '/images/players/shahab-alam.webp', 'Proven domestic left-arm spinner celebrated for high accuracy and tactical flight variation.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sonu-devkota', 'sonu-devkota', 'Sonu Devkota', 'S. Devkota',
+  'Nepalese', NULL, 'Sarlahi, Nepal',
+  'Right-hand bat', 'Right-arm legbreak',
+  '/images/players/sonu-devkota.webp', 'Sonu Devkota is a Nepali cricketer born on February 19, 2004, in Sarlahi.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'suryanshu-koirala', 'suryanshu-koirala', 'Suryanshu Koirala', 'S. Koirala',
+  'Nepalese', NULL, 'Chitwan, Nepal',
+  'Right-hand bat', 'Not recorded — Koirala is listed purely as a batter',
+  '/images/players/suryanshu-koirala.webp', 'Suryanshu Koirala is a Nepalese right-handed opening batter born September 2, 2008, in Chitwan.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -812,7 +1486,7 @@ INSERT INTO public.players (
   'rohit-paudel', 'rohit-paudel', 'Rohit Paudel', 'R. Paudel',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm off break',
-  NULL, 'Nepal National Team captain and premier middle-order stroke-maker, leading the Lumbini Lions franchise in Season 3.'
+  '/images/players/rohit-paudel.webp', 'Nepal National Team captain and premier middle-order stroke-maker, leading the Lumbini Lions franchise in Season 3.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -823,10 +1497,10 @@ INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
-  'sundeep-jora', 'sundeep-jora', 'Sundeep Jora', 'S. Jora',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', NULL,
-  NULL, 'Clean-striking T20 middle-order batter known for rapid scoring and athletic boundary fielding.'
+  'aakash-tripathi', 'aakash-tripathi', 'Aakash Tripathi', 'A. Tripathi',
+  'Nepalese', '2005-09-10', 'Kotahimai, Rupandehi District, Nepal',
+  'Right-hand bat', 'Right-arm off-break',
+  '/images/players/aakash-tripathi.webp', 'Aakash Tripathi is a Nepali cricketer, born on 10 September 2005 in Rupandehi.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -837,38 +1511,10 @@ INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
-  'sher-malla', 'sher-malla', 'Sher Malla', 'S. Malla',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm off break',
-  NULL, 'Off-spin bowler who topped the domestic wicket-taking charts and anchors the Lions spin department.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'dilip-nath', 'dilip-nath', 'Dilip Nath', 'D. Nath',
-  'Nepalese', NULL, NULL,
-  'Left-hand bat', NULL,
-  NULL, 'Experienced left-handed wicketkeeper-batter capable of opening the batting or stabilizing the middle order.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'dinesh-adhikari', 'dinesh-adhikari', 'Dinesh Adhikari', 'D. Adhikari',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm medium',
-  NULL, 'Accurate seam bowler providing steady overs and wicket-taking consistency for Lumbini.'
+  'aasif-sheikh', 'aasif-sheikh', 'Aasif Sheikh', 'A. Sheikh',
+  'Nepalese', '2001-06-22', 'Birgunj, Nepal',
+  'Right-hand bat', 'Does not bowl',
+  '/images/players/aasif-sheikh.webp', 'Aasif Sheikh is Nepal''s wicketkeeper-opener, born on 22 June 2001 in Birgunj.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -882,7 +1528,161 @@ INSERT INTO public.players (
   'abhishesh-gautam', 'abhishesh-gautam', 'Abhishesh Gautam', 'A. Gautam',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm leg break',
-  NULL, 'Wrist spinner offering drift, turn, and attacking wicket-taking options for Lumbini Lions.'
+  '/images/players/abhishesh-gautam.webp', 'Wrist spinner offering drift, turn, and attacking wicket-taking options for Lumbini Lions.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ajay-chauhan', 'ajay-chauhan', 'Ajay Chauhan', 'A. Chauhan',
+  'Nepalese', NULL, 'Bhairahawa, Nepal',
+  'Right Hand Bat', 'Slow Left Arm Orthodox',
+  '/images/players/ajay-chauhan.webp', 'Ajay Kumar Chauhan is a Nepali cricketer born on March 24, 2003, in Bhairahawa.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'arniko-prasad-yadav', 'arniko-prasad-yadav', 'Arniko Yadav', 'A. Yadav',
+  'Nepalese', NULL, 'Bara, Nepal',
+  'Left Hand Bat', 'Slow Left Arm Orthodox',
+  '/images/players/arniko-prasad-yadav.webp', 'Arniko Prasad Yadav is a Nepali cricketer born on May 17, 1993, in Bara.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'darcy-short', 'darcy-short', 'D’Arcy Short', 'D. Short',
+  'Australian', '1990-08-09', 'Katherine, Northern Territory, Australia',
+  'Left-Handed', 'Left-Arm Orthodox Spinner',
+  '/images/players/darcy-short.webp', 'D''Arcy John Matthew Short is an Australian opener, born in Katherine, Northern Territory, on 9 August 1990. He played ODIs and T20Is for Australia from 2018 to 2020, with a T20I best of 76, and has been a regular in the Big Bash League for Hobart ...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dilip-nath', 'dilip-nath', 'Dilip Nath', 'D. Nath',
+  'Nepalese', NULL, NULL,
+  'Left-hand bat', NULL,
+  '/images/players/dilip-nath.webp', 'Experienced left-handed wicketkeeper-batter capable of opening the batting or stabilizing the middle order.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dinesh-adhikari', 'dinesh-adhikari', 'Dinesh Adhikari', 'D. Adhikari',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/dinesh-adhikari.webp', 'Accurate seam bowler providing steady overs and wicket-taking consistency for Lumbini.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'durgesh-gupta', 'durgesh-gupta', 'Durgesh Gupta', 'D. Gupta',
+  'Nepalese', '2004-12-25', 'Not officially confirmed; one fan profile lists Kapilbastu, Nepal',
+  'Right-Handed', 'Left-Arm Medium-Fast',
+  '/images/players/durgesh-gupta.webp', 'Durgesh Gupta is a Nepali cricketer born 25 December 2004, a right-handed batter and left-arm medium-fast bowler.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'kishore-mahato', 'kishore-mahato', 'Kishore Mahato', 'K. Mahato',
+  'Nepalese', '2000-04-02', 'Nepal — specific city/district not publicly confirmed by verified sources',
+  'Right Hand Bat', 'Right Arm Medium Fast',
+  '/images/players/kishore-mahato.webp', 'Kishor Mahato (also spelled Kishore Mahato) is a Nepali right-arm medium-fast bowler best known for his match-winning 3/25 in the inaugural NPL 2024 final.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'niroshan-dickwella', 'niroshan-dickwella', 'Niroshan Dickwella', 'N. Dickwella',
+  'International', '1993-06-23', 'Kandy, Sri Lanka',
+  'Left-Handed Batsman', 'N/A',
+  '/images/players/niroshan-dickwella.webp', 'Niroshan Dickwella is a Sri Lankan wicketkeeper-batter known for scoops, ramps, and aggressive left-hand batting. Born in Kandy on 23 June 1993, he has played Test, ODI, and T20I cricket for Sri Lanka since 2014 and keeps wickets for the Nondescri...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ruben-trumpelmann', 'ruben-trumpelmann', 'Ruben Trumpelmann', 'R. Trumpelmann',
+  'Namibian', '1998-02-01', 'Durban, South Africa',
+  'Right-Handed', 'Left-Arm-Fast',
+  '/images/players/ruben-trumpelmann.webp', 'Ruben Trumpelmann is a Namibian left-arm fast bowler, born in Durban on 1 February 1998. He plays ODIs and T20Is for Namibia and was eligible through his father’s Windhoek birth. In NPL 2025 he played all 10 matches for the Lumbini Lions, took 15 ...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sher-malla', 'sher-malla', 'Sher Malla', 'S. Malla',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm off break',
+  '/images/players/sher-malla.webp', 'Off-spin bowler who topped the domestic wicket-taking charts and anchors the Lions spin department.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sundeep-jora', 'sundeep-jora', 'Sundeep Jora', 'S. Jora',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', NULL,
+  '/images/players/sundeep-jora.webp', 'Clean-striking T20 middle-order batter known for rapid scoring and athletic boundary fielding.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -896,7 +1696,7 @@ INSERT INTO public.players (
   'tilak-bhandari', 'tilak-bhandari', 'Tilak Bhandari', 'T. Bhandari',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm leg break, googly',
-  NULL, 'Leg-spin talent with a deceptive googly, adding attacking depth to the Lions bowling roster.'
+  '/images/players/tilak-bhandari.webp', 'Leg-spin talent with a deceptive googly, adding attacking depth to the Lions bowling roster.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -910,49 +1710,7 @@ INSERT INTO public.players (
   'kushal-bhurtel', 'kushal-bhurtel', 'Kushal Bhurtel', 'K. Bhurtel',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm leg break',
-  NULL, 'Dynamic Nepal international opening batter and part-time leg-spinner, captaining Pokhara Avengers.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'sagar-dhakal', 'sagar-dhakal', 'Sagar Dhakal', 'S. Dhakal',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Slow left-arm orthodox',
-  NULL, 'International left-arm spinner specializing in powerplay containment and tactical accuracy.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'arjun-kumal', 'arjun-kumal', 'Arjun Kumal', 'A. Kumal',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', NULL,
-  NULL, 'Talented young national top-order batter known for classical technique and temperament.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'bipin-khatri', 'bipin-khatri', 'Bipin Khatri', 'B. Khatri',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', 'Right-arm medium',
-  NULL, 'Gandaki regional stalwart providing seam-bowling all-round balance to the Avengers.'
+  '/images/players/kushal-bhurtel.webp', 'Dynamic Nepal international opening batter and part-time leg-spinner, captaining Pokhara Avengers.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -966,7 +1724,7 @@ INSERT INTO public.players (
   'aakash-chand', 'aakash-chand', 'Aakash Chand', 'A. Chand',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm fast-medium',
-  NULL, 'High-potential young pace bowler with genuine bounce and seam presentation.'
+  '/images/players/aakash-chand.webp', 'High-potential young pace bowler with genuine bounce and seam presentation.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -977,10 +1735,94 @@ INSERT INTO public.players (
   id, slug, name, display_name, nationality, date_of_birth, birth_place,
   batting_style, bowling_style, profile_image, bio
 ) VALUES (
-  'kiran-thagunna', 'kiran-thagunna', 'Kiran Thagunna', 'K. Thagunna',
+  'arjun-gharti', 'arjun-gharti', 'Arjun Gharti', 'A. Gharti',
+  'Nepalese', NULL, 'Karnali Province, Nepal',
+  'Right-handed batsman', 'Does not bowl (specialist wicketkeeper)',
+  '/images/players/arjun-gharti.webp', 'Arjun Gharti is a Nepali wicketkeeper-batter from Karnali Province who plays for Pokhara Avengers in the Nepal Premier League.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'arjun-kumal', 'arjun-kumal', 'Arjun Kumal', 'A. Kumal',
   'Nepalese', NULL, NULL,
   'Right-hand bat', NULL,
-  NULL, 'Middle-order strokeplayer retained to bolster Pokhara''s scoring depth.'
+  '/images/players/arjun-kumal.webp', 'Talented young national top-order batter known for classical technique and temperament.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bibek-rana-magar', 'bibek-rana-magar', 'Bibek Rana Magar', 'B. Rana Magar',
+  'Nepalese', NULL, 'Kavre, Nepal',
+  'Left-hand bat', 'Right-arm medium',
+  '/images/players/bibek-rana-magar.webp', 'Bibek Kumar Rana Magar is a Nepali domestic cricketer from Kavre, born February 25, 2004.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bipin-acharya', 'bipin-acharya', 'Bipin Acharya', 'B. Acharya',
+  'Nepalese', NULL, 'Not publicly confirmed',
+  'Left-hand bat', 'Right-arm offbreak',
+  '/images/players/bipin-acharya.webp', 'Bipin Acharya is a Nepali cricketer, born February 22, 2001, who bats left-handed and bowls right-arm offbreak.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'bipin-khatri', 'bipin-khatri', 'Bipin Khatri', 'B. Khatri',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Right-arm medium',
+  '/images/players/bipin-khatri.webp', 'Gandaki regional stalwart providing seam-bowling all-round balance to the Avengers.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'chamika-karunaratne', 'chamika-karunaratne', 'Chamika Karunaratne', 'C. Karunaratne',
+  'Sri Lankan', '1996-05-29', 'Colombo, Sri Lanka',
+  'Right-handed', 'Right-arm fast-medium',
+  '/images/players/chamika-karunaratne.webp', 'Chamika Karunaratne is a Sri Lankan international pace-bowling all-rounder signed by the Pokhara Avengers for the Nepal Premier League. He contributes with both bat and ball in T20 cricket.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dhananjaya-lakshan', 'dhananjaya-lakshan', 'Dhananjaya Lakshan', 'D. Lakshan',
+  'Sri Lankan', '1998-10-05', 'Galle, Sri Lanka',
+  'Left-handed', 'Right-arm medium-fast',
+  '/images/players/dhananjaya-lakshan.webp', 'Dhananjaya Lakshan (full name Pothotuwa Arachchige Dhananjaya Lakshan) is a Sri Lankan professional cricketer who plays as an all-rounder for Pokhara Avengers in the Nepal Premier League. He has represented Sri Lanka in ODIs.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -994,7 +1836,93 @@ INSERT INTO public.players (
   'dinesh-kharel', 'dinesh-kharel', 'Dinesh Kharel', 'D. Kharel',
   'Nepalese', NULL, NULL,
   'Right-hand bat', NULL,
-  NULL, 'Top-order batter retained by the Avengers to support their aggressive batting philosophy.'
+  '/images/players/dinesh-kharel.webp', 'Top-order batter retained by the Avengers to support their aggressive batting philosophy.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'kiran-thagunna', 'kiran-thagunna', 'Kiran Thagunna', 'K. Thagunna',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', NULL,
+  '/images/players/kiran-thagunna.webp', 'Middle-order strokeplayer retained to bolster Pokhara''s scoring depth.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'pratik-pokharel', 'pratik-pokharel', 'Pratik Pokharel', 'P. Pokharel',
+  'Nepalese', NULL, 'Not publicly disclosed',
+  'Right-hand bat (lower order)', 'Right-arm fast medium',
+  '/images/players/pratik-pokharel.webp', 'Pratik Pokharel is a Nepali all-rounder born November 23, 2006.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sagar-dhakal', 'sagar-dhakal', 'Sagar Dhakal', 'S. Dhakal',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', 'Slow left-arm orthodox',
+  '/images/players/sagar-dhakal.webp', 'International left-arm spinner specializing in powerplay containment and tactical accuracy.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'shakib-al-hasan', 'shakib-al-hasan', 'Shakib AL Hasan', 'S. AL Hasan',
+  'Bangladeshi', '1987-03-24', NULL,
+  'Left-handed', 'Slow left-arm orthodox',
+  '/images/players/shakib-al-hasan.webp', 'Shakib Al Hasan was born in Magura on 24 March 1987 and played for Bangladesh from 2006 to 2024. He appeared in 71 Tests, 247 ODIs and 129 T20Is, scoring 4,609 Test runs and taking 246 Test wickets, with 7,570 ODI runs and 317 ODI wickets.
+
+He has...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sudip-aryal', 'sudip-aryal', 'Sudip Aryal', 'S. Aryal',
+  'Nepalese', NULL, 'Madani, Gulmi District, Gandaki Province, Nepal',
+  'Right-hand bat', 'Right-arm medium-fast',
+  '/images/players/sudip-aryal.webp', 'Sudip Aryal is a 19-year-old Nepali cricketer from Gulmi, Gandaki Province, who bats right-handed and bowls right-arm medium-fast.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sunny-bk', 'sunny-bk', 'Sunny BK', 'S. BK',
+  'Nepalese', NULL, 'N/A',
+  'Right Hand Bat', 'Leg-Spin (Wrist Spin)',
+  '/images/players/sunny-bk.webp', 'Sunny BK is a Nepali cricketer who joined Pokhara Avengers in the Nepal Premier League after being purchased in the NPL 2026 auction for NPR 2 lakh.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -1008,21 +1936,7 @@ INSERT INTO public.players (
   'dipendra-singh-airee', 'dipendra-singh-airee', 'Dipendra Singh Airee', 'D. S. Airee',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm off break',
-  NULL, 'World-class T20 international all-rounder and world-record six-hitter, captaining Sudurpaschim Royals for NPL Season 3.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'binod-bhandari', 'binod-bhandari', 'Binod Bhandari', 'B. Bhandari',
-  'Nepalese', NULL, NULL,
-  'Right-hand bat', NULL,
-  NULL, 'Veteran Nepal international wicketkeeper and power-hitter with extensive domestic and international experience.'
+  '/images/players/dipendra-singh-airee.webp', 'World-class T20 international all-rounder and world-record six-hitter, captaining Sudurpaschim Royals for NPL Season 3.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -1036,21 +1950,7 @@ INSERT INTO public.players (
   'aarif-sheikh', 'aarif-sheikh', 'Aarif Sheikh', 'A. Sheikh',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm medium',
-  NULL, 'Dependable middle-order batsman and medium-pace bowler offering crisis management for the Royals.'
-) ON CONFLICT (id) DO UPDATE SET
-  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
-  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
-  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
-  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.players (
-  id, slug, name, display_name, nationality, date_of_birth, birth_place,
-  batting_style, bowling_style, profile_image, bio
-) VALUES (
-  'ishan-pandey', 'ishan-pandey', 'Ishan Pandey', 'I. Pandey',
-  'Nepalese', NULL, NULL,
-  'Left-hand bat', NULL,
-  NULL, 'Left-handed top-order batsman known for clean timing and aggressive strokeplay.'
+  '/images/players/aarif-sheikh.webp', 'Dependable middle-order batsman and medium-pace bowler offering crisis management for the Royals.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -1064,7 +1964,63 @@ INSERT INTO public.players (
   'abinash-bohara', 'abinash-bohara', 'Abinash Bohara', 'A. Bohara',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm medium-fast',
-  NULL, 'Premier Nepali death-overs fast-bowling specialist renowned for pinpoint yorkers and slower deliveries.'
+  '/images/players/abinash-bohara.webp', 'Premier Nepali death-overs fast-bowling specialist renowned for pinpoint yorkers and slower deliveries.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ayub-chand', 'ayub-chand', 'Ayub Chand', 'A. Chand',
+  'Nepalese', NULL, NULL,
+  'Right-handed', 'Right-arm leg spin',
+  '/images/players/ayub-chand.webp', 'Ayub Chand is a Nepalese cricketer signed by Sudurpaschim Royals in the Category C bracket of the NPL Season 3 (2026) auction for NRs 200,000.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'binod-bhandari', 'binod-bhandari', 'Binod Bhandari', 'B. Bhandari',
+  'Nepalese', NULL, NULL,
+  'Right-hand bat', NULL,
+  '/images/players/binod-bhandari.webp', 'Veteran Nepal international wicketkeeper and power-hitter with extensive domestic and international experience.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'brandon-mcmullen', 'brandon-mcmullen', 'Brandon McMullen', 'B. McMullen',
+  'Scottish', '1999-10-18', 'Durban, South Africa',
+  'Right-handed', 'Right-arm medium',
+  '/images/players/brandon-mcmullen.webp', 'Brandon McMullen is a Scottish all-rounder who bats right-handed and bowls right-arm medium pace. He previously played for Sudurpaschim Royals in the inaugural NPL and returns for Season 3.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'dipak-bohara', 'dipak-bohara', 'Dipak Bohara', 'D. Bohara',
+  'Nepalese', '2004-12-26', 'Dasharathchand, Baitadi District, Sudurpaschim Province, Nepal',
+  'Right-hand bat', 'None — does not bowl',
+  '/images/players/dipak-bohara.webp', 'Dipak Bohara is a Nepalese wicketkeeper-batter born on 26 December 2004 in Baitadi.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -1078,7 +2034,7 @@ INSERT INTO public.players (
   'hemant-dhami', 'hemant-dhami', 'Hemant Dhami', 'H. Dhami',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm fast-medium',
-  NULL, 'Young fast-bowling talent from Sudurpaschim Province with sharp pace and attacking seam presentation.'
+  '/images/players/hemant-dhami.webp', 'Young fast-bowling talent from Sudurpaschim Province with sharp pace and attacking seam presentation.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -1092,7 +2048,91 @@ INSERT INTO public.players (
   'hikmat-mahara', 'hikmat-mahara', 'Hikmat Mahara', 'H. Mahara',
   'Nepalese', NULL, NULL,
   'Right-hand bat', 'Right-arm medium',
-  NULL, 'Regional all-rounder providing seam support and lower-order batting resilience for the Royals.'
+  '/images/players/hikmat-mahara.webp', 'Regional all-rounder providing seam support and lower-order batting resilience for the Royals.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'ishan-pandey', 'ishan-pandey', 'Ishan Pandey', 'I. Pandey',
+  'Nepalese', NULL, NULL,
+  'Left-hand bat', NULL,
+  '/images/players/ishan-pandey.webp', 'Left-handed top-order batsman known for clean timing and aggressive strokeplay.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'milan-bohara', 'milan-bohara', 'Milan Bohara', 'M. Bohara',
+  'Nepalese', '2005-06-28', 'Bheemdatt, Kanchanpur, Nepal',
+  'Right-hand bat', 'Slow left-arm orthodox',
+  '/images/players/milan-bohara.webp', 'Milan Bohara is a Nepali all-rounder born on 28 June 2005 in Kanchanpur.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'sachin-bhatt', 'sachin-bhatt', 'Sachin Bhatt', 'S. Bhatt',
+  'Nepalese', NULL, 'Not publicly disclosed',
+  'Right-hand bat', 'Right-arm legbreak',
+  '/images/players/sachin-bhatt.webp', 'Sachin Bhatt (officially listed as Sachin Bhatta) is a Nepali right-arm legbreak bowler from Sudur Paschim Province.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'scott-kuggeleijn', 'scott-kuggeleijn', 'Scott Kuggeleijn', 'S. Kuggeleijn',
+  'New Zealander', '1992-01-03', 'Hamilton, New Zealand',
+  'Right-hand bat', 'Right-arm fast-medium',
+  '/images/players/scott-kuggeleijn.webp', 'Born in Hamilton on 3 January 1992, Kuggeleijn is the son of former New Zealand Test player Chris Kuggeleijn. A genuine seamier who can also hit down the order, he made his name with Wellington and Northern Districts, topped the 2016–17 Ford Troph...'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'tek-raj-thalal', 'tek-raj-thalal', 'Tek Raj Thalal', 'T. Raj Thalal',
+  'Nepalese', NULL, 'Dadeldhura, Sudurpaschim Province, Nepal',
+  'Left-arm', 'Left-arm medium',
+  '/images/players/tek-raj-thalal.webp', 'Tek Raj Thalal is a left-arm medium bowler from Dadeldhura who was elevated to the role of iconic player for Sudurpaschim Royals following a talent hunt across Sudurpaschim Province.'
+) ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
+  date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
+  batting_style = EXCLUDED.batting_style, bowling_style = EXCLUDED.bowling_style,
+  profile_image = EXCLUDED.profile_image, bio = EXCLUDED.bio,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.players (
+  id, slug, name, display_name, nationality, date_of_birth, birth_place,
+  batting_style, bowling_style, profile_image, bio
+) VALUES (
+  'tek-rawat', 'tek-rawat', 'Tek Rawat', 'T. Rawat',
+  'Nepalese', NULL, 'Sudurpaschim Province, Nepal (exact town not publicly confirmed)',
+  'Right-hand bat', 'Does not bowl (specialist wicketkeeper-batter)',
+  '/images/players/tek-rawat.webp', 'Tek Rawat (Tek Bahadur Rawat) is a Nepali wicketkeeper-batter who plays domestic cricket for Sudurpaschim Province and franchise cricket for Sudurpaschim Royals in the Nepal Premier League.'
 ) ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name, display_name = EXCLUDED.display_name, nationality = EXCLUDED.nationality,
   date_of_birth = EXCLUDED.date_of_birth, birth_place = EXCLUDED.birth_place,
@@ -1101,7 +2141,7 @@ INSERT INTO public.players (
   updated_at = timezone('utc'::text, now());
 
 -- ------------------------------------------------------------------------------
--- 5. PLAYER_SEASONS (53 Season 3 Player-Team Relations)
+-- 5. PLAYER_SEASONS (127 Season 3 Player-Team Relations)
 -- ------------------------------------------------------------------------------
 INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
@@ -1120,7 +2160,33 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_lokesh-bam', 'season-3', 'lokesh-bam', 'biratnagar-kings', 'Wicketkeeper',
+  'season-3_andre-russell', 'season-3', 'andre-russell', 'biratnagar-kings', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_aparajit-poudel', 'season-3', 'aparajit-poudel', 'biratnagar-kings', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_basir-ahamad', 'season-3', 'basir-ahamad', 'biratnagar-kings', 'All-rounder',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Biratnagar Kings Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1133,7 +2199,46 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_basir-ahamad', 'season-3', 'basir-ahamad', 'biratnagar-kings', 'All-rounder',
+  'season-3_charith-asalanka', 'season-3', 'charith-asalanka', 'biratnagar-kings', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_dilsad-ali', 'season-3', 'dilsad-ali', 'biratnagar-kings', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_imran-sheikh', 'season-3', 'imran-sheikh', 'biratnagar-kings', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_lokesh-bam', 'season-3', 'lokesh-bam', 'biratnagar-kings', 'Wicketkeeper',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Biratnagar Kings Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1159,9 +2264,61 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_naren-saud', 'season-3', 'naren-saud', 'biratnagar-kings', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_pratik-shrestha', 'season-3', 'pratik-shrestha', 'biratnagar-kings', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_pratish-gc', 'season-3', 'pratish-gc', 'biratnagar-kings', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Biratnagar Kings Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_rupesh-kumar-singh', 'season-3', 'rupesh-kumar-singh', 'biratnagar-kings', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_shubham-ranjane', 'season-3', 'shubham-ranjane', 'biratnagar-kings', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1185,6 +2342,19 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_sujan-thapaliya', 'season-3', 'sujan-thapaliya', 'biratnagar-kings', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_kushal-malla', 'season-3', 'kushal-malla', 'chitwan-rhinos', 'All-rounder',
   'confirmed', TRUE, TRUE, NULL,
   'confirmed', 'Chitwan Rhinos Official Announcement / CAN', NULL, '2026'
@@ -1198,9 +2368,61 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_rijan-dhakal', 'season-3', 'rijan-dhakal', 'chitwan-rhinos', 'Bowler',
+  'season-3_sikandar-raza', 'season-3', 'sikandar-raza', 'chitwan-rhinos', 'All-rounder',
+  'confirmed', FALSE, TRUE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_arjun-saud', 'season-3', 'arjun-saud', 'chitwan-rhinos', 'Wicketkeeper',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Chitwan Rhinos Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_ashok-dhami', 'season-3', 'ashok-dhami', 'chitwan-rhinos', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_bibek-kumar-yadav', 'season-3', 'bibek-kumar-yadav', 'chitwan-rhinos', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_bipin-rawal', 'season-3', 'bipin-rawal', 'chitwan-rhinos', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1212,32 +2434,6 @@ INSERT INTO public.player_seasons (
   player_number, confidence, source, source_url, source_date
 ) VALUES (
   'season-3_deepak-bohara', 'season-3', 'deepak-bohara', 'chitwan-rhinos', 'Batter',
-  'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Chitwan Rhinos Official Retained Core', NULL, '2026'
-) ON CONFLICT (season_id, player_id) DO UPDATE SET
-  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
-  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
-  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
-  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.player_seasons (
-  id, season_id, player_id, team_id, role, status, captain, marquee,
-  player_number, confidence, source, source_url, source_date
-) VALUES (
-  'season-3_ranjeet-kumar', 'season-3', 'ranjeet-kumar', 'chitwan-rhinos', 'Bowler',
-  'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Chitwan Rhinos Official Retained Core', NULL, '2026'
-) ON CONFLICT (season_id, player_id) DO UPDATE SET
-  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
-  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
-  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
-  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.player_seasons (
-  id, season_id, player_id, team_id, role, status, captain, marquee,
-  player_number, confidence, source, source_url, source_date
-) VALUES (
-  'season-3_kamal-singh-airee', 'season-3', 'kamal-singh-airee', 'chitwan-rhinos', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Chitwan Rhinos Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1263,9 +2459,113 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_arjun-saud', 'season-3', 'arjun-saud', 'chitwan-rhinos', 'Wicketkeeper',
+  'season-3_gautam-kc', 'season-3', 'gautam-kc', 'chitwan-rhinos', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_kalim-sana', 'season-3', 'kalim-sana', 'chitwan-rhinos', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_kamal-singh-airee', 'season-3', 'kamal-singh-airee', 'chitwan-rhinos', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Chitwan Rhinos Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_mousom-dhakal', 'season-3', 'mousom-dhakal', 'chitwan-rhinos', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_ranjeet-kumar', 'season-3', 'ranjeet-kumar', 'chitwan-rhinos', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Chitwan Rhinos Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_ravi-bopara', 'season-3', 'ravi-bopara', 'chitwan-rhinos', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_rijan-dhakal', 'season-3', 'rijan-dhakal', 'chitwan-rhinos', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Chitwan Rhinos Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_salahuddin-khan', 'season-3', 'salahuddin-khan', 'chitwan-rhinos', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_usama-mir', 'season-3', 'usama-mir', 'chitwan-rhinos', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1289,6 +2589,45 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_aaditya-mahata', 'season-3', 'aaditya-mahata', 'janakpur-bolts', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Janakpur Bolts Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_abhishek-tiwari', 'season-3', 'abhishek-tiwari', 'janakpur-bolts', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_amar-singh-rautela', 'season-3', 'amar-singh-rautela', 'janakpur-bolts', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_anil-sah', 'season-3', 'anil-sah', 'janakpur-bolts', 'Batter',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Janakpur Bolts Official Retained Core', NULL, '2026'
@@ -1302,7 +2641,20 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_lalit-rajbanshi', 'season-3', 'lalit-rajbanshi', 'janakpur-bolts', 'Bowler',
+  'season-3_ashutosh-pandey', 'season-3', 'ashutosh-pandey', 'janakpur-bolts', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_bikash-aagri', 'season-3', 'bikash-aagri', 'janakpur-bolts', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Janakpur Bolts Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1315,7 +2667,59 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_bikash-aagri', 'season-3', 'bikash-aagri', 'janakpur-bolts', 'Bowler',
+  'season-3_bishal-patel', 'season-3', 'bishal-patel', 'janakpur-bolts', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_bishal-shusling', 'season-3', 'bishal-shusling', 'janakpur-bolts', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_iftikhar-ahmed', 'season-3', 'iftikhar-ahmed', 'janakpur-bolts', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_james-neesham', 'season-3', 'james-neesham', 'janakpur-bolts', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_lalit-rajbanshi', 'season-3', 'lalit-rajbanshi', 'janakpur-bolts', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Janakpur Bolts Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1341,9 +2745,48 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_aaditya-mahata', 'season-3', 'aaditya-mahata', 'janakpur-bolts', 'All-rounder',
+  'season-3_moeen-ali', 'season-3', 'moeen-ali', 'janakpur-bolts', 'All-rounder',
   'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Janakpur Bolts Official Retained Core', NULL, '2026'
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_rit-gautam', 'season-3', 'rit-gautam', 'janakpur-bolts', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_santosh-karki', 'season-3', 'santosh-karki', 'janakpur-bolts', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_trit-raj-das', 'season-3', 'trit-raj-das', 'janakpur-bolts', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1367,9 +2810,9 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_gulshan-jha', 'season-3', 'gulshan-jha', 'karnali-yaks', 'All-rounder',
+  'season-3_ariful-islam', 'season-3', 'ariful-islam', 'karnali-yaks', 'Batter',
   'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Karnali Yaks Official Retained Core', NULL, '2026'
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1380,9 +2823,9 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_nandan-yadav', 'season-3', 'nandan-yadav', 'karnali-yaks', 'Bowler',
+  'season-3_bipin-sharma', 'season-3', 'bipin-sharma', 'karnali-yaks', 'All-rounder',
   'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Karnali Yaks Official Retained Core', NULL, '2026'
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1406,9 +2849,100 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_dipendra-rawat', 'season-3', 'dipendra-rawat', 'karnali-yaks', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_gulshan-jha', 'season-3', 'gulshan-jha', 'karnali-yaks', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Karnali Yaks Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_mark-watt', 'season-3', 'mark-watt', 'karnali-yaks', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_nandan-yadav', 'season-3', 'nandan-yadav', 'karnali-yaks', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Karnali Yaks Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_pawan-sarraf', 'season-3', 'pawan-sarraf', 'karnali-yaks', 'All-rounder',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Karnali Yaks Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sachin-sharma', 'season-3', 'sachin-sharma', 'karnali-yaks', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_shubh-kansakar', 'season-3', 'shubh-kansakar', 'karnali-yaks', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_surya-tamang', 'season-3', 'surya-tamang', 'karnali-yaks', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1458,9 +2992,74 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_david-warner', 'season-3', 'david-warner', 'kathmandu-gorkhas', 'Batter',
+  'confirmed', FALSE, TRUE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_bhim-sharki', 'season-3', 'bhim-sharki', 'kathmandu-gorkhas', 'Batter',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Kathmandu Gorkhas Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_dayanand-mandal', 'season-3', 'dayanand-mandal', 'kathmandu-gorkhas', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_dev-shah', 'season-3', 'dev-shah', 'kathmandu-gorkhas', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_krishna-paudel', 'season-3', 'krishna-paudel', 'kathmandu-gorkhas', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_ks-bharat', 'season-3', 'ks-bharat', 'kathmandu-gorkhas', 'Wicketkeeper',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1484,9 +3083,48 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_prasiddha-jaishi', 'season-3', 'prasiddha-jaishi', 'kathmandu-gorkhas', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_rashid-khan', 'season-3', 'rashid-khan', 'kathmandu-gorkhas', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Kathmandu Gorkhas Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sahan-arachchige', 'season-3', 'sahan-arachchige', 'kathmandu-gorkhas', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sahil-patel', 'season-3', 'sahil-patel', 'kathmandu-gorkhas', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1523,6 +3161,32 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_sonu-devkota', 'season-3', 'sonu-devkota', 'kathmandu-gorkhas', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_suryanshu-koirala', 'season-3', 'suryanshu-koirala', 'kathmandu-gorkhas', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_rohit-paudel', 'season-3', 'rohit-paudel', 'lumbini-lions', 'Batter',
   'confirmed', TRUE, TRUE, NULL,
   'confirmed', 'Lumbini Lions Official Announcement / CAN', NULL, '2026'
@@ -1536,7 +3200,33 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_sundeep-jora', 'season-3', 'sundeep-jora', 'lumbini-lions', 'Batter',
+  'season-3_aakash-tripathi', 'season-3', 'aakash-tripathi', 'lumbini-lions', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_aasif-sheikh', 'season-3', 'aasif-sheikh', 'lumbini-lions', 'Wicketkeeper',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_abhishesh-gautam', 'season-3', 'abhishesh-gautam', 'lumbini-lions', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Lumbini Lions Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1549,9 +3239,35 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_sher-malla', 'season-3', 'sher-malla', 'lumbini-lions', 'Bowler',
+  'season-3_ajay-chauhan', 'season-3', 'ajay-chauhan', 'lumbini-lions', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Lumbini Lions Official Retained Core', NULL, '2026'
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_arniko-prasad-yadav', 'season-3', 'arniko-prasad-yadav', 'lumbini-lions', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_darcy-short', 'season-3', 'darcy-short', 'lumbini-lions', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1588,7 +3304,72 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_abhishesh-gautam', 'season-3', 'abhishesh-gautam', 'lumbini-lions', 'Bowler',
+  'season-3_durgesh-gupta', 'season-3', 'durgesh-gupta', 'lumbini-lions', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_kishore-mahato', 'season-3', 'kishore-mahato', 'lumbini-lions', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_niroshan-dickwella', 'season-3', 'niroshan-dickwella', 'lumbini-lions', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_ruben-trumpelmann', 'season-3', 'ruben-trumpelmann', 'lumbini-lions', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sher-malla', 'season-3', 'sher-malla', 'lumbini-lions', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Lumbini Lions Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sundeep-jora', 'season-3', 'sundeep-jora', 'lumbini-lions', 'Batter',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Lumbini Lions Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1627,9 +3408,22 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_sagar-dhakal', 'season-3', 'sagar-dhakal', 'pokhara-avengers', 'Bowler',
+  'season-3_aakash-chand', 'season-3', 'aakash-chand', 'pokhara-avengers', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Pokhara Avengers Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_arjun-gharti', 'season-3', 'arjun-gharti', 'pokhara-avengers', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1653,6 +3447,32 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
+  'season-3_bibek-rana-magar', 'season-3', 'bibek-rana-magar', 'pokhara-avengers', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_bipin-acharya', 'season-3', 'bipin-acharya', 'pokhara-avengers', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
   'season-3_bipin-khatri', 'season-3', 'bipin-khatri', 'pokhara-avengers', 'All-rounder',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Pokhara Avengers Official Retained Core', NULL, '2026'
@@ -1666,7 +3486,33 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_aakash-chand', 'season-3', 'aakash-chand', 'pokhara-avengers', 'Bowler',
+  'season-3_chamika-karunaratne', 'season-3', 'chamika-karunaratne', 'pokhara-avengers', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_dhananjaya-lakshan', 'season-3', 'dhananjaya-lakshan', 'pokhara-avengers', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_dinesh-kharel', 'season-3', 'dinesh-kharel', 'pokhara-avengers', 'Batter',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Pokhara Avengers Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1692,9 +3538,61 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_dinesh-kharel', 'season-3', 'dinesh-kharel', 'pokhara-avengers', 'Batter',
+  'season-3_pratik-pokharel', 'season-3', 'pratik-pokharel', 'pokhara-avengers', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sagar-dhakal', 'season-3', 'sagar-dhakal', 'pokhara-avengers', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Pokhara Avengers Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_shakib-al-hasan', 'season-3', 'shakib-al-hasan', 'pokhara-avengers', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sudip-aryal', 'season-3', 'sudip-aryal', 'pokhara-avengers', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sunny-bk', 'season-3', 'sunny-bk', 'pokhara-avengers', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1718,33 +3616,7 @@ INSERT INTO public.player_seasons (
   id, season_id, player_id, team_id, role, status, captain, marquee,
   player_number, confidence, source, source_url, source_date
 ) VALUES (
-  'season-3_binod-bhandari', 'season-3', 'binod-bhandari', 'sudurpaschim-royals', 'Wicketkeeper',
-  'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Sudurpaschim Royals Official Retained Core', NULL, '2026'
-) ON CONFLICT (season_id, player_id) DO UPDATE SET
-  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
-  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
-  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
-  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.player_seasons (
-  id, season_id, player_id, team_id, role, status, captain, marquee,
-  player_number, confidence, source, source_url, source_date
-) VALUES (
   'season-3_aarif-sheikh', 'season-3', 'aarif-sheikh', 'sudurpaschim-royals', 'All-rounder',
-  'confirmed', FALSE, FALSE, NULL,
-  'confirmed', 'Sudurpaschim Royals Official Retained Core', NULL, '2026'
-) ON CONFLICT (season_id, player_id) DO UPDATE SET
-  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
-  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
-  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
-  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
-  updated_at = timezone('utc'::text, now());
-INSERT INTO public.player_seasons (
-  id, season_id, player_id, team_id, role, status, captain, marquee,
-  player_number, confidence, source, source_url, source_date
-) VALUES (
-  'season-3_ishan-pandey', 'season-3', 'ishan-pandey', 'sudurpaschim-royals', 'Batter',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Sudurpaschim Royals Official Retained Core', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
@@ -1760,6 +3632,58 @@ INSERT INTO public.player_seasons (
   'season-3_abinash-bohara', 'season-3', 'abinash-bohara', 'sudurpaschim-royals', 'Bowler',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Sudurpaschim Royals Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_ayub-chand', 'season-3', 'ayub-chand', 'sudurpaschim-royals', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_binod-bhandari', 'season-3', 'binod-bhandari', 'sudurpaschim-royals', 'Wicketkeeper',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Sudurpaschim Royals Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_brandon-mcmullen', 'season-3', 'brandon-mcmullen', 'sudurpaschim-royals', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_dipak-bohara', 'season-3', 'dipak-bohara', 'sudurpaschim-royals', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -1786,6 +3710,84 @@ INSERT INTO public.player_seasons (
   'season-3_hikmat-mahara', 'season-3', 'hikmat-mahara', 'sudurpaschim-royals', 'All-rounder',
   'confirmed', FALSE, FALSE, NULL,
   'confirmed', 'Sudurpaschim Royals Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_ishan-pandey', 'season-3', 'ishan-pandey', 'sudurpaschim-royals', 'Batter',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Sudurpaschim Royals Official Retained Core', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_milan-bohara', 'season-3', 'milan-bohara', 'sudurpaschim-royals', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_sachin-bhatt', 'season-3', 'sachin-bhatt', 'sudurpaschim-royals', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_scott-kuggeleijn', 'season-3', 'scott-kuggeleijn', 'sudurpaschim-royals', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / Official Franchise Retained Squad', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_tek-raj-thalal', 'season-3', 'tek-raj-thalal', 'sudurpaschim-royals', 'Bowler',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Official Franchise Announcement / Contracted Overseas Signing', NULL, '2026'
+) ON CONFLICT (season_id, player_id) DO UPDATE SET
+  team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
+  captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
+  confidence = EXCLUDED.confidence, source = EXCLUDED.source,
+  source_url = EXCLUDED.source_url, source_date = EXCLUDED.source_date,
+  updated_at = timezone('utc'::text, now());
+INSERT INTO public.player_seasons (
+  id, season_id, player_id, team_id, role, status, captain, marquee,
+  player_number, confidence, source, source_url, source_date
+) VALUES (
+  'season-3_tek-rawat', 'season-3', 'tek-rawat', 'sudurpaschim-royals', 'All-rounder',
+  'confirmed', FALSE, FALSE, NULL,
+  'confirmed', 'Cricket Association of Nepal / NPL Season 3 Player Auction', NULL, '2026'
 ) ON CONFLICT (season_id, player_id) DO UPDATE SET
   team_id = EXCLUDED.team_id, role = EXCLUDED.role, status = EXCLUDED.status,
   captain = EXCLUDED.captain, marquee = EXCLUDED.marquee, player_number = EXCLUDED.player_number,
@@ -2407,7 +4409,7 @@ INSERT INTO public.matches (
   updated_at = timezone('utc'::text, now());
 
 -- ------------------------------------------------------------------------------
--- 7. NEWS_ARTICLES (7 Articles)
+-- 7. NEWS_ARTICLES (10 Articles)
 -- ------------------------------------------------------------------------------
 INSERT INTO public.news_articles (
   id, slug, title, excerpt, content, category, status, featured,
@@ -2517,11 +4519,62 @@ INSERT INTO public.news_articles (
   published_at, updated_at
 ) VALUES (
   'article-07', 'npl-season-3-overseas-signings-warner-shakib', 'NPL Season 3 Overseas Stars: Warner, Shakib and Every Big Signing So Far', 'From David Warner at Kathmandu Gorkhas to Shakib Al Hasan at Pokhara Avengers, here are NPL Season 3''s biggest NPL 2026 overseas signings so far — verified, franchise by franchise.',
-  '["With Nepal Premier League Season 3 scheduled to bowl off on October 26, 2026 at TU International Cricket Stadium in Kirtipur, the league has captured global attention with an unprecedented wave of international talent. The confirmed NPL 2026 overseas signings showcase a thrilling blend of World Cup champions, experienced franchise campaigners, and match-winners eager to play in front of Nepal''s passionate cricket crowds. Across 32 fixtures running through November 21, the tournament promises to deliver the most competitive franchise cricket in the nation''s history.","While previous editions laid the groundwork for domestic franchise cricket, Season 3 elevates the competition onto the international stage as all eight franchises assemble squads built to contend for the championship.","## The Headline Blockbusters: David Warner and Shakib Al Hasan Arrive in Nepal","Leading the roster of marquee international arrivals is Australian cricket legend David Warner, whose signing with the Kathmandu Gorkhas was officially announced on September 15, 2026. A two-time ODI World Cup winner (2015, 2023) and 2021 T20 World Cup champion, Warner brings over 12,000 international runs and extensive franchise pedigree worldwide. His David Warner NPL arrival gives Gorkhas fans a world-class opening batter alongside national team captain Rohit Paudel.","The capital franchise also secured Sri Lankan all-rounder Sahan Arachchige, whose top-order batting and off-break spin provide middle-overs stability, and Indian international wicketkeeper-batter K. S. Bharat, adding proven top-level glovework and technique.","Equally seismic is the signing of Bangladeshi legend Shakib Al Hasan by the Pokhara Avengers, confirmed on July 27, 2026. Regarded as one of the finest all-rounders in cricket history, Shakib Al Hasan NPL participation gives Pokhara an elite performer with over 7,000 international runs and nearly 700 wickets across formats. His ability to control match tempo on spin-friendly pitches makes him an invaluable asset for captain Kushal Malla''s side.","To complement Shakib, the Avengers re-signed Sri Lankan pace-bowling all-rounder Dhananjaya Lakshan. Guiding Pokhara''s dugout is legendary Sri Lankan mystery spinner Ajantha Mendis as head coach.","## Confirmed NPL 2026 Overseas Signings: Franchise-by-Franchise","Across all eight NPL Season 3 teams, franchises have deployed their overseas player quotas to address key tactical needs, balancing raw pace, batting power, and cunning spin. Here is a full verified breakdown of confirmed international signings heading into the opening match:","Kathmandu Gorkhas: David Warner (Australia), Sahan Arachchige (Sri Lanka), K. S. Bharat (India) — all confirmed. Pokhara Avengers: Shakib Al Hasan (Bangladesh), Dhananjaya Lakshan (Sri Lanka) — all confirmed. Janakpur Bolts: Jimmy Neesham (New Zealand), returning champion. Sudurpaschim Royals: Scott Kuggeleijn (New Zealand) and Saif Ali Zaib (England), both returning. Lumbini Lions: Niroshan Dickwella (Sri Lanka), retained. Biratnagar Kings: Charith Asalanka (Sri Lanka, confirmed September 17, 2026) and Shubham Ranjane (USA, confirmed September 29, 2026). Chitwan Rhinos: Sikandar Raza (Zimbabwe, confirmed August 27, 2026) and Kaleem Sana (Canada, confirmed September 2026). Karnali Yaks: Akbar Ali (Bangladesh) and Mark Watt (Scotland), both confirmed September 27, 2026.","Reigning titleholders Janakpur Bolts have retained Kiwi powerhouse Jimmy Neesham, whose death-overs power hitting and dependable seam bowling were crucial to the franchise''s championship run under captain Dipendra Singh Airee.","Sudurpaschim Royals bring back Kiwi express pacer Scott Kuggeleijn, whose hit-the-deck pace offers real hostility on Kirtipur''s true bounce, alongside English domestic standout Saif Ali Zaib.","Biratnagar Kings'' headline capture is Sri Lankan national team star Charith Asalanka, a deft middle-order batter with a sharp off-break. Chitwan Rhinos unveiled Sikandar Raza — a devastating batting all-rounder — alongside Canadian left-arm spearhead Kaleem Sana. Karnali Yaks secured ICC Under-19 World Cup-winning captain Akbar Ali and Scottish spinner Mark Watt, known globally for his creative variations. Lumbini Lions have retained dynamic Sri Lankan stumper Niroshan Dickwella to spearhead their aggressive top order.","Note: Squad registration deadlines and final overseas selections are ongoing. All signings listed above have been verified from franchise social media announcements and accredited cricket press. Any subsequent additions will be reported as confirmed.","## Opinion: Who Could Make the Biggest Impact at TU Stadium?","The following section reflects analytical editorial opinion and does not contain invented statistics, quotes, or guarantees of performance.","1. The Warner Factor in the Powerplay. David Warner''s career has been built on seizing control within the first six overs. The TU International Cricket Stadium dimensions, combined with over 15,000 passionate spectators, offer Warner a potent platform. If Warner fires consistently, the Kathmandu Gorkhas possess the batting depth to post match-winning totals throughout the season.","2. The Battle of Proven All-Rounders. T20 matches in Nepal are frequently decided in the middle overs. The presence of Sikandar Raza (Chitwan), Shakib Al Hasan (Pokhara), and Jimmy Neesham (Janakpur) gives their captains a formidable tactical cushion. All three veterans have the experience to rebuild from early setbacks or deliver vital wickets in crucial stages.","3. Spin Mastery on Autumn Tracks. Historically, Kirtipur pitches offer increasing turn as the tournament moves through November. Bowlers like Mark Watt (Karnali) and Charith Asalanka (Biratnagar) will relish these conditions. Watt''s ability to bowl inside the powerplay with economy rates under six could prove decisive in close finishes.","## What''s Next: Opening Match, Schedule and Teams","The tournament begins on Monday, October 26, 2026, when Lumbini Lions take on Sudurpaschim Royals in NPL Match #1 at TU International Cricket Stadium at 4:30 PM NPT — see the full opening match details on the /matches/match-1-lumbini-lions-vs-sudurpaschim-royals page. Fans can explore the complete 32-match programme on the NPL Season 3 Schedule at /schedule and explore every franchise squad on the Teams Hub at /teams. Full franchise profile pages are available for the Kathmandu Gorkhas, Biratnagar Kings, Janakpur Bolts, Pokhara Avengers, Chitwan Rhinos, Lumbini Lions, Karnali Yaks, and Sudurpaschim Royals.","NPL Hub Nepal is not affiliated with the official NPL or CAN. All player confirmation details have been cross-referenced against the sources listed below.","## Verified Sources","Sources used to verify all signings in this article: The Kathmandu Post — David Warner announced for Kathmandu Gorkhas (kathmandupost.com); Nepal News — Shakib Al Hasan confirmed for Pokhara Avengers (nepalnews.com); Ratopati Sports — Sikandar Raza signing announcement (ratopati.com); Official NPL T20 League Roster Pages (nplt20league.com); CAN official announcements (can.org.np). All signing dates are as reported by the referenced sources."]'::jsonb,
+  '["With Nepal Premier League Season 3 scheduled to bowl off on October 26, 2026 at TU International Cricket Stadium in Kirtipur, the league has captured global attention with an unprecedented wave of international talent. The confirmed NPL 2026 overseas signings showcase a thrilling blend of World Cup champions, experienced franchise campaigners, and match-winners eager to play in front of Nepal''s passionate cricket crowds. Across 32 fixtures running through November 21, the tournament promises to deliver the most competitive franchise cricket in the nation''s history.","While previous editions laid the groundwork for domestic franchise cricket, Season 3 elevates the competition onto the international stage as all eight franchises assemble squads built to contend for the championship.","## The Headline Blockbusters: David Warner and Shakib Al Hasan Arrive in Nepal","Leading the roster of marquee international arrivals is Australian cricket legend David Warner, whose signing with the Kathmandu Gorkhas was officially announced on September 15, 2026. A two-time ODI World Cup winner (2015, 2023) and 2021 T20 World Cup champion, Warner brings over 12,000 international runs and extensive franchise pedigree worldwide. His David Warner NPL arrival gives Gorkhas fans a world-class opening batter, setting up marquee clashes against defending champions Lumbini Lions led by Nepal national team captain Rohit Paudel.","The capital franchise also secured Sri Lankan all-rounder Sahan Arachchige, whose top-order batting and off-break spin provide middle-overs stability, and Indian international wicketkeeper-batter K. S. Bharat, adding proven top-level glovework and technique.","Equally seismic is the signing of Bangladeshi legend Shakib Al Hasan by the Pokhara Avengers, confirmed on July 27, 2026. Regarded as one of the finest all-rounders in cricket history, Shakib Al Hasan NPL participation gives Pokhara an elite performer with over 7,000 international runs and nearly 700 wickets across formats. His ability to control match tempo on spin-friendly pitches makes him an invaluable asset for Kushal Bhurtel''s Pokhara Avengers side.","To complement Shakib, the Avengers re-signed Sri Lankan pace-bowling all-rounder Dhananjaya Lakshan. Guiding Pokhara''s dugout is legendary Sri Lankan mystery spinner Ajantha Mendis as head coach.","## Confirmed NPL 2026 Overseas Signings: Franchise-by-Franchise","Across all eight NPL Season 3 teams, franchises have deployed their overseas player quotas to address key tactical needs, balancing raw pace, batting power, and cunning spin. Here is a full verified breakdown of confirmed international signings heading into the opening match:","Kathmandu Gorkhas: David Warner (Australia), Sahan Arachchige (Sri Lanka), K. S. Bharat (India) — all confirmed. Pokhara Avengers: Shakib Al Hasan (Bangladesh), Dhananjaya Lakshan (Sri Lanka) — all confirmed. Janakpur Bolts: Jimmy Neesham (New Zealand), returning champion. Sudurpaschim Royals: Scott Kuggeleijn (New Zealand) and Saif Ali Zaib (England), both returning. Lumbini Lions: Niroshan Dickwella (Sri Lanka), retained. Biratnagar Kings: Charith Asalanka (Sri Lanka, confirmed September 17, 2026) and Shubham Ranjane (USA, confirmed September 29, 2026). Chitwan Rhinos: Sikandar Raza (Zimbabwe, confirmed August 27, 2026) and Kaleem Sana (Canada, confirmed September 2026). Karnali Yaks: Akbar Ali (Bangladesh) and Mark Watt (Scotland), both confirmed September 27, 2026.","Reigning titleholders Janakpur Bolts have retained Kiwi powerhouse Jimmy Neesham, whose death-overs power hitting and dependable seam bowling were crucial to the franchise''s championship run in the tournament''s inaugural edition.","Sudurpaschim Royals bring back Kiwi express pacer Scott Kuggeleijn, whose hit-the-deck pace offers real hostility on Kirtipur''s true bounce, alongside English domestic standout Saif Ali Zaib.","Biratnagar Kings'' headline capture is Sri Lankan national team star Charith Asalanka, a deft middle-order batter with a sharp off-break. Chitwan Rhinos unveiled Sikandar Raza — a devastating batting all-rounder — alongside Canadian left-arm spearhead Kaleem Sana. Karnali Yaks secured ICC Under-19 World Cup-winning captain Akbar Ali and Scottish spinner Mark Watt, known globally for his creative variations. Lumbini Lions have retained dynamic Sri Lankan stumper Niroshan Dickwella to spearhead their aggressive top order.","Note: Squad registration deadlines and final overseas selections are ongoing. All signings listed above have been verified from franchise social media announcements and accredited cricket press. Any subsequent additions will be reported as confirmed.","## Opinion: Who Could Make the Biggest Impact at TU Stadium?","The following section reflects analytical editorial opinion and does not contain invented statistics, quotes, or guarantees of performance.","1. The Warner Factor in the Powerplay. David Warner''s career has been built on seizing control within the first six overs. The TU International Cricket Stadium dimensions, combined with over 15,000 passionate spectators, offer Warner a potent platform. If Warner fires consistently, the Kathmandu Gorkhas possess the batting depth to post match-winning totals throughout the season.","2. The Battle of Proven All-Rounders. T20 matches in Nepal are frequently decided in the middle overs. The presence of Sikandar Raza (Chitwan), Shakib Al Hasan (Pokhara), and Jimmy Neesham (Janakpur) gives their captains a formidable tactical cushion. All three veterans have the experience to rebuild from early setbacks or deliver vital wickets in crucial stages.","3. Spin Mastery on Autumn Tracks. Historically, Kirtipur pitches offer increasing turn as the tournament moves through November. Bowlers like Mark Watt (Karnali) and Charith Asalanka (Biratnagar) will relish these conditions. Watt''s ability to bowl inside the powerplay with economy rates under six could prove decisive in close finishes.","## What''s Next: Opening Match, Schedule and Teams","The tournament begins on Monday, October 26, 2026, when Lumbini Lions take on Sudurpaschim Royals in NPL Match #1 at TU International Cricket Stadium at 4:30 PM NPT — see the full opening match details on the /matches/match-1-lumbini-lions-vs-sudurpaschim-royals page. Fans can explore the complete 32-match programme on the NPL Season 3 Schedule at /schedule and explore every franchise squad on the Teams Hub at /teams. Full franchise profile pages are available for the Kathmandu Gorkhas, Biratnagar Kings, Janakpur Bolts, Pokhara Avengers, Chitwan Rhinos, Lumbini Lions, Karnali Yaks, and Sudurpaschim Royals.","NPL Hub Nepal is not affiliated with the official NPL or CAN. All player confirmation details have been cross-referenced against the sources listed below.","## Verified Sources","Sources used to verify all signings in this article: The Kathmandu Post — David Warner announced for Kathmandu Gorkhas (kathmandupost.com); Nepal News — Shakib Al Hasan confirmed for Pokhara Avengers (nepalnews.com); Ratopati Sports — Sikandar Raza signing announcement (ratopati.com); Official NPL T20 League Roster Pages (nplt20league.com); CAN official announcements (can.org.np). All signing dates are as reported by the referenced sources."]'::jsonb,
   'Teams', 'published', TRUE,
   '/images/news/npl-season-3-overseas-stars.webp', 'NPL Hub Nepal Editorial',
   'Editorial', '6 min read', '{}', 'Kathmandu Post, Nepal News, Ratopati, nplt20league.com, CAN', NULL,
   '2026-10-03T16:30:00+05:45', '2026-10-03T16:30:00+05:45'
+) ON CONFLICT (id) DO UPDATE SET
+  slug = EXCLUDED.slug, title = EXCLUDED.title, excerpt = EXCLUDED.excerpt,
+  content = EXCLUDED.content, category = EXCLUDED.category, status = EXCLUDED.status,
+  featured = EXCLUDED.featured, image_url = EXCLUDED.image_url, author = EXCLUDED.author,
+  read_time = EXCLUDED.read_time, source = EXCLUDED.source,
+  published_at = EXCLUDED.published_at, updated_at = EXCLUDED.updated_at;
+INSERT INTO public.news_articles (
+  id, slug, title, excerpt, content, category, status, featured,
+  image_url, author, author_role, read_time, tags, source, source_url,
+  published_at, updated_at
+) VALUES (
+  'article-08', 'npl-season-3-first-match-date-time-venue-nepali-date', 'NPL Season 3 First Match: Date, Time, Venue, Nepali Date', 'The npl season 3 first match is Lumbini Lions vs Sudurpaschim Royals on Oct 26, 2026 at 4:30 PM NPT in Kirtipur, Kartik 9, 2083 in Nepali calendar.',
+  '[{"type":"paragraph","text":"The npl season 3 first match will be played between defending champions Lumbini Lions and two-time runners-up Sudurpaschim Royals on Monday, October 26, 2026, which is Kartik 9, 2083 in the Nepali calendar, at 4:30 PM Nepal Standard Time at the TU International Cricket Ground in Kirtipur, Kathmandu."},{"type":"heading","level":2,"text":"Introduction: When does NPL Season 3 start?"},{"type":"paragraph","text":"NPL Season 3, officially Siddhartha Bank NPL 2026, starts on October 26 and runs through November 21, 2026. The Cricket Association of Nepal has confirmed an 8-team, 32-match tournament, with all matches at the TU International Cricket Ground in Kirtipur. The full day-by-day fixture list was released by CAN on September 20, 2026. This season shifts from the usual December window to the period between Dashain and Tihar."},{"type":"heading","level":2,"text":"Opening match details: teams, date, time and venue"},{"type":"paragraph","text":"The opening match is Match 1 of the season: Lumbini Lions vs Sudurpaschim Royals on Monday, October 26, 2026, at 4:30 PM NST. The venue is TU International Cricket Stadium, Kirtipur, the home of Nepali cricket and the sole venue for the third consecutive season. According to the official schedule, single-header days will have one evening game at 4:30 PM, while double-header days will have games at 12:30 PM and 4:30 PM. The tournament opens with a single-header evening fixture under lights."},{"type":"match","matchSlug":"match-1-lumbini-lions-vs-sudurpaschim-royals","title":"Match #1 Showcase: Lumbini Lions vs Sudurpaschim Royals"},{"type":"table","caption":"Official NPL Season 3 Match 1 Specification & Schedule Table","headers":["Match Parameter","Official Specification"],"rows":[["Fixture","Match #1 · Lumbini Lions vs Sudurpaschim Royals"],["Date (English)","Monday, 26 October 2026"],["Nepali Date (BS)","सोमबार, ९ कार्तिक २०८३ (Kartik 9, 2083 BS)"],["Start Time (NPT)","4:30 PM Nepal Time (UTC +5:45)"],["Venue","TU International Cricket Stadium, Kirtipur, Kathmandu"],["Session Type","Single-header evening clash under floodlights"],["Format","Twenty20 (20 Overs per side) · White Ball"],["Captains","Rohit Paudel (Lumbini, reported) vs Dipendra Singh Airee (Sudurpaschim)"],["Context","Rematch of 2025 NPL Final (Lumbini won by 6 wickets)"],["Broadcast (TV)","Himalaya TV HD (Provisional / Past Season Partner)"],["Live Stream","NetTV App & Web (Provisional / Past Season Partner)"],["Digital Ticketing","eSewa (Provisional / Past Season Partner)"]]},{"type":"heading","level":2,"text":"NPL first match date in the Nepali calendar"},{"type":"paragraph","text":"The verified Nepali date for the first match is Monday, Kartik 9, 2083. This has been confirmed by checking Hamro Patro and independent Nepali calendar tables. Kartik 1, 2083 falls on Sunday, October 18, 2026, which corrects an earlier calendar bug that showed October 17. Dashain ends on Kartik 8, 2083, which is Sunday, October 25, 2026, so the next day October 26 is Kartik 9. CAN also announced the tournament window as Kartik 9 to Mangsir 5. Some outlets reported the opener as Kartik 10, 2083, due to the older incorrect month-length data, but the corrected Hamro Patro calendar and CAN announcement confirm Kartik 9. The tournament window is Kartik 9, 2083 to Mangsir 5, 2083, which is October 26 to November 21, 2026. Kartik 2083 has 30 days from October 18 to November 16, so Mangsir 1 is November 17 and the final on November 21 is Mangsir 5, 2083, a Saturday."},{"type":"heading","level":2,"text":"Lumbini Lions vs Sudurpaschim Royals: what fans should know"},{"type":"paragraph","text":"This opener is a rematch of the NPL Season 2 final. Lumbini Lions beat Sudurpaschim Royals by six wickets in the final on December 13, 2025, at Kirtipur to win their first title after bowling the Royals out for 85. Sudurpaschim Royals have finished as runners-up in both seasons so far, losing to Janakpur Bolts in the 2024 final and to Lumbini Lions in 2025. For 2026, Rohit Paudel (who captained Lumbini Lions to the 2025 championship) is the reported captain for Lumbini Lions, alongside Dipendra Singh Airee as captain for Sudurpaschim Royals. Head coaches are Nandan Phadnis for Lumbini Lions and Jagat Tamata for Sudurpaschim Royals, with Brad Hodge as mentor for the Royals. Verified overseas signings for Lumbini Lions include Namibia fast bowler Ruben Trumpelmann, who was Player of the Series in 2025, Sri Lankan wicketkeeper Niroshan Dickwella and Australian opener D''Arcy Short, all retained from last season. For Sudurpaschim Royals, verified overseas signings include England all-rounder Saif Zaib, New Zealand pacer Scott Kuggeleijn and Scotland all-rounder Brandon McMullen, with UAE all-rounder Rohan Mustafa also listed in the squad."},{"type":"heading","level":2,"text":"Match timings in other countries"},{"type":"paragraph","text":"The opening match starts at 4:30 PM NPT, which is UTC plus 5:45. For diaspora fans on October 26, 2026, that is 4:15 PM in India, 4:45 PM in Bangladesh, 2:45 PM in the UAE, 10:45 AM in the UK, 6:45 AM US Eastern Daylight Time and 9:45 PM in Sydney. Day-night games at Kirtipur are played under floodlights, so the evening slot is the prime time slot in Nepal."},{"type":"heading","level":2,"text":"Where to find the full NPL 2026 schedule"},{"type":"paragraph","text":"You can find the full NPL 2026 fixture list, match timings, venues and points table on the NPL Hub Nepal schedule page, which will be updated with live scores once the tournament starts."},{"type":"heading","level":2,"text":"Frequently asked questions"},{"type":"faq","question":"When is the first match of NPL Season 3?","answer":"The first match of NPL Season 3 is on Monday, October 26, 2026, at 4:30 PM NPT. The tournament runs until November 21, 2026, with 32 matches at Kirtipur."},{"type":"faq","question":"Which teams play in the opening match?","answer":"Defending champions Lumbini Lions play Sudurpaschim Royals in the opening match. It is a rematch of the 2025 final that Lumbini Lions won."},{"type":"faq","question":"What time does the first match start?","answer":"The first match starts at 4:30 PM Nepal Standard Time. On double-header days, the first game starts at 12:30 PM and the second at 4:30 PM."},{"type":"faq","question":"Where is the first match played?","answer":"The first match is played at the TU International Cricket Ground in Kirtipur, Kathmandu. All 32 matches of NPL Season 3 are scheduled at this venue."},{"type":"faq","question":"What is the date of the first NPL match in the Nepali calendar?","answer":"The first NPL match date in the Nepali calendar is Kartik 9, 2083, Monday. The final on November 21, 2026 is Mangsir 5, 2083. The date has been verified against Hamro Patro and CAN''s announcement of Kartik 9 to Mangsir 5."},{"type":"paragraph","text":"The schedule, match timings and broadcast information are based on CAN''s official announcements and the fixture list released on September 20, 2026. No postponement or venue change has been announced as of publication. Live television in Nepal is on Himalaya TV, worldwide streaming is on NetTV and digital tickets are issued on eSewa. Schedules can change due to weather or operational reasons, so fans should check the official CAN channels before match day. Last updated: October 9, 2026."}]'::jsonb,
+  'Matches', 'published', TRUE,
+  'https://zohmcgjixebuiconrven.supabase.co/storage/v1/object/public/article-images/articles/article-1791521388205-g2x1w2/1791522050648-mhasx55q.png', 'NPL Hub Nepal Editorial',
+  'Editorial', '4 min read', '{}', 'NPL Hub Nepal Editorial', NULL,
+  '2026-10-09T05:15:00+00:00', '2026-10-09T05:15:00+00:00'
+) ON CONFLICT (id) DO UPDATE SET
+  slug = EXCLUDED.slug, title = EXCLUDED.title, excerpt = EXCLUDED.excerpt,
+  content = EXCLUDED.content, category = EXCLUDED.category, status = EXCLUDED.status,
+  featured = EXCLUDED.featured, image_url = EXCLUDED.image_url, author = EXCLUDED.author,
+  read_time = EXCLUDED.read_time, source = EXCLUDED.source,
+  published_at = EXCLUDED.published_at, updated_at = EXCLUDED.updated_at;
+INSERT INTO public.news_articles (
+  id, slug, title, excerpt, content, category, status, featured,
+  image_url, author, author_role, read_time, tags, source, source_url,
+  published_at, updated_at
+) VALUES (
+  'article-09', 'npl-2026-points-table-live-score', 'NPL 2026 Points Table, Live Score & Today''s Match', 'Follow the NPL 2026 points table, live score and today''s match for Season 3, with standings, fixtures, results and how to watch, updated every match day.',
+  '["The NPL 2026 points table will start to fill up on Monday, October 26, when Lumbini Lions face Sudurpaschim Royals in the opening match of Nepal Premier League Season 3 at TU International Cricket Ground in Kirtipur, Kathmandu. The first ball is scheduled for 4:30 PM Nepal time. This page tracks the NPL points table, the live score, today''s NPL match, the latest results and the upcoming fixtures, and it is updated after every match day.","## Today''s NPL match","[[TODAY_MATCH]]","Before the tournament starts, the next match is the season opener: Lumbini Lions against Sudurpaschim Royals on Monday, October 26, 2026, at 4:30 PM Nepal time at TU International Cricket Ground. It is a rematch of last season''s final, which Lumbini won by six wickets to take their first NPL title.","## NPL 2026 points table","All eight teams start the season on zero points. The table below is sorted by points and then by net run rate, and it highlights the four teams currently in the playoff places.","[[POINTS_TABLE]]","## Latest NPL results","[[LATEST_RESULTS]]","Results appear here after every match day.","## Upcoming NPL matches","[[UPCOMING_FIXTURES]]","The complete list of fixtures is on the NPL 2026 schedule page.","## How the NPL points table works","The league stage has 28 matches, and every team plays the other seven teams once. The top four teams in the table qualify for the playoffs, which are Qualifier 1, the Eliminator, Qualifier 2 and the final. A win earns a team two points, while a tie or no result earns one point. If two or more teams finish level on points, net run rate decides their order in the table.","## How to watch NPL 2026 live","NetTV holds the worldwide streaming rights for NPL Season 3. Reports put the price at Rs 400 for viewers in Nepal, $4 in the Middle East and $10 in Europe, the United States, Australia, Japan and South Korea. Himalaya Television Network holds the television rights in Nepal. Tickets for matches at the TU ground are sold through eSewa. Official Season 3 ticket prices and sale dates had not been announced at the time of writing, so check the official channels for the latest details.","## NPL 2026 schedule at a glance","NPL Season 3 runs from October 26 to November 21, 2026, with 32 matches in total: 28 league matches and four playoff matches. All matches are played at TU International Cricket Ground in Kirtipur. Matches on single-match days start at 4:30 PM Nepal time, and double-header days are reported to start at 12:30 PM and 4:30 PM.","## Frequently asked questions","When does NPL 2026 start?","NPL Season 3 starts on Monday, October 26, 2026, and the final is on November 21, 2026.","Which teams play in the first match of NPL 2026?","Lumbini Lions, the defending champions, play Sudurpaschim Royals in the opening match at 4:30 PM Nepal time.","How many teams qualify for the NPL playoffs?","The top four teams in the points table qualify for the playoffs.","What time do NPL matches start?","Single-match days start at 4:30 PM Nepal time. Double-header days are reported to start at 12:30 PM and 4:30 PM.","Where can I watch NPL 2026 live?","NetTV streams the matches worldwide, and Himalaya Television Network broadcasts them on television in Nepal.","Where is NPL 2026 played?","All 32 matches are played at TU International Cricket Ground in Kirtipur, Kathmandu.","This page is updated after every match day, and the \"Last updated\" time at the top of the page shows when the table was last refreshed."]'::jsonb,
+  'Tournament', 'draft', TRUE,
+  '/images/articles/npl-2026-points-table.jpg', 'NPL Hub Nepal Editorial',
+  'Editorial', '3 min read', '{}', 'NPL Hub Nepal Editorial', NULL,
+  '2026-10-12T18:19:23+05:45', '2026-10-12T18:19:23+05:45'
+) ON CONFLICT (id) DO UPDATE SET
+  slug = EXCLUDED.slug, title = EXCLUDED.title, excerpt = EXCLUDED.excerpt,
+  content = EXCLUDED.content, category = EXCLUDED.category, status = EXCLUDED.status,
+  featured = EXCLUDED.featured, image_url = EXCLUDED.image_url, author = EXCLUDED.author,
+  read_time = EXCLUDED.read_time, source = EXCLUDED.source,
+  published_at = EXCLUDED.published_at, updated_at = EXCLUDED.updated_at;
+INSERT INTO public.news_articles (
+  id, slug, title, excerpt, content, category, status, featured,
+  image_url, author, author_role, read_time, tags, source, source_url,
+  published_at, updated_at
+) VALUES (
+  'article-10', 'npl-season-3-squad-rankings-strongest-team', 'NPL Season 3 Squad Rankings: Which Team Looks Strongest on Paper?', 'An independent editorial ranking of all eight Nepal Premier League Season 3 franchise squads — assessed on batting, bowling, overseas power and squad depth, with every score backed by confirmed player data.',
+  '[]'::jsonb,
+  'Teams', 'published', TRUE,
+  '/images/news/npl-season-3-overseas-stars.webp', 'NPL Hub Nepal Editorial Team',
+  'Editorial', '8 min read', '{}', 'NPL Hub Nepal Editorial — Verified Franchise Squads, Player Registrations, and Official CAN Announcements', NULL,
+  '2026-10-14T10:00:00+05:45', '2026-10-14T10:00:00+05:45'
 ) ON CONFLICT (id) DO UPDATE SET
   slug = EXCLUDED.slug, title = EXCLUDED.title, excerpt = EXCLUDED.excerpt,
   content = EXCLUDED.content, category = EXCLUDED.category, status = EXCLUDED.status,
@@ -2591,6 +4644,60 @@ VALUES ('article-07', 'chitwan-rhinos')
 ON CONFLICT (article_id, team_id) DO NOTHING;
 INSERT INTO public.news_team_relations (article_id, team_id)
 VALUES ('article-07', 'karnali-yaks')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-08', 'lumbini-lions')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-08', 'sudurpaschim-royals')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'biratnagar-kings')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'chitwan-rhinos')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'janakpur-bolts')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'karnali-yaks')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'kathmandu-gorkhas')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'lumbini-lions')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'pokhara-avengers')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-09', 'sudurpaschim-royals')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'lumbini-lions')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'janakpur-bolts')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'kathmandu-gorkhas')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'sudurpaschim-royals')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'chitwan-rhinos')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'biratnagar-kings')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'pokhara-avengers')
+ON CONFLICT (article_id, team_id) DO NOTHING;
+INSERT INTO public.news_team_relations (article_id, team_id)
+VALUES ('article-10', 'karnali-yaks')
 ON CONFLICT (article_id, team_id) DO NOTHING;
 
 -- ------------------------------------------------------------------------------

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Player, getPlayerTeam } from "@/lib/data/players-data";
 import { Card, CardBody } from "@/components/ui/Card";
 import { TeamLogo } from "@/components/ui/TeamLogo";
+import { PlayerAvatar } from "@/components/players/PlayerAvatar";
 
 interface PlayerCardProps {
   player: Player;
@@ -10,20 +11,16 @@ interface PlayerCardProps {
 export function PlayerCard({ player }: PlayerCardProps) {
   const team = getPlayerTeam(player);
 
-  // Generate initials for avatar fallback
-  const initials = player.name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-
   const roleBadgeColors: Record<string, string> = {
     Batter: "bg-blue-50 text-blue-800 border-blue-200",
     Bowler: "bg-emerald-50 text-emerald-800 border-emerald-200",
     "All-rounder": "bg-purple-50 text-purple-800 border-purple-200",
     Wicketkeeper: "bg-amber-50 text-amber-900 border-amber-200",
   };
+
+  const isRetained =
+    player.source.toLowerCase().includes("retained") ||
+    player.source.toLowerCase().includes("retention");
 
   return (
     <Card
@@ -40,15 +37,14 @@ export function PlayerCard({ player }: PlayerCardProps) {
             tabIndex={-1}
             aria-hidden="true"
           >
-            <div
-              style={{
-                backgroundColor: team ? team.crestBg : "var(--color-brand)",
-                color: team ? team.crestText : "#ffffff",
-              }}
-              className="w-12 h-12 rounded-full font-black text-sm flex items-center justify-center shadow-2xs group-hover/avatar:scale-105 transition-transform select-none"
-            >
-              {initials}
-            </div>
+            <PlayerAvatar
+              name={player.name}
+              image={player.profileImage}
+              size="md"
+              crestBg={team?.crestBg}
+              crestText={team?.crestText}
+              className="group-hover/avatar:scale-105 transition-transform"
+            />
           </Link>
 
           {/* Badges */}
@@ -130,7 +126,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
         {/* Footer: Status & Direct Link */}
         <div className="pt-3 border-t border-[var(--color-rule)] flex items-center justify-between text-xs">
           <span className="text-[11px] font-medium text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-[var(--radius-sm)] border border-emerald-200">
-            Confirmed Retained
+            {isRetained ? "Confirmed Retained" : "Confirmed Squad"}
           </span>
           <Link
             href={`/players/${player.slug}`}

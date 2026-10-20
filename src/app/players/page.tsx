@@ -40,7 +40,7 @@ export default async function PlayersDirectoryPage() {
     "@type": "ItemList",
     name: "Nepal Premier League Season 3 Players Directory",
     description:
-      "Directory of verified retained and core players for NPL Season 3.",
+      "Directory of verified Season 3 players, marquee leaders, auction signings, and international recruits across all 8 franchises.",
     url: `${siteUrl}/players`,
     numberOfItems: allPlayers.length,
     itemListElement: allPlayers.map((player, idx) => ({
@@ -48,6 +48,7 @@ export default async function PlayersDirectoryPage() {
       position: idx + 1,
       name: player.name,
       url: `${siteUrl}/players/${player.slug}`,
+      ...(player.profileImage ? { image: `${siteUrl}${player.profileImage}` } : {}),
     })),
   };
 
@@ -76,9 +77,9 @@ export default async function PlayersDirectoryPage() {
             </h1>
 
             <p className="text-sm sm:text-base text-[var(--color-ink-secondary)] max-w-3xl leading-relaxed">
-              Complete index of confirmed retained players and marquee leaders
-              competing in Nepal Premier League Season 3. Filter by team,
-              cricket role, captaincy status, or player search.
+              Complete index of confirmed squad members, marquee leaders, auction
+              signings, and overseas stars competing in Nepal Premier League Season 3.
+              Filter by franchise, cricket role, captaincy status, or player search.
             </p>
           </header>
 

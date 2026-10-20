@@ -3,6 +3,7 @@ import { SectionHeader } from "@/components/ui/Layout";
 import { Card, CardBody } from "@/components/ui/Card";
 import { TeamDetail } from "@/lib/data/teams-data";
 import { getPlayersByTeam } from "@/lib/data/players-data";
+import { PlayerAvatar } from "@/components/players/PlayerAvatar";
 
 interface TeamSquadSectionProps {
   team: TeamDetail;
@@ -43,25 +44,34 @@ export function TeamSquadSection({ team }: TeamSquadSectionProps) {
                 >
                   <CardBody className="p-3.5 flex flex-col justify-between h-full space-y-2">
                     <div>
-                      {/* Leadership / Role Badges */}
-                      <div className="flex flex-wrap items-center gap-1 mb-1.5">
-                        {player.captain && (
-                          <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-[var(--color-accent)] text-[#052618]">
-                            Captain
+                      {/* Top row: Avatar + Badges */}
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <PlayerAvatar
+                          name={player.name}
+                          image={player.profileImage}
+                          size="sm"
+                          crestBg={team.crestBg}
+                          crestText={team.crestText}
+                        />
+                        <div className="flex flex-wrap items-center justify-end gap-1">
+                          {player.captain && (
+                            <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-[var(--color-accent)] text-[#052618]">
+                              Captain
+                            </span>
+                          )}
+                          {player.marquee && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-amber-50 text-amber-800 border border-amber-200">
+                              Marquee
+                            </span>
+                          )}
+                          <span
+                            className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[var(--radius-sm)] border ${
+                              roleBadgeColors[player.role] || "bg-gray-50 text-gray-700 border-gray-200"
+                            }`}
+                          >
+                            {player.role}
                           </span>
-                        )}
-                        {player.marquee && (
-                          <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-amber-50 text-amber-800 border border-amber-200">
-                            Marquee
-                          </span>
-                        )}
-                        <span
-                          className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-[var(--radius-sm)] border ${
-                            roleBadgeColors[player.role] || "bg-gray-50 text-gray-700 border-gray-200"
-                          }`}
-                        >
-                          {player.role}
-                        </span>
+                        </div>
                       </div>
 
                       {/* Name */}
@@ -97,13 +107,12 @@ export function TeamSquadSection({ team }: TeamSquadSectionProps) {
             </span>
             <div>
               <strong className="text-[var(--color-ink)] font-semibold">
-                Confirmed Retained Roster:
+                Confirmed Season 3 Squad:
               </strong>{" "}
               The {verifiedPlayers.length} players listed above represent the
-              officially confirmed retained core for {team.name}. Additional domestic
-              draft selections and overseas player signings will appear here
-              immediately following official verification by CAN and franchise
-              management.
+              officially confirmed Season 3 squad for {team.name}, comprising
+              retained core players, auction signings, and verified international
+              acquisitions.
             </div>
           </div>
         </div>
