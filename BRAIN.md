@@ -368,3 +368,10 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Admin Control UI:** Built `/admin/agent` page with master toggle, interval guide, source toggles, manual scan trigger, and live run log table. Added navigation link to `AdminShell.tsx`.
   - **Vercel Scheduling:** Created `vercel.json` with daily cron stub; documented `cron-job.org` integration for 1–2 hour sub-daily execution.
   - **Production Build:** ✅ 228 routes compiled cleanly with 0 TypeScript errors.
+
+- **2026-10-26 (Live Match #1 & Scorecard Integration):**
+  - **Live Score Source Identified:** Discovered active ESPN Cricinfo live scorecard for NPL Season 3 Match #1 (SPR vs LUL) at Tribhuvan University Ground.
+  - **Live Score Embed & Route:** Added espnMatchPath to ScheduleMatch and mapped in src/lib/repository/matches.ts. Built /api/matches/[slug]/live-score route and LiveScoreEmbed.tsx component providing interactive real-time ball-by-ball scorecard directly on /matches/[slug].
+  - **Clean Commentary Experience:** Removed fake mock commentary events from Supabase match_commentary table; removed public 'Test AI Commentary' button to protect free Gemini quota; configured clean upcoming placeholder.
+  - **Supabase Match State Synchronized:** Set Match #1 status to 'live' with initial live score data.
+  - **Production Deployed:** Verified on https://nplhubnepal.vercel.app/matches/match-1-lumbini-lions-vs-sudurpaschim-royals (HTTP 200).
