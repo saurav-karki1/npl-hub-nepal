@@ -68,28 +68,28 @@ export function LiveScoreEmbed({
 
   return (
     <section className="space-y-4">
-      {/* ── Real-Time Native Live Score Card ── */}
-      <div className="rounded-xl border-2 border-[var(--color-brand)] bg-[#051c12] p-4 sm:p-5 shadow-lg">
-        <div className="flex items-center justify-between border-b border-[var(--color-brand)]/30 pb-3 mb-3">
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-              Live Match Centre
-            </span>
-            {isRefreshing && (
-              <span className="text-[10px] text-[var(--color-brand)] animate-pulse">
-                Syncing…
+      {/* ── Real-Time Native Live Score Card (shown when data is parsed) ── */}
+      {data?.score && (
+        <div className="rounded-xl border-2 border-[var(--color-brand)] bg-[#051c12] p-4 sm:p-5 shadow-lg">
+          <div className="flex items-center justify-between border-b border-[var(--color-brand)]/30 pb-3 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                Live Match Centre
+              </span>
+              {isRefreshing && (
+                <span className="text-[10px] text-[var(--color-brand)] animate-pulse">
+                  Syncing…
+                </span>
+              )}
+            </div>
+            {data?.updatedAt && (
+              <span className="text-[11px] text-emerald-300/80 font-mono">
+                Updated: {data.updatedAt} NPT
               </span>
             )}
           </div>
-          {data?.updatedAt && (
-            <span className="text-[11px] text-emerald-300/80 font-mono">
-              Updated: {data.updatedAt} NPT
-            </span>
-          )}
-        </div>
 
-        {data?.score ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             {/* Score & Overs */}
             <div className="space-y-1">
@@ -108,7 +108,12 @@ export function LiveScoreEmbed({
               </div>
               {data.teamCode && (
                 <p className="text-xs font-medium text-slate-300">
-                  Batting: {data.teamCode === "SPR" ? "Sudurpaschim Royals" : data.teamCode === "LUL" ? "Lumbini Lions" : data.teamCode}
+                  Batting:{" "}
+                  {data.teamCode === "SPR"
+                    ? "Sudurpaschim Royals"
+                    : data.teamCode === "LUL"
+                    ? "Lumbini Lions"
+                    : data.teamCode}
                 </p>
               )}
             </div>
@@ -136,12 +141,8 @@ export function LiveScoreEmbed({
               </p>
             </div>
           </div>
-        ) : (
-          <div className="py-2 text-center text-xs text-emerald-300/80">
-            {loading ? "Connecting to live match feed…" : "Match underway. Scores refreshing automatically…"}
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* ── Interactive Full Scorecard Header & Action ── */}
       <div className="flex items-center justify-between flex-wrap gap-2 pt-2">
