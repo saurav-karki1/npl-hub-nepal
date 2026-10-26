@@ -1,19 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-
-interface LiveScoreData {
-  live: boolean;
-  rawScore?: string;
-  teamCode?: string | null;
-  score?: string | null;
-  overs?: string | null;
-  batter1?: string | null;
-  batter2?: string | null;
-  bowler?: string | null;
-  fullTitle?: string;
-  updatedAt?: string;
-}
+import type { LiveScorePayload, LiveBatter, LiveBowler, LiveBallEvent } from "@/app/api/matches/[slug]/live-score/route";
 
 interface LiveScoreEmbedProps {
   matchSlug: string;
@@ -21,18 +9,12 @@ interface LiveScoreEmbedProps {
   matchStatus: string;
 }
 
-/**
- * Live Score component that:
- * 1. Automatically polls /api/matches/[slug]/live-score every 15s to display
- *    verified live figures (score, overs, active batters, bowler).
- * 2. Embeds the official ESPN Cricinfo interactive scorecard iframe below.
- */
 export function LiveScoreEmbed({
   matchSlug,
   espnMatchPath,
   matchStatus,
 }: LiveScoreEmbedProps) {
-  const [data, setData] = useState<LiveScoreData | null>(null);
+  const [data, setData] = useState<LiveScorePayload | null>(null);
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -41,7 +23,7 @@ export function LiveScoreEmbed({
       setIsRefreshing(true);
       const res = await fetch(`/api/matches/${matchSlug}/live-score`);
       if (res.ok) {
-        const json = await res.json();
+        const json: LiveScorePayload = await res.json();
         if (json.live) {
           setData(json);
         }
@@ -66,127 +48,184 @@ export function LiveScoreEmbed({
 
   const espnUrl = `https://www.espncricinfo.com${espnMatchPath}`;
 
+  const getEventBadgeClass = (event: string) => {
+    const ev = event.toLowerCase();
+    if (ev.includes("out") || ev.includes("w")) {
+      return "bg-red-500/20 text-red-400 border-red-500/40";
+    }
+    if (ev.includes("6") || ev.includes("six")) {
+      return "bg-purple-500/20 text-purple-400 border-purple-500/40";
+    }
+    if (ev.includes("4") || ev.includes("four")) {
+      return "bg-amber-500/20 text-amber-400 border-amber-500/40";
+    }
+    return "bg-slate-700/50 text-slate-300 border-slate-600";
+  };
+
   return (
     <section className="space-y-4">
-      {/* ── Real-Time Native Live Score Card (shown when data is parsed) ── */}
-      {data?.score && (
-        <div className="rounded-xl border-2 border-[var(--color-brand)] bg-[#051c12] p-4 sm:p-5 shadow-lg">
-          <div className="flex items-center justify-between border-b border-[var(--color-brand)]/30 pb-3 mb-3">
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
-                Live Match Centre
+      {/* ── Top Match Situation & Header ── */}
+      <div className="rounded-xl border border-[var(--color-rule)] bg-[#051c12] p-4 sm:p-5 shadow-lg space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2 border-b border-[var(--color-brand)]/30 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-full uppercase tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+              Live Match Centre
+            </span>
+            {isRefreshing && (
+              <span className="text-[10px] text-[var(--color-brand)] animate-pulse">
+                Syncing…
               </span>
-              {isRefreshing && (
-                <span className="text-[10px] text-[var(--color-brand)] animate-pulse">
-                  Syncing…
-                </span>
-              )}
-            </div>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
             {data?.updatedAt && (
               <span className="text-[11px] text-emerald-300/80 font-mono">
                 Updated: {data.updatedAt} NPT
               </span>
             )}
+            <button
+              type="button"
+              onClick={fetchLiveScore}
+              disabled={isRefreshing}
+              className="text-xs px-2.5 py-1 rounded bg-[#0c121e] border border-[var(--color-rule)] text-[var(--color-ink-muted)] hover:text-white transition-colors"
+            >
+              {isRefreshing ? "…" : "Refresh"}
+            </button>
+            <a
+              href={espnUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1"
+            >
+              ESPN Cricinfo ↗
+            </a>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            {/* Score & Overs */}
-            <div className="space-y-1">
-              <span className="text-xs uppercase font-semibold tracking-wider text-emerald-400">
-                Current Innings
-              </span>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-mono">
-                  {data.score}
-                </span>
-                {data.overs && (
-                  <span className="text-base font-semibold text-emerald-300/90 font-mono">
-                    ({data.overs} ov)
+        {/* Toss & Live Summary */}
+        {data?.toss && (
+          <div className="text-xs text-emerald-300 bg-[#09261a] border border-[var(--color-brand)]/30 rounded-lg px-3 py-2">
+            <strong>Match Note:</strong> {data.toss}
+          </div>
+        )}
+
+        {/* ── Active Batters Table ── */}
+        {data?.batters && data.batters.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400">
+              Batters at the Crease
+            </h4>
+            <div className="overflow-x-auto rounded-lg border border-[var(--color-rule)] bg-[#0c121e]">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-[var(--color-rule)] bg-black/40 text-[10px] font-bold uppercase text-[var(--color-ink-muted)]">
+                    <th className="py-2 px-3">Batter</th>
+                    <th className="py-2 px-3 text-center">R</th>
+                    <th className="py-2 px-3 text-center">B</th>
+                    <th className="py-2 px-3 text-center">4s</th>
+                    <th className="py-2 px-3 text-center">6s</th>
+                    <th className="py-2 px-3 text-right">SR</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--color-rule)] text-slate-200">
+                  {data.batters.map((b: LiveBatter, idx: number) => (
+                    <tr key={idx} className={b.isStriker ? "bg-emerald-950/20" : ""}>
+                      <td className="py-2 px-3 font-semibold text-white flex items-center gap-1.5">
+                        {b.isStriker && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" title="On strike" />
+                        )}
+                        {b.name}
+                        {b.isStriker && <span className="text-[10px] text-emerald-400">*</span>}
+                      </td>
+                      <td className="py-2 px-3 text-center font-bold text-white">{b.runs}</td>
+                      <td className="py-2 px-3 text-center text-slate-400">{b.balls}</td>
+                      <td className="py-2 px-3 text-center text-slate-400">{b.fours}</td>
+                      <td className="py-2 px-3 text-center text-slate-400">{b.sixes}</td>
+                      <td className="py-2 px-3 text-right font-mono text-emerald-300">{b.strikeRate}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── Active Bowlers Table ── */}
+        {data?.bowlers && data.bowlers.length > 0 && (
+          <div className="space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-sky-400">
+              Current Bowlers
+            </h4>
+            <div className="overflow-x-auto rounded-lg border border-[var(--color-rule)] bg-[#0c121e]">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-[var(--color-rule)] bg-black/40 text-[10px] font-bold uppercase text-[var(--color-ink-muted)]">
+                    <th className="py-2 px-3">Bowler</th>
+                    <th className="py-2 px-3 text-center">O</th>
+                    <th className="py-2 px-3 text-center">M</th>
+                    <th className="py-2 px-3 text-center">R</th>
+                    <th className="py-2 px-3 text-center">W</th>
+                    <th className="py-2 px-3 text-right">Econ</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[var(--color-rule)] text-slate-200">
+                  {data.bowlers.map((bw: LiveBowler, idx: number) => (
+                    <tr key={idx}>
+                      <td className="py-2 px-3 font-semibold text-white">{bw.name}</td>
+                      <td className="py-2 px-3 text-center text-slate-300 font-mono">{bw.overs}</td>
+                      <td className="py-2 px-3 text-center text-slate-400">{bw.maidens}</td>
+                      <td className="py-2 px-3 text-center text-slate-400">{bw.runs}</td>
+                      <td className="py-2 px-3 text-center font-bold text-red-400">{bw.wickets}</td>
+                      <td className="py-2 px-3 text-right font-mono text-sky-300">{bw.economy}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── Ball-by-Ball Live Timeline ── */}
+        {data?.recentBalls && data.recentBalls.length > 0 && (
+          <div className="space-y-2 pt-2 border-t border-[var(--color-rule)]">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-ink-muted)]">
+              Recent Deliveries & Ball-by-Ball Timeline
+            </h4>
+            <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+              {data.recentBalls.map((ball: LiveBallEvent, idx: number) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-2.5 bg-[#0c121e] border border-[var(--color-rule)] px-3 py-1.5 rounded-lg text-xs"
+                >
+                  <span className="font-mono text-[10px] text-slate-400 min-w-[28px]">
+                    {ball.over}
                   </span>
-                )}
-              </div>
-              {data.teamCode && (
-                <p className="text-xs font-medium text-slate-300">
-                  Batting:{" "}
-                  {data.teamCode === "SPR"
-                    ? "Sudurpaschim Royals"
-                    : data.teamCode === "LUL"
-                    ? "Lumbini Lions"
-                    : data.teamCode}
-                </p>
-              )}
-            </div>
-
-            {/* Current Batters */}
-            <div className="space-y-1 bg-[#09261a] p-3 rounded-lg border border-[var(--color-brand)]/20">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400 block">
-                Batters at Crease
-              </span>
-              <p className="text-xs font-semibold text-white truncate">
-                {data.batter1 || "—"}
-              </p>
-              <p className="text-xs text-slate-300 truncate">
-                {data.batter2 || "—"}
-              </p>
-            </div>
-
-            {/* Current Bowler */}
-            <div className="space-y-1 bg-[#09261a] p-3 rounded-lg border border-[var(--color-brand)]/20">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-sky-400 block">
-                Current Bowler
-              </span>
-              <p className="text-xs font-semibold text-white">
-                {data.bowler || "Bowler in action"}
-              </p>
+                  <span
+                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase shrink-0 ${getEventBadgeClass(
+                      ball.dismissal || ball.event
+                    )}`}
+                  >
+                    {ball.dismissal ? "WICKET" : ball.event || "•"}
+                  </span>
+                  <span className="text-slate-300 truncate">
+                    {ball.dismissal || ball.text || ball.event}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ── Interactive Full Scorecard Header & Action ── */}
-      <div className="flex items-center justify-between flex-wrap gap-2 pt-2">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-bold text-[var(--color-ink)]">
-            Full Ball-by-Ball Scorecard
-          </h3>
-          <span className="text-[10px] text-[var(--color-ink-muted)]">
-            (Interactive Feed)
-          </span>
-        </div>
-        <a
-          href={espnUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1 bg-[#0c1a14] border border-emerald-500/30 px-3 py-1.5 rounded-lg"
-        >
-          Open on ESPN Cricinfo ↗
-        </a>
-      </div>
-
-      {/* ── ESPN Cricinfo Iframe Feed ── */}
-      <div className="relative w-full rounded-xl overflow-hidden border border-[var(--color-rule)] bg-[#0c121e] shadow-md">
-        <iframe
-          src={espnUrl}
-          title="Live Cricket Score — ESPN Cricinfo"
-          className="w-full"
-          style={{ height: "650px", border: "none" }}
-          loading="lazy"
-          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-        />
+        {loading && !data && (
+          <div className="py-4 text-center text-xs text-emerald-300 animate-pulse">
+            Connecting to official match feed…
+          </div>
+        )}
       </div>
 
       <p className="text-[10px] text-[var(--color-ink-muted)]/50 text-center">
-        Live data verified via{" "}
-        <a
-          href="https://www.espncricinfo.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-[var(--color-ink-muted)]"
-        >
-          ESPN Cricinfo
-        </a>{" "}
-        · Polling every 15s · NPL Season 3 Official Match #1
+        Live ball-by-ball feed synced with official match data · Updated automatically every 15s · Zero third-party cookies
       </p>
     </section>
   );

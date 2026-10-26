@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardBody, StatusBadge } from "@/components/ui/Card";
 import { TeamLogo } from "@/components/ui/TeamLogo";
@@ -16,7 +19,48 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
 
   const isCompleted = match.status === "completed";
   const isLive = match.status === "live";
-  const hasScores = Boolean(match.scores?.team1?.runs != null || match.scores?.team2?.runs != null);
+
+  // Dynamic live score state for automatic updates
+  const [liveScores, setLiveScores] = useState(match.scores);
+  const [liveSummary, setLiveSummary] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isLive) return;
+
+    let isMounted = true;
+    const fetchLive = async () => {
+      try {
+        const res = await fetch(`/api/matches/${match.slug}/live-score`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.live && isMounted) {
+            if (data.scores) {
+              setLiveScores((prev) => ({
+                team1: data.scores.team1 ?? prev?.team1,
+                team2: data.scores.team2 ?? prev?.team2,
+              }));
+            }
+            if (data.summary) {
+              setLiveSummary(data.summary);
+            }
+          }
+        }
+      } catch {
+        // Keep existing score on transient fetch error
+      }
+    };
+
+    fetchLive();
+    const interval = setInterval(fetchLive, 15000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [isLive, match.slug]);
+
+  const hasScores = Boolean(
+    liveScores?.team1?.runs != null || liveScores?.team2?.runs != null
+  );
 
   return (
     <section aria-labelledby="scoreboard-heading" className="space-y-4">
@@ -41,7 +85,7 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
       </div>
 
       <Card className="border-[var(--color-rule)] bg-[var(--color-canvas)]">
-        {/* If Completed or Live: Result-ready scoreboard */}
+        {/* If Completed or Live or has scores: Result-ready scoreboard */}
         {isCompleted || isLive || hasScores ? (
           <CardBody className="p-5 sm:p-6 space-y-6">
             {/* Winner Announcement or Live Banner */}
@@ -60,11 +104,18 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                 )}
               </div>
             ) : isLive ? (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-[var(--radius-md)] p-3 text-center flex items-center justify-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-xs font-bold uppercase tracking-wider text-red-400">
-                  LIVE MATCH IN PROGRESS
-                </span>
+              <div className="bg-red-500/10 border border-red-500/30 rounded-[var(--radius-md)] p-3.5 text-center space-y-1.5">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-red-400">
+                    LIVE MATCH IN PROGRESS
+                  </span>
+                </div>
+                {liveSummary && (
+                  <p className="text-sm sm:text-base font-extrabold text-white font-mono tracking-tight">
+                    {liveSummary}
+                  </p>
+                )}
               </div>
             ) : null}
 
@@ -96,19 +147,19 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                       {team1.name}
                     </td>
                     <td className="py-3 px-4 text-center font-black text-sm text-[var(--color-ink)]">
-                      {match.scores?.team1?.runs ?? "—"}
+                      {liveScores?.team1?.runs ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {match.scores?.team1?.wickets ?? "—"}
+                      {liveScores?.team1?.wickets ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {match.scores?.team1?.overs ?? "—"}
+                      {liveScores?.team1?.overs ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
                       {(() => {
-                        if (!match.scores?.team1 || match.scores.team1.runs == null) return "—";
-                        const dec = oversToDecimal(match.scores.team1.overs, match.scores.team1.wickets);
-                        return dec > 0 ? (match.scores.team1.runs / dec).toFixed(2) : "—";
+                        if (!liveScores?.team1 || liveScores.team1.runs == null) return "—";
+                        const dec = oversToDecimal(liveScores.team1.overs, liveScores.team1.wickets);
+                        return dec > 0 ? (liveScores.team1.runs / dec).toFixed(2) : "—";
                       })()}
                     </td>
                   </tr>
@@ -128,19 +179,19 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                       {team2.name}
                     </td>
                     <td className="py-3 px-4 text-center font-black text-sm text-[var(--color-ink)]">
-                      {match.scores?.team2?.runs ?? "—"}
+                      {liveScores?.team2?.runs ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {match.scores?.team2?.wickets ?? "—"}
+                      {liveScores?.team2?.wickets ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {match.scores?.team2?.overs ?? "—"}
+                      {liveScores?.team2?.overs ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
                       {(() => {
-                        if (!match.scores?.team2 || match.scores.team2.runs == null) return "—";
-                        const dec = oversToDecimal(match.scores.team2.overs, match.scores.team2.wickets);
-                        return dec > 0 ? (match.scores.team2.runs / dec).toFixed(2) : "—";
+                        if (!liveScores?.team2 || liveScores.team2.runs == null) return "—";
+                        const dec = oversToDecimal(liveScores.team2.overs, liveScores.team2.wickets);
+                        return dec > 0 ? (liveScores.team2.runs / dec).toFixed(2) : "—";
                       })()}
                     </td>
                   </tr>
