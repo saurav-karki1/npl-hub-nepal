@@ -1,4 +1,4 @@
-﻿# NPL Hub Nepal â€” Project Brain (BRAIN.md)
+# NPL Hub Nepal â€” Project Brain (BRAIN.md)
 
 > **Persistent Project-State Document**  
 > This file is the single compact source of truth for current project status, data architecture, routes, conventions, and roadmaps. Read this file to understand the project state without inspecting the entire repository.
@@ -359,3 +359,12 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Build:** npm run build â€” 223 static pages, 0 TypeScript errors, 0 ESLint errors. Committed 916e670, pushed to master; Vercel redeploy triggered.
 
 
+
+
+- **2026-10-26 (Phase 10 — AI News Agent Milestone 1):** Built isolated AI News Agent foundation:
+  - **Database Migration:** `supabase/migrations/20261023000000_ai_news_agent.sql` created with `agent_config` singleton, `agent_runs` audit log, and `news_articles.ai_generated` column.
+  - **Agent Engine:** Created `src/lib/agent/` modules (`types.ts`, `config-repository.ts`, `run-repository.ts`, `sources/google-news-rss.ts`, `deduplication.ts`, `gemini-news-generator.ts`, `article-builder.ts`, `runner.ts`).
+  - **Execution Routes:** Built protected `/api/agent/news-scan` endpoint (`x-cron-secret` auth) and `/api/admin/agent/trigger` (Supabase JWT auth for manual testing).
+  - **Admin Control UI:** Built `/admin/agent` page with master toggle, interval guide, source toggles, manual scan trigger, and live run log table. Added navigation link to `AdminShell.tsx`.
+  - **Vercel Scheduling:** Created `vercel.json` with daily cron stub; documented `cron-job.org` integration for 1–2 hour sub-daily execution.
+  - **Production Build:** ✅ 228 routes compiled cleanly with 0 TypeScript errors.

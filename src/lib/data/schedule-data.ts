@@ -119,6 +119,8 @@ export interface ScheduleMatch {
   isProvisional: boolean;
   externalProvider?: string;
   externalMatchId?: string;
+  /** ESPN Cricinfo live scorecard path (relative to espncricinfo.com) */
+  espnMatchPath?: string;
 }
 
 /** Helper to resolve both teams for a given match */
@@ -179,6 +181,7 @@ export const SCHEDULE_FIXTURES: ScheduleMatch[] = [
     status: "upcoming",
     slug: "match-1-lumbini-lions-vs-sudurpaschim-royals",
     isProvisional: false,
+    espnMatchPath: "/series/nepal-premier-league-2026-27-1558581/lumbini-lions-npl-vs-sudur-paschim-royals-npl-1st-match-1558582/live-cricket-score",
   },
   {
     id: "match-02",

@@ -16,6 +16,7 @@ import { MatchTeamsSection } from "@/components/matches/MatchTeamsSection";
 import { MatchNavigation } from "@/components/matches/MatchNavigation";
 import { MatchRelatedLinks } from "@/components/matches/MatchRelatedLinks";
 import { LiveCommentaryFeed } from "@/components/matches/LiveCommentaryFeed";
+import { LiveScoreEmbed } from "@/components/matches/LiveScoreEmbed";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -99,6 +100,14 @@ export default async function MatchDetailPage({ params }: PageProps) {
 
         {/* 3. Result-Ready Scoreboard & Pre-Match Guarantee */}
         <MatchScoreboard match={match} />
+
+        {/* ESPN Cricinfo Live Score Embed — shown only when match is live and ESPN path is set */}
+        {match.espnMatchPath && (
+          <LiveScoreEmbed
+            espnMatchPath={match.espnMatchPath}
+            matchStatus={match.status}
+          />
+        )}
 
         {/* Live Commentary Section */}
         <section className="mt-8">
