@@ -88,9 +88,19 @@ export function LiveCommentaryFeed({
   };
 
   // ── Upcoming / scheduled matches ──────────────────────────────────────────
-  // The Live Commentary section is completely hidden for matches that have not
-  // started. It will automatically appear once an admin marks the match "live".
-  if (isUpcoming) return null;
+  // Show the section heading but just a quiet placeholder — no data, no buttons.
+  if (isUpcoming) {
+    return (
+      <section className="space-y-4">
+        <h2 className="text-base font-bold text-[var(--color-ink)]">Live Commentary</h2>
+        <div className="bg-[#0c121e] border border-[var(--color-rule)] rounded-lg p-6 text-center">
+          <p className="text-xs text-[var(--color-ink-muted)]">
+            AI commentary will appear here once the match begins.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   // ── Live or completed ─────────────────────────────────────────────────────
   return (
