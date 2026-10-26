@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { recalculateStandings } from "./recalculate-standings.mjs";
 
 const SUPABASE_URL = "https://zohmcgjixebuiconrven.supabase.co";
 const SERVICE_ROLE_KEY =
@@ -24,7 +25,7 @@ export async function syncMatch(matchNumber = 1) {
     });
 
     if (!res.ok) {
-      console.error(`[SYNC M${matchNumber}] ESPN returned ${res.status}`);
+      console.error(`[SYNC M${matchNumber}] ESPN returned HTTP ${res.status}`);
       return;
     }
 
@@ -67,6 +68,18 @@ export async function syncMatch(matchNumber = 1) {
     }
 
     const isCompleted = d.match?.result !== "0" && Boolean(d.match?.result);
+    const hasInningsData = Boolean(
+      (d.innings && d.innings.length > 0) ||
+      (d.live?.innings && d.live.innings.runs !== undefined)
+    );
+    const isLiveMatch = !isCompleted && hasInningsData;
+
+    // If match is upcoming and hasn't started yet, do not falsely flip status
+    if (!isCompleted && !isLiveMatch) {
+      console.log(`[SYNC M${matchNumber}] Match is upcoming / not yet started (${d.live?.status || "Scheduled"}).`);
+      return;
+    }
+
     const summary = d.match?.current_summary || "";
     const toss = d.live?.status || "";
 
@@ -144,25 +157,48 @@ export async function syncMatch(matchNumber = 1) {
 
       if (!commErr) inserted++;
     }
+
+    // 3. When a match is completed, immediately trigger points table recalculation
+    if (isCompleted) {
+      try {
+        await recalculateStandings("season-3");
+      } catch (err) {
+        console.error(`[SYNC M${matchNumber}] Standings recalculation error:`, err.message);
+      }
+    }
   } catch (err) {
     console.error(`[SYNC M${matchNumber}] Error:`, err.message);
   }
 }
 
-// Run loop checking currently active/live matches
+// Run loop checking currently active/live matches or the next upcoming fixture
 async function runLoop() {
   console.log("[SYNC SERVICE] Started live sync for NPL Season 3 matches...");
   while (true) {
     try {
-      // Find matches with status 'live' or match-01
+      // Find matches with status 'live'
       const { data: liveMatches } = await sb
         .from("matches")
         .select("id,match_number,status")
-        .in("status", ["live"]);
+        .eq("status", "live");
 
-      const matchesToSync = (liveMatches && liveMatches.length > 0)
+      let matchesToSync = (liveMatches && liveMatches.length > 0)
         ? liveMatches.map((m) => m.match_number)
-        : [1]; // default to Match 1 if none marked live
+        : [];
+
+      // If no match is marked live, inspect the next upcoming match to auto-detect start
+      if (matchesToSync.length === 0) {
+        const { data: upcomingMatches } = await sb
+          .from("matches")
+          .select("id,match_number,status")
+          .eq("status", "upcoming")
+          .order("match_number", { ascending: true })
+          .limit(1);
+
+        if (upcomingMatches && upcomingMatches.length > 0) {
+          matchesToSync = [upcomingMatches[0].match_number];
+        }
+      }
 
       for (const mNum of matchesToSync) {
         await syncMatch(mNum);

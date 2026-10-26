@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getMatchBySlug } from "@/lib/repository/matches";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { recalculateAndPersistStandings } from "@/lib/standings/calculator";
 
 export const dynamic = "force-dynamic";
 
@@ -147,6 +148,12 @@ export async function GET(
 
         // Match result detection
         const isCompleted = d.match?.result !== "0" && Boolean(d.match?.result);
+        const hasInningsData = Boolean(
+          (d.innings && d.innings.length > 0) ||
+          (d.live?.innings && d.live.innings.runs !== undefined)
+        );
+        const isLiveMatch = !isCompleted && hasInningsData;
+
         const winnerEspnId = String(d.match?.winner_team_id);
         const winnerTeamSlug =
           winnerEspnId === team1Id ? match.team1Id : winnerEspnId === team2Id ? match.team2Id : undefined;
@@ -194,27 +201,33 @@ export async function GET(
           ? `${winnerEspnId === team1Id ? match.team1Id : match.team2Id} won${winMargin ? ` by ${winMargin}` : ""}`
           : summary;
 
-        // Asynchronously sync to Supabase
-        try {
-          const sb = getSupabaseAdminClient();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (sb.from("matches") as any)
-            .update({
-              status: isCompleted ? "completed" : "live",
-              scores,
-              result: isCompleted ? resultStatement : undefined,
-              result_statement: summary || resultStatement,
-              winner_team_id: winnerTeamSlug,
-              win_margin: winMargin,
-              win_type: winType,
-            })
-            .eq("slug", slug);
-        } catch {
-          // Continue if background write fails
+        // Asynchronously sync to Supabase when active or completed
+        if (isCompleted || isLiveMatch) {
+          try {
+            const sb = getSupabaseAdminClient();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (sb.from("matches") as any)
+              .update({
+                status: isCompleted ? "completed" : "live",
+                scores,
+                result: isCompleted ? resultStatement : undefined,
+                result_statement: summary || resultStatement,
+                winner_team_id: winnerTeamSlug,
+                win_margin: winMargin,
+                win_type: winType,
+              })
+              .eq("slug", slug);
+
+            if (isCompleted) {
+              recalculateAndPersistStandings("season-3").catch(() => {});
+            }
+          } catch {
+            // Continue if background write fails
+          }
         }
 
         return NextResponse.json({
-          live: !isCompleted,
+          live: isLiveMatch,
           isCompleted,
           matchId: match.id,
           slug: match.slug,

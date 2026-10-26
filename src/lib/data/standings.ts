@@ -278,8 +278,8 @@ export function computeStandings(
     const ptsDiff = (b.points ?? 0) - (a.points ?? 0);
     if (ptsDiff !== 0) return ptsDiff;
 
-    const nrrA = a.netRunRate ?? -999;
-    const nrrB = b.netRunRate ?? -999;
+    const nrrA = a.netRunRate ?? 0;
+    const nrrB = b.netRunRate ?? 0;
     if (nrrB !== nrrA) return nrrB - nrrA;
 
     const winDiff = (b.won ?? 0) - (a.won ?? 0);
