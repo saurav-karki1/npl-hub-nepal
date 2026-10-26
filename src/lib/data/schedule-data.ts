@@ -123,6 +123,18 @@ export interface ScheduleMatch {
   espnMatchPath?: string;
 }
 
+/**
+ * Resolves the official ESPN Cricinfo match ID for any NPL Season 3 match (1-32).
+ * Matches 1 to 32 correspond sequentially to ESPN IDs 1558582 to 1558613.
+ */
+export function getEspnMatchId(matchNumber: number): string {
+  return String(1558581 + matchNumber);
+}
+
+export function getEspnMatchPath(matchNumber: number): string {
+  return `/series/nepal-premier-league-2026-27-1558581/match-${getEspnMatchId(matchNumber)}/live-cricket-score`;
+}
+
 /** Helper to resolve both teams for a given match */
 export function resolveMatchTeams(match: ScheduleMatch): { team1: MatchTeamInfo; team2: MatchTeamInfo } {
   return {

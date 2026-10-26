@@ -20,6 +20,7 @@ import {
   resolveMatchTeams,
   getMatchBySlug as getMatchBySlugData,
   getAdjacentMatches as getAdjacentMatchesData,
+  getEspnMatchPath,
 } from "@/lib/data/schedule-data";
 import {
   StandingsData,
@@ -217,7 +218,7 @@ function mapSupabaseMatch(row: any): ScheduleMatch {
     isProvisional: row.is_provisional ?? false,
     externalProvider: row.external_provider ?? undefined,
     externalMatchId: row.external_match_id ?? undefined,
-    espnMatchPath: row.espn_match_path ?? staticMatch?.espnMatchPath,
+    espnMatchPath: row.espn_match_path ?? staticMatch?.espnMatchPath ?? getEspnMatchPath(row.match_number),
   };
 }
 
