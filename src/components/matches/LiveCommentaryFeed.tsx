@@ -28,12 +28,18 @@ interface LiveCommentaryFeedProps {
   matchStatus: string;
 }
 
-export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveCommentaryFeedProps) {
+export function LiveCommentaryFeed({
+  matchSlug,
+  isLive,
+  matchStatus,
+}: LiveCommentaryFeedProps) {
   const [commentary, setCommentary] = useState<CommentaryItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [simulating, setSimulating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<string | null>(null);
+
+  const isUpcoming = matchStatus === "upcoming" || matchStatus === "tba";
+  const isCompleted = matchStatus === "completed";
 
   const fetchCommentary = useCallback(async () => {
     if (loading) return;
@@ -54,55 +60,42 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
   }, [matchSlug, loading]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    // Do NOT fetch commentary for upcoming/scheduled matches — nothing to show yet.
+    if (isUpcoming) return;
     fetchCommentary();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchSlug]);
 
-  // Live polling every 25s when match is live
+  // Live polling every 25 seconds — only when the match is actually in progress.
   useEffect(() => {
     if (!isLive) return;
     const interval = setInterval(fetchCommentary, 25000);
     return () => clearInterval(interval);
   }, [isLive, fetchCommentary]);
 
-  const handleSimulate = async () => {
-    setSimulating(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/matches/${matchSlug}/commentary`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ simulateSample: true }),
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        await fetchCommentary();
-      } else {
-        setError(data.error || "Simulation failed.");
-      }
-    } catch {
-      setError("Network error during simulation.");
-    } finally {
-      setSimulating(false);
-    }
-  };
-
   const getEventBadge = (item: CommentaryItem) => {
-    if (item.isWicket) return { label: "WICKET", class: "bg-red-500/20 text-red-400 border-red-500/30" };
-    if (item.isSix) return { label: "SIX!", class: "bg-purple-500/20 text-purple-400 border-purple-500/30" };
-    if (item.isBoundary) return { label: "FOUR!", class: "bg-amber-500/20 text-amber-400 border-amber-500/30" };
-    if (item.eventType === "over_summary") return { label: "END OF OVER", class: "bg-blue-500/20 text-blue-400 border-blue-500/30" };
-    if (item.eventType === "wicket") return { label: "WICKET", class: "bg-red-500/20 text-red-400 border-red-500/30" };
+    if (item.isWicket)
+      return { label: "WICKET", class: "bg-red-500/20 text-red-400 border-red-500/30" };
+    if (item.isSix)
+      return { label: "SIX!", class: "bg-purple-500/20 text-purple-400 border-purple-500/30" };
+    if (item.isBoundary)
+      return { label: "FOUR!", class: "bg-amber-500/20 text-amber-400 border-amber-500/30" };
+    if (item.eventType === "over_summary")
+      return { label: "END OF OVER", class: "bg-blue-500/20 text-blue-400 border-blue-500/30" };
+    if (item.eventType === "wicket")
+      return { label: "WICKET", class: "bg-red-500/20 text-red-400 border-red-500/30" };
     return { label: `${item.runs}`, class: "bg-slate-700/50 text-slate-300 border-slate-700" };
   };
 
-  const isUpcoming = matchStatus === "upcoming" || matchStatus === "tba";
+  // ── Upcoming / scheduled matches ──────────────────────────────────────────
+  // The Live Commentary section is completely hidden for matches that have not
+  // started. It will automatically appear once an admin marks the match "live".
+  if (isUpcoming) return null;
 
-
-
+  // ── Live or completed ─────────────────────────────────────────────────────
   return (
     <section className="space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-base font-bold text-[var(--color-ink)]">Live Commentary</h2>
@@ -113,44 +106,45 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          {lastFetched && (
-            <span className="text-[10px] text-[var(--color-ink-muted)]">Updated {lastFetched}</span>
-          )}
-          <button
-            type="button"
-            onClick={fetchCommentary}
-            disabled={loading}
-            className="text-xs px-2.5 py-1 rounded bg-[#0c121e] border border-[var(--color-rule)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand)] transition-colors"
-          >
-            {loading ? "Refreshing…" : "Refresh"}
-          </button>
-          <button
-            type="button"
-            onClick={handleSimulate}
-            disabled={simulating}
-            className="text-xs px-2.5 py-1 rounded bg-[var(--color-brand-light)] border border-[var(--color-brand)]/30 text-[var(--color-brand)] hover:bg-[var(--color-brand)]/20 transition-colors font-semibold"
-          >
-            {simulating ? "Generating…" : "✦ Test AI Commentary"}
-          </button>
-        </div>
+
+        {/* Refresh button — only shown during a live match so viewers can
+            manually pull the latest events without waiting for the 25 s poll. */}
+        {isLive && (
+          <div className="flex items-center gap-2">
+            {lastFetched && (
+              <span className="text-[10px] text-[var(--color-ink-muted)]">
+                Updated {lastFetched}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={fetchCommentary}
+              disabled={loading}
+              className="text-xs px-2.5 py-1 rounded bg-[#0c121e] border border-[var(--color-rule)] text-[var(--color-ink-muted)] hover:text-[var(--color-ink)] hover:border-[var(--color-brand)] transition-colors"
+            >
+              {loading ? "Refreshing…" : "Refresh"}
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Error state */}
       {error && (
         <div className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded px-3 py-2">
           {error}
         </div>
       )}
 
+      {/* Empty state */}
       {commentary.length === 0 && !loading ? (
         <div className="bg-[#0c121e] border border-[var(--color-rule)] rounded-lg p-6 text-center space-y-2">
           <p className="text-sm font-semibold text-[var(--color-ink)]">
-            {isUpcoming ? "Live Commentary Scheduled" : "No Commentary Recorded"}
+            {isCompleted ? "No Commentary Recorded" : "Commentary Starting Soon"}
           </p>
           <p className="text-xs text-[var(--color-ink-muted)] max-w-md mx-auto leading-relaxed">
-            {isUpcoming
-              ? "Live ball-by-ball commentary powered by Gemini will activate once the match is underway. Click 'Test AI Commentary' to preview verified sample events."
-              : "No live events or commentary recorded for this fixture."}
+            {isCompleted
+              ? "No live events or commentary were recorded for this fixture."
+              : "Ball-by-ball commentary powered by Gemini will appear here once play begins."}
           </p>
         </div>
       ) : (
@@ -170,15 +164,13 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
                     : "border-[var(--color-rule)]"
                 }`}
               >
-                {/* Over badge */}
+                {/* Over.ball badge */}
                 <div className="shrink-0 text-center min-w-[40px]">
                   <span className="text-[10px] font-mono text-[var(--color-ink-muted)] block">
                     {item.overNumber.toFixed(1)}
                   </span>
                   <span
-                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                      badge.class
-                    } block mt-0.5`}
+                    className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${badge.class} block mt-0.5`}
                   >
                     {badge.label}
                   </span>
@@ -189,7 +181,9 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
                   {item.headline && (
                     <p className="text-xs font-bold text-[var(--color-ink)]">{item.headline}</p>
                   )}
-                  <p className="text-xs text-[var(--color-ink-muted)] leading-relaxed">{item.text}</p>
+                  <p className="text-xs text-[var(--color-ink-muted)] leading-relaxed">
+                    {item.text}
+                  </p>
                   {(item.batterName || item.bowlerName) && (
                     <p className="text-[10px] text-[var(--color-ink-muted)]/60 mt-1">
                       {item.batterName && <span>{item.batterName}</span>}
@@ -199,7 +193,7 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
                   )}
                 </div>
 
-                {/* Provider badge */}
+                {/* Provider label */}
                 <div className="shrink-0">
                   <span className="text-[9px] text-[var(--color-ink-muted)]/50 uppercase tracking-wide">
                     {item.provider === "gemini" ? "✦ Gemini" : item.provider}
@@ -212,7 +206,8 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
       )}
 
       <p className="text-[10px] text-[var(--color-ink-muted)]/50 text-center pt-1">
-        AI Commentary powered by Gemini · Generated strictly from verified match events · Zero fabricated data
+        AI Commentary powered by Gemini · Generated strictly from verified match events · Zero
+        fabricated data
       </p>
     </section>
   );
