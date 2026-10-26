@@ -176,6 +176,10 @@ export const getCompletedMatchesSync = (): ScheduleMatch[] =>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSupabaseMatch(row: any): ScheduleMatch {
+  const staticMatch = SCHEDULE_FIXTURES.find(
+    (m) => m.slug === row.slug || m.id === row.id
+  );
+
   const resultDetails: MatchResultDetails | undefined =
     row.winner_team_id || row.result_statement || row.winner_name
       ? {
@@ -213,6 +217,7 @@ function mapSupabaseMatch(row: any): ScheduleMatch {
     isProvisional: row.is_provisional ?? false,
     externalProvider: row.external_provider ?? undefined,
     externalMatchId: row.external_match_id ?? undefined,
+    espnMatchPath: row.espn_match_path ?? staticMatch?.espnMatchPath,
   };
 }
 

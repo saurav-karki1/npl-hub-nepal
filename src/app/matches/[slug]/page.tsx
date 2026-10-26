@@ -104,6 +104,7 @@ export default async function MatchDetailPage({ params }: PageProps) {
         {/* ESPN Cricinfo Live Score Embed — shown only when match is live and ESPN path is set */}
         {match.espnMatchPath && (
           <LiveScoreEmbed
+            matchSlug={match.slug}
             espnMatchPath={match.espnMatchPath}
             matchStatus={match.status}
           />
