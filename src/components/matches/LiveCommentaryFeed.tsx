@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 interface CommentaryItem {
   id: string;
@@ -24,6 +24,11 @@ interface CommentaryItem {
 interface LiveScoreData {
   summary?: string;
   resultStatement?: string;
+  battingTeam?: string;
+  bowlingTeam?: string;
+  target?: number;
+  runsNeeded?: number;
+  ballsLeft?: number;
   scores?: {
     team1?: { runs: number; overs: string; wickets: number };
     team2?: { runs: number; overs: string; wickets: number };
@@ -37,101 +42,123 @@ interface LiveCommentaryFeedProps {
   matchStatus: string;
 }
 
-// Seed-based variety picker so same-run balls get different phrases
+// ─────────────────────────────────────────────────────────────────────────────
+// Template fallback — instant, no API needed
+// ─────────────────────────────────────────────────────────────────────────────
 function pickVariant(variants: string[], seed: number): string {
   return variants[seed % variants.length];
 }
 
-function formatEasyCommentary(item: CommentaryItem): string {
+function templateCommentary(item: CommentaryItem): string {
   const isWicket = item.isWicket || item.eventType === "wicket";
   const isSix = item.isSix;
   const isFour = item.isBoundary && !isSix;
   const batter = item.batterName || "The batter";
   const bowler = item.bowlerName || "the bowler";
-
-  // Use over*10+ball as seed. Fall back to over*100 if ballNumber is 0 (use a hash of the text).
-  const textSeed = item.text ? item.text.charCodeAt(0) + (item.text.charCodeAt(4) || 0) : 0;
+  const textSeed = item.text
+    ? item.text.charCodeAt(0) + (item.text.charCodeAt(4) || 0)
+    : 0;
   const seed = Math.round(item.overNumber * 10) + textSeed;
 
-  // ── Wicket ────────────────────────────────────────────────────────────────
   if (isWicket) {
     const raw = item.text || "";
-    // Try to parse "Name b/c FielderName Runs (Balls)" pattern from ESPN text
-    const m = raw.match(/([A-Za-z .'-]+?)\s+(b\s+[A-Za-z .'-]+|c\s+[A-Za-z .'-]+\s+b\s+[A-Za-z .'-]+|lbw b\s+[A-Za-z .'-]+|run out|st\s+[A-Za-z .'-]+)[\s]*(\d+)\s*\((\d+)\)/i);
+    const m = raw.match(
+      /([A-Za-z .'-]+?)\s+(b\s+[A-Za-z .'-]+|c\s+[A-Za-z .'-]+\s+b\s+[A-Za-z .'-]+|lbw b\s+[A-Za-z .'-]+|run out|st\s+[A-Za-z .'-]+)[\s]*(\d+)\s*\((\d+)\)/i
+    );
     if (m) {
-      const name = m[1].trim();
-      const howOut = m[2].trim();
-      const runs = m[3];
-      const balls = m[4];
-      return `OUT! ${name} is dismissed (${howOut}) for ${runs} runs off ${balls} balls. Big moment — the bowling side celebrate!`;
+      return `OUT! ${m[1].trim()} is dismissed (${m[2].trim()}) for ${m[3]} runs off ${m[4]} balls. Big moment — the bowling side celebrate!`;
     }
-    return pickVariant([
-      `WICKET! ${batter} is out! A big breakthrough for the bowling side. ${bowler} is thrilled!`,
-      `OUT! ${batter} has to walk back. That is a massive wicket for the team! ${bowler} deserves full credit.`,
-      `${batter} is gone! A crucial dismissal — ${bowler} strikes at the perfect time.`,
-    ], seed);
+    return pickVariant(
+      [
+        `WICKET! ${batter} is out! A big breakthrough for the bowling side. ${bowler} is thrilled!`,
+        `OUT! ${batter} has to walk back. That is a massive wicket! ${bowler} deserves full credit.`,
+        `${batter} is gone! A crucial dismissal — ${bowler} strikes at the perfect time.`,
+      ],
+      seed
+    );
   }
 
-  // ── Six ───────────────────────────────────────────────────────────────────
-  if (isSix) {
-    return pickVariant([
-      `SIX! ${batter} sends it sailing over the boundary! Massive hit off ${bowler} — the crowd goes wild!`,
-      `MAXIMUM! ${batter} clears the ropes with ease. ${bowler} can only watch as that disappears into the stands!`,
-      `SIX! What a shot by ${batter}! Picked up the length early and launched it out of the ground off ${bowler}.`,
-      `BANG! Over the fence! ${batter} hits ${bowler} for a huge SIX — pure timing and power!`,
-    ], seed);
-  }
+  if (isSix)
+    return pickVariant(
+      [
+        `SIX! ${batter} sends it sailing over the boundary! Massive hit off ${bowler} — the crowd goes wild!`,
+        `MAXIMUM! ${batter} clears the ropes with ease. ${bowler} can only watch as that disappears into the stands!`,
+        `SIX! What a shot by ${batter}! Picked up the length early and launched it out of the ground off ${bowler}.`,
+        `BANG! Over the fence! ${batter} hits ${bowler} for a huge SIX — pure timing and power!`,
+      ],
+      seed
+    );
 
-  // ── Four ──────────────────────────────────────────────────────────────────
-  if (isFour) {
-    return pickVariant([
-      `FOUR! Cracking shot from ${batter}! Finds the gap and races to the boundary off ${bowler}.`,
-      `BOUNDARY! ${batter} times it perfectly through the covers off ${bowler}. No chance for the fielders!`,
-      `FOUR runs! ${batter} clips it off the pads and the ball speeds away to the fence. ${bowler} is frustrated.`,
-      `That's a FOUR! ${batter} reads the line well and flicks it past the fielder — great cricket shot!`,
-    ], seed);
-  }
+  if (isFour)
+    return pickVariant(
+      [
+        `FOUR! Cracking shot from ${batter}! Finds the gap and races to the boundary off ${bowler}.`,
+        `BOUNDARY! ${batter} times it perfectly through the covers off ${bowler}. No chance for the fielders!`,
+        `FOUR runs! ${batter} clips it off the pads and the ball speeds away to the fence.`,
+        `That's a FOUR! ${batter} reads the line well and flicks it past the fielder — great shot!`,
+      ],
+      seed
+    );
 
-  // ── 3 runs ────────────────────────────────────────────────────────────────
-  if (item.runs === 3) {
-    return pickVariant([
-      `3 runs! ${batter} hits it into the deep and they run hard between the wickets off ${bowler}. Good effort!`,
-      `Three runs! The ball goes to the boundary region — sharp running by both batters off ${bowler}.`,
-    ], seed);
-  }
+  if (item.runs === 3)
+    return pickVariant(
+      [
+        `3 runs! ${batter} hits it into the deep and they run hard between the wickets. Good effort!`,
+        `Three runs! Sharp running by both batters off ${bowler}.`,
+      ],
+      seed
+    );
 
-  // ── 2 runs ────────────────────────────────────────────────────────────────
-  if (item.runs === 2) {
-    return pickVariant([
-      `2 runs. ${batter} places it wide of mid-on and they scamper back for two. Quick between the wickets!`,
-      `Two runs. ${batter} pushes it through the gap off ${bowler} — good running converts one into two.`,
-      `A couple of runs here. ${batter} and their partner communicate well and pick up two off ${bowler}.`,
-    ], seed);
-  }
+  if (item.runs === 2)
+    return pickVariant(
+      [
+        `2 runs. ${batter} places it wide of mid-on and they scamper back for two. Quick between the wickets!`,
+        `Two runs. ${batter} pushes it through the gap off ${bowler} — good running converts one into two.`,
+        `A couple of runs. ${batter} and partner communicate well and pick up two off ${bowler}.`,
+      ],
+      seed
+    );
 
-  // ── 1 run ─────────────────────────────────────────────────────────────────
-  if (item.runs === 1) {
-    return pickVariant([
-      `1 run. ${batter} tucks it off the hip off ${bowler} and takes a single to rotate the strike.`,
-      `Single taken. ${batter} nudges it into the leg side off ${bowler} — keeps the scoreboard ticking.`,
-      `1 run. ${batter} pushes ${bowler} into the covers and calls for a quick single.`,
-      `Just a run. ${batter} steers it to fine leg off ${bowler} — sensible cricket, keeps things moving.`,
-      `1 run. Nicely worked by ${batter} off the pads of ${bowler} — easy single taken.`,
-    ], seed);
-  }
+  if (item.runs === 1)
+    return pickVariant(
+      [
+        `1 run. ${batter} tucks it off the hip off ${bowler} and takes a single to rotate the strike.`,
+        `Single taken. ${batter} nudges it into the leg side off ${bowler} — keeps the scoreboard ticking.`,
+        `1 run. ${batter} pushes ${bowler} into the covers and calls for a quick single.`,
+        `Just a run. ${batter} steers it to fine leg off ${bowler} — sensible cricket.`,
+        `1 run. Nicely worked by ${batter} off the pads of ${bowler} — easy single taken.`,
+      ],
+      seed
+    );
 
-  // ── Dot ball ──────────────────────────────────────────────────────────────
-  if (item.runs === 0) {
-    return pickVariant([
-      `Dot ball! ${bowler} bowls a tight line and ${batter} can only block it back down the wicket.`,
-      `No run. Good delivery by ${bowler} — ${batter} has no option but to defend solidly.`,
-      `Dot! ${bowler} hits the right length and keeps ${batter} quiet. Good pressure from the bowling side.`,
-      `Defended! ${batter} plays it safe against ${bowler}. No run scored — scoreboard pressure building.`,
-    ], seed);
-  }
+  if (item.runs === 0)
+    return pickVariant(
+      [
+        `Dot ball! ${bowler} bowls a tight line and ${batter} can only block it back down the wicket.`,
+        `No run. Good delivery by ${bowler} — ${batter} has no option but to defend solidly.`,
+        `Dot! ${bowler} hits the right length and keeps ${batter} quiet. Pressure building.`,
+        `Defended! ${batter} plays it safe against ${bowler}. No run — scoreboard pressure rising.`,
+      ],
+      seed
+    );
 
-  // Fallback: return original ESPN text cleaned up a little
-  return item.text || `${item.runs} run(s) off ${bowler} by ${batter}.`;
+  return item.text || `${item.runs} run(s) scored.`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Determine if a ball qualifies for AI enhancement
+// ─────────────────────────────────────────────────────────────────────────────
+function getAIEventType(
+  item: CommentaryItem
+): "wicket" | "six" | "four" | "dot_pressure" | null {
+  if (item.isWicket || item.eventType === "wicket") return "wicket";
+  if (item.isSix) return "six";
+  if (item.isBoundary && !item.isSix) return "four";
+  return null; // normal balls use templates
+}
+
+function formatEasyCommentary(item: CommentaryItem): string {
+  return templateCommentary(item);
 }
 
 export function LiveCommentaryFeed({
@@ -146,6 +173,13 @@ export function LiveCommentaryFeed({
   const [lastFetched, setLastFetched] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
 
+  // AI commentary cache: eventId → AI text (or null if failed/pending)
+  const aiCache = useRef<Map<string, string | null>>(new Map());
+  // Track which eventIds are currently being fetched to avoid duplicate calls
+  const aiFetching = useRef<Set<string>>(new Set());
+  // Re-render trigger when AI text arrives
+  const [aiVersion, setAiVersion] = useState(0);
+
   const isUpcoming = matchStatus === "upcoming" || matchStatus === "tba";
   const isCompleted = matchStatus === "completed";
 
@@ -153,17 +187,15 @@ export function LiveCommentaryFeed({
     if (loading) return;
     setLoading(true);
     try {
-      // 1. Fetch Commentary
-      const res = await fetch(`/api/matches/${matchSlug}/commentary`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.commentary) {
-          setCommentary(data.commentary);
-        }
-      }
+      const [commRes, scoreRes] = await Promise.all([
+        fetch(`/api/matches/${matchSlug}/commentary`),
+        fetch(`/api/matches/${matchSlug}/live-score`),
+      ]);
 
-      // 2. Fetch Live Score & Equation
-      const scoreRes = await fetch(`/api/matches/${matchSlug}/live-score`);
+      if (commRes.ok) {
+        const data = await commRes.json();
+        if (data.commentary) setCommentary(data.commentary);
+      }
       if (scoreRes.ok) {
         const scoreData = await scoreRes.json();
         setLiveMeta(scoreData);
@@ -177,7 +209,7 @@ export function LiveCommentaryFeed({
         })
       );
     } catch {
-      // Keep previous state on network error
+      // Keep previous state on error
     } finally {
       setLoading(false);
     }
@@ -188,6 +220,74 @@ export function LiveCommentaryFeed({
     fetchCommentary();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchSlug]);
+
+  useEffect(() => {
+    if (!isLive) return;
+    const interval = setInterval(fetchCommentary, 15000);
+    return () => clearInterval(interval);
+  }, [isLive, fetchCommentary]);
+
+  // ── AI enrichment: fire-and-forget for key moments ───────────────────────
+  // Runs whenever commentary list changes; fetches AI text for wickets/6s/4s
+  // that haven't been requested yet. Updates aiCache and triggers re-render.
+  useEffect(() => {
+    const toEnrich = commentary.filter((item) => {
+      const eventType = getAIEventType(item);
+      if (!eventType) return false;
+      if (aiCache.current.has(item.id)) return false;
+      if (aiFetching.current.has(item.id)) return false;
+      return true;
+    });
+
+    if (toEnrich.length === 0) return;
+
+    toEnrich.forEach((item) => {
+      const eventType = getAIEventType(item)!;
+      aiFetching.current.add(item.id);
+
+      const scoreStr = liveMeta?.scores?.team2
+        ? `${liveMeta.scores.team2.runs}/${liveMeta.scores.team2.wickets} (${liveMeta.scores.team2.overs} ov)`
+        : liveMeta?.scores?.team1
+        ? `${liveMeta.scores.team1.runs}/${liveMeta.scores.team1.wickets} (${liveMeta.scores.team1.overs} ov)`
+        : "Unknown";
+
+      fetch(`/api/matches/${matchSlug}/ai-commentary`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventType,
+          over: item.overNumber,
+          runs: item.runs,
+          batterName: item.batterName || "",
+          bowlerName: item.bowlerName || "",
+          rawText: item.text || "",
+          matchContext: {
+            battingTeam: liveMeta?.battingTeam || "Batting team",
+            bowlingTeam: liveMeta?.bowlingTeam || "Bowling team",
+            score: scoreStr,
+            target: liveMeta?.target,
+            runsNeeded: liveMeta?.runsNeeded,
+            ballsLeft: liveMeta?.ballsLeft,
+            matchStatus: isLive ? "live" : "completed",
+          },
+        }),
+      })
+        .then((r) => r.json())
+        .then((data: { commentary: string | null }) => {
+          aiFetching.current.delete(item.id);
+          aiCache.current.set(item.id, data.commentary ?? null);
+          if (data.commentary) {
+            // Trigger re-render to show AI text
+            setAiVersion((v) => v + 1);
+          }
+        })
+        .catch(() => {
+          aiFetching.current.delete(item.id);
+          aiCache.current.set(item.id, null); // mark as tried, use template
+        });
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [commentary, matchSlug]);
 
   // Live polling every 15s during active match
   useEffect(() => {
@@ -387,8 +487,18 @@ export function LiveCommentaryFeed({
             const isSix = item.isSix;
             const isFour = item.isBoundary && !isSix;
             const isLatest = idx === 0;
+            const isKeyMoment = isWicket || isSix || isFour;
 
-            const easyText = formatEasyCommentary(item);
+            // Hybrid: use AI text if ready, else template, show ✨ badge for AI
+            const cachedAI = aiCache.current.get(item.id);
+            const aiReady = isKeyMoment && cachedAI !== undefined;
+            const aiPending = isKeyMoment && !aiReady;
+            const displayText =
+              isKeyMoment && cachedAI
+                ? cachedAI
+                : templateCommentary(item);
+            // suppress unused var warning — aiVersion used to force re-render
+            void aiVersion;
 
             return (
               <div
@@ -437,8 +547,8 @@ export function LiveCommentaryFeed({
                   </div>
 
                   {/* Easy Commentary Text & Tags */}
-                  <div className="flex-1 min-w-0 space-y-1">
-                    {/* Easy Friendly Text */}
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    {/* Commentary text: AI (with badge) or template */}
                     <p className={`text-xs sm:text-sm leading-relaxed font-medium ${
                       isWicket
                         ? "text-white"
@@ -450,26 +560,37 @@ export function LiveCommentaryFeed({
                         ? "text-slate-100"
                         : "text-slate-300"
                     }`}>
-                      {easyText}
+                      {displayText}
                     </p>
 
-                    {/* Match Entities (Bowler to Batter) */}
-                    {(item.batterName || item.bowlerName) && (
-                      <div className="pt-0.5 flex items-center gap-2 flex-wrap text-[11px] text-slate-400 font-medium">
-                        {item.bowlerName && (
-                          <span className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-0.5 rounded">
-                            <span className="text-[10px] text-sky-400 font-bold">Bowler:</span>
-                            <span className="text-slate-300">{item.bowlerName}</span>
-                          </span>
-                        )}
-                        {item.batterName && (
-                          <span className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-0.5 rounded">
-                            <span className="text-[10px] text-amber-400 font-bold">Batter:</span>
-                            <span className="text-slate-300">{item.batterName}</span>
-                          </span>
-                        )}
-                      </div>
-                    )}
+                    {/* AI / Pending badges */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {isKeyMoment && cachedAI && (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-violet-300 bg-violet-950/60 border border-violet-500/30 px-1.5 py-0.5 rounded">
+                          ✨ AI Commentary
+                        </span>
+                      )}
+                      {aiPending && (
+                        <span className="inline-flex items-center gap-1 text-[9px] font-medium text-slate-500 italic">
+                          <span className="w-1.5 h-1.5 rounded-full bg-slate-600 animate-pulse" />
+                          enhancing…
+                        </span>
+                      )}
+
+                      {/* Bowler / Batter chips */}
+                      {item.bowlerName && (
+                        <span className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-0.5 rounded text-[11px]">
+                          <span className="text-[10px] text-sky-400 font-bold">Bowler:</span>
+                          <span className="text-slate-300">{item.bowlerName}</span>
+                        </span>
+                      )}
+                      {item.batterName && (
+                        <span className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-0.5 rounded text-[11px]">
+                          <span className="text-[10px] text-amber-400 font-bold">Batter:</span>
+                          <span className="text-slate-300">{item.batterName}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

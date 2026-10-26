@@ -394,3 +394,13 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **stats-season3-data.ts (full rewrite):** Real Match 1 data. Standings: All 8 teams (LL #1, 2pts, +4.599 NRR; SPR #8, 0pts, -4.599 NRR). Awards: Sher Malla 3/11 POTM. Leaderboards: Matt Short 40 (222.22 SR), Aasif Sheikh 32, Bibek Mahato 4/14. `PlayerSeasonStats` array with all required fields (null for missing). `VerifiedLeagueMatch` shape corrected. `SourceReference.description` field used (no `verified`).
   - **stats-types.ts:** `SeasonStatus` type already included `"in-progress"`. `SeasonOption.status` uses `SeasonStatus`. `PlayerSeasonStats` all required fields enforced.
   - **Build:** ✅ `npm run build` → 229 routes, 0 TypeScript errors. Committed `262fa32`, pushed to master; Vercel redeploy triggered.
+
+- **2026-10-26 (Hybrid AI Commentary & Delivery Feed Clarity):**
+  - **Hybrid AI Engine (`/api/matches/[slug]/ai-commentary`):** Built dedicated server-side endpoint invoking Gemini (`gemini-2.5-flash-lite` -> `gemini-2.0-flash` -> `gemini-1.5-flash`) with multi-key failover via `executeWithKeyFailover`. Only high-impact moments (wickets, sixes, fours, pressure dots) trigger AI enrichment; routine balls run via client-side varied phrase templates. In-memory deduplication cache prevents repeated Gemini calls for identical deliveries.
+  - **UI Readability & Visual Hierarchy (`LiveCommentaryFeed.tsx`):**
+    - High-contrast flat backgrounds replacing washed-out gradients (`#1a0505` for wickets, `#110a1c` for sixes, `#1a1000` for fours, `#071410` for latest ball, `#0b101b` for normal).
+    - Left accent stripe indicator per event type.
+    - Crisp white/light-slate typography for instant readability on mobile/desktop.
+    - `✨ AI Commentary` badge for Gemini-generated moments and subtle `enhancing…` indicator during streaming.
+    - Varied template seed algorithm ensuring consecutive 1-run or dot balls display distinct phrasing without repeating.
+  - **Build & Verification:** ✅ `npm run build` completed with 0 errors (230 routes compiled).
