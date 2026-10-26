@@ -38,7 +38,7 @@ export class MockCricketProvider implements ICricketDataProvider {
   }
 
   async fetchLiveMatches(): Promise<NormalizedCricketMatch[]> {
-    // Returns a simulated live opening match between Janakpur Bolts and Biratnagar Kings
+    // Returns a simulated live opening match between Lumbini Lions and Sudurpaschim Royals
     return [
       {
         externalId: "mock-live-match-01",
@@ -46,14 +46,14 @@ export class MockCricketProvider implements ICricketDataProvider {
         season: "season-3",
         matchNumber: 1,
         stage: "League",
-        team1ExternalId: "mock-jb",
-        team1Name: "Janakpur Bolts",
-        team1CanonicalId: "janakpur-bolts",
-        team2ExternalId: "mock-bk",
-        team2Name: "Biratnagar Kings",
-        team2CanonicalId: "biratnagar-kings",
+        team1ExternalId: "mock-ll",
+        team1Name: "Lumbini Lions",
+        team1CanonicalId: "lumbini-lions",
+        team2ExternalId: "mock-sr",
+        team2Name: "Sudurpaschim Royals",
+        team2CanonicalId: "sudurpaschim-royals",
         date: "2026-10-26",
-        time: "12:15",
+        time: "17:00",
         venue: "TU International Cricket Stadium, Kirtipur",
         status: "live",
         scores: {
@@ -70,12 +70,12 @@ export class MockCricketProvider implements ICricketDataProvider {
             oversDecimal: oversToDecimal("17.2", 4),
           },
           currentInnings: 2,
-          currentBattingTeamId: "biratnagar-kings",
-          liveStatusDescription: "Biratnagar Kings need 27 runs in 16 balls",
+          currentBattingTeamId: "sudurpaschim-royals",
+          liveStatusDescription: "Sudurpaschim Royals need 27 runs in 16 balls",
           requiredRunRate: 10.12,
           currentRunRate: 8.19,
         },
-        tossWinner: "Janakpur Bolts",
+        tossWinner: "Lumbini Lions",
         tossDecision: "bat",
         lastUpdated: new Date().toISOString(),
       },

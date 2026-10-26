@@ -9,6 +9,7 @@ import { CommentaryEvent, CommentaryOutput } from "./types";
 import { GeminiCommentaryProvider } from "./gemini-provider";
 import { RuleBasedCommentaryProvider } from "./rule-provider";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { SCHEDULE_FIXTURES, resolveMatchTeams } from "@/lib/data/schedule-data";
 
 export * from "./types";
 export { GeminiCommentaryProvider } from "./gemini-provider";
@@ -143,6 +144,26 @@ export async function getMatchCommentary(matchId: string): Promise<CommentaryOut
  * Returns mock/sample verified events for sandbox testing
  */
 export function getSampleCommentaryEvents(matchId: string): CommentaryEvent[] {
+  const match = SCHEDULE_FIXTURES.find((m) => m.id === matchId || m.slug === matchId);
+  const { team1, team2 } = match ? resolveMatchTeams(match) : { team1: { name: "Team 1" }, team2: { name: "Team 2" } };
+
+  const battingTeam = team2.name;
+  const bowlingTeam = team1.name;
+
+  let batter1 = "The batter";
+  let batter2 = "The non-striker";
+  let bowler = "The bowler";
+
+  if (match?.slug?.includes("lumbini") || match?.slug?.includes("sudurpaschim")) {
+    batter1 = "Dipendra Singh Airee";
+    batter2 = "Binod Bhandari";
+    bowler = "Ruben Trumpelmann";
+  } else if (match?.slug?.includes("biratnagar") || match?.slug?.includes("janakpur")) {
+    batter1 = "Anil Sah";
+    batter2 = "Lokesh Bam";
+    bowler = "Karan KC";
+  }
+
   return [
     {
       matchId,
@@ -150,16 +171,16 @@ export function getSampleCommentaryEvents(matchId: string): CommentaryEvent[] {
       eventType: "boundary",
       overNumber: 17.2,
       ballNumber: 2,
-      batterName: "Anil Sah",
-      bowlerName: "Karan KC",
-      battingTeamName: "Biratnagar Kings",
-      bowlingTeamName: "Janakpur Bolts",
+      batterName: batter1,
+      bowlerName: bowler,
+      battingTeamName: battingTeam,
+      bowlingTeamName: bowlingTeam,
       runs: 4,
       isWicket: false,
       isBoundary: true,
       isSix: false,
       totalScoreDescription: "142/4 (17.2 ov)",
-      contextNote: "Biratnagar Kings need 27 runs in 16 balls",
+      contextNote: `${battingTeam} need 27 runs in 16 balls`,
     },
     {
       matchId,
@@ -167,16 +188,16 @@ export function getSampleCommentaryEvents(matchId: string): CommentaryEvent[] {
       eventType: "ball",
       overNumber: 17.1,
       ballNumber: 1,
-      batterName: "Anil Sah",
-      bowlerName: "Karan KC",
-      battingTeamName: "Biratnagar Kings",
-      bowlingTeamName: "Janakpur Bolts",
+      batterName: batter1,
+      bowlerName: bowler,
+      battingTeamName: battingTeam,
+      bowlingTeamName: bowlingTeam,
       runs: 1,
       isWicket: false,
       isBoundary: false,
       isSix: false,
       totalScoreDescription: "138/4 (17.1 ov)",
-      contextNote: "Biratnagar Kings need 31 runs in 17 balls",
+      contextNote: `${battingTeam} need 31 runs in 17 balls`,
     },
     {
       matchId,
@@ -184,10 +205,10 @@ export function getSampleCommentaryEvents(matchId: string): CommentaryEvent[] {
       eventType: "over_summary",
       overNumber: 16.6,
       ballNumber: 6,
-      batterName: "Lokesh Bam",
-      bowlerName: "Lalit Rajbanshi",
-      battingTeamName: "Biratnagar Kings",
-      bowlingTeamName: "Janakpur Bolts",
+      batterName: batter2,
+      bowlerName: bowler,
+      battingTeamName: battingTeam,
+      bowlingTeamName: bowlingTeam,
       runs: 1,
       isWicket: false,
       isBoundary: false,
@@ -201,17 +222,17 @@ export function getSampleCommentaryEvents(matchId: string): CommentaryEvent[] {
       eventType: "wicket",
       overNumber: 16.4,
       ballNumber: 4,
-      batterName: "Martin Guptill",
-      bowlerName: "Lalit Rajbanshi",
-      battingTeamName: "Biratnagar Kings",
-      bowlingTeamName: "Janakpur Bolts",
+      batterName: batter2,
+      bowlerName: bowler,
+      battingTeamName: battingTeam,
+      bowlingTeamName: bowlingTeam,
       runs: 0,
       isWicket: true,
-      wicketType: "c Aasif Sheikh b Lalit Rajbanshi",
+      wicketType: "caught at long-off",
       isBoundary: false,
       isSix: false,
-      totalScoreDescription: "134/4 (16.4 ov)",
-      contextNote: "Crucial wicket in the death overs",
+      totalScoreDescription: "136/4 (16.4 ov)",
+      contextNote: `Crucial breakthrough for ${bowlingTeam}`,
     },
   ];
 }

@@ -3,6 +3,7 @@ import { Card, CardBody, StatusBadge } from "@/components/ui/Card";
 import { TeamLogo } from "@/components/ui/TeamLogo";
 import { ScheduleMatch, resolveMatchTeams } from "@/lib/repository/matches";
 import { getTeamBySlugSync } from "@/lib/repository/teams";
+import { oversToDecimal } from "@/lib/data/standings";
 
 interface MatchScoreboardProps {
   match: ScheduleMatch;
@@ -104,9 +105,11 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                       {match.scores?.team1?.overs ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
-                      {match.scores?.team1 && parseFloat(match.scores.team1.overs) > 0
-                        ? (match.scores.team1.runs / parseFloat(match.scores.team1.overs)).toFixed(2)
-                        : "—"}
+                      {(() => {
+                        if (!match.scores?.team1 || match.scores.team1.runs == null) return "—";
+                        const dec = oversToDecimal(match.scores.team1.overs, match.scores.team1.wickets);
+                        return dec > 0 ? (match.scores.team1.runs / dec).toFixed(2) : "—";
+                      })()}
                     </td>
                   </tr>
 
@@ -134,9 +137,11 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                       {match.scores?.team2?.overs ?? "—"}
                     </td>
                     <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
-                      {match.scores?.team2 && parseFloat(match.scores.team2.overs) > 0
-                        ? (match.scores.team2.runs / parseFloat(match.scores.team2.overs)).toFixed(2)
-                        : "—"}
+                      {(() => {
+                        if (!match.scores?.team2 || match.scores.team2.runs == null) return "—";
+                        const dec = oversToDecimal(match.scores.team2.overs, match.scores.team2.wickets);
+                        return dec > 0 ? (match.scores.team2.runs / dec).toFixed(2) : "—";
+                      })()}
                     </td>
                   </tr>
                 </tbody>

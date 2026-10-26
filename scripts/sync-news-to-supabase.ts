@@ -32,8 +32,18 @@ async function main() {
 
   for (const a of NEWS_ARTICLES) {
     console.log(`Processing article: ${a.id} (${a.slug})...`);
+
+    // Check if an article already exists by slug to preserve database primary key id
+    const { data: existingBySlug } = await supabase
+      .from('news_articles')
+      .select('id')
+      .eq('slug', a.slug)
+      .maybeSingle();
+
+    const targetId = existingBySlug?.id ?? a.id;
+
     const payload = {
-      id: a.id,
+      id: targetId,
       slug: a.slug,
       title: a.title,
       excerpt: a.excerpt,
@@ -58,24 +68,24 @@ async function main() {
     if (error) {
       console.error(`❌ Error upserting ${a.id}:`, error.message);
     } else {
-      console.log(`✅ Upserted ${a.id}: ${a.title}`);
+      console.log(`✅ Upserted ${targetId}: ${a.title}`);
     }
 
     // Sync team relations if any
     const teamIds = a.relatedTeamIds ?? [];
     if (teamIds.length > 0) {
       // Delete existing relations first
-      await supabase.from('news_team_relations').delete().eq('article_id', a.id);
+      await supabase.from('news_team_relations').delete().eq('article_id', targetId);
       // Re-insert
       const relRows = teamIds.map((teamId) => ({
-        article_id: a.id,
+        article_id: targetId,
         team_id: teamId,
       }));
       const { error: relError } = await supabase.from('news_team_relations').insert(relRows);
       if (relError) {
-        console.error(`❌ Error inserting relations for ${a.id}:`, relError.message);
+        console.error(`❌ Error inserting relations for ${targetId}:`, relError.message);
       } else {
-        console.log(`   Linked ${teamIds.length} teams for ${a.id}`);
+        console.log(`   Linked ${teamIds.length} teams for ${targetId}`);
       }
     }
   }

@@ -46,7 +46,7 @@ export class TheSportsDbProvider implements ICricketDataProvider {
   private baseUrl: string;
 
   constructor() {
-    this.apiKey = process.env.THESPORTSDB_API_KEY || "3"; // '3' is public demo key
+    this.apiKey = process.env.THESPORTSDB_API_KEY || "123"; // '123' is current active test key ('3' was disabled by provider)
     this.baseUrl = `https://www.thesportsdb.com/api/v1/json/${this.apiKey}`;
   }
 
@@ -93,7 +93,7 @@ export class TheSportsDbProvider implements ICricketDataProvider {
         matchesFound: matches.length,
         message: has2026Data
           ? `Verified! Found ${teams.length} teams and ${matches.length} fixtures in TheSportsDB.`
-          : `TheSportsDB has 8 NPL teams registered, but 2026 Season 3 fixtures are not yet added. Manual admin entry or verified mock provider active.`,
+          : `TheSportsDB has 8 NPL teams registered, but 2026 Season 3 fixtures are not yet added. Official live scorecard updates are managed via verified admin entries.`,
         testedAt,
         details: {
           teams: teams.map((t: { idTeam: string; strTeam: string }) => ({

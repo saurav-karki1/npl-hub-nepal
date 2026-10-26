@@ -28,6 +28,9 @@ import {
   getStandings as getStandingsData,
 } from "@/lib/data/standings";
 import { TeamDetail } from "@/lib/data/teams-data";
+import { resolveTodayMatches, getNepalDateString, TodayMatchesResolution } from "@/lib/date-utils";
+
+export type { TodayMatchesResolution };
 
 export type {
   ScheduleMatch,

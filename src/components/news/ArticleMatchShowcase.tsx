@@ -40,7 +40,7 @@ export function ArticleMatchShowcase({
           <span className="text-white/80 hidden sm:inline">Siddhartha Bank NPL 2026</span>
         </div>
         <span className="text-[11px] font-semibold text-emerald-100 bg-emerald-900/60 border border-emerald-700/50 px-2.5 py-0.5 rounded-full">
-          26 Oct 2026 · 4:30 PM NPT
+          26 Oct 2026 · 5:00 PM NPT
         </span>
       </div>
 
@@ -202,7 +202,7 @@ export function ArticleMatchShowcase({
                       Match Timing
                     </th>
                     <td className="py-2.5 px-4 text-[var(--color-ink)]">
-                      <strong className="text-[var(--color-ink)] font-bold">4:30 PM NPT</strong> (Nepal Standard Time, UTC +5:45)
+                      <strong className="text-[var(--color-ink)] font-bold">5:00 PM NPT</strong> (Nepal Standard Time, UTC +5:45)
                     </td>
                   </tr>
                   <tr className="border-b border-[var(--color-rule)] bg-[var(--color-surface)]">

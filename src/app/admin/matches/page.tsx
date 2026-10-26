@@ -610,7 +610,7 @@ function EditPanel({ match, seasonId, accessToken, onClose, onSaved }: EditPanel
                 label="Match Time"
                 value={form.matchTime}
                 onChange={(v) => setField("matchTime", v)}
-                placeholder="e.g. 12:30 PM NPT or 4:30 PM NPT"
+                placeholder="e.g. 12:30 PM NPT or 5:00 PM NPT"
                 required
               />
             </div>

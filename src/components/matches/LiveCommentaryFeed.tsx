@@ -99,16 +99,7 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
 
   const isUpcoming = matchStatus === "upcoming" || matchStatus === "tba";
 
-  if (isUpcoming) {
-    return (
-      <div className="bg-[#0c121e] border border-[var(--color-rule)] rounded-lg p-6 text-center space-y-2">
-        <p className="text-sm font-semibold text-[var(--color-ink)]">Live Commentary</p>
-        <p className="text-xs text-[var(--color-ink-muted)] max-w-md mx-auto">
-          Ball-by-ball commentary powered by Gemini will appear here once the match begins.
-        </p>
-      </div>
-    );
-  }
+
 
   return (
     <section className="space-y-4">
@@ -153,8 +144,13 @@ export function LiveCommentaryFeed({ matchSlug, isLive, matchStatus }: LiveComme
 
       {commentary.length === 0 && !loading ? (
         <div className="bg-[#0c121e] border border-[var(--color-rule)] rounded-lg p-6 text-center space-y-2">
-          <p className="text-sm text-[var(--color-ink-muted)]">
-            No commentary yet. Click &ldquo;Test AI Commentary&rdquo; to generate verified sample events.
+          <p className="text-sm font-semibold text-[var(--color-ink)]">
+            {isUpcoming ? "Live Commentary Scheduled" : "No Commentary Recorded"}
+          </p>
+          <p className="text-xs text-[var(--color-ink-muted)] max-w-md mx-auto leading-relaxed">
+            {isUpcoming
+              ? "Live ball-by-ball commentary powered by Gemini will activate once the match is underway. Click 'Test AI Commentary' to preview verified sample events."
+              : "No live events or commentary recorded for this fixture."}
           </p>
         </div>
       ) : (

@@ -29,7 +29,7 @@ const FAQS: FAQItem[] = [
   {
     question: "What time do NPL matches take place in Nepal?",
     answer:
-      "NPL Season 3 league matches are scheduled in two standard daily slots: morning fixtures starting at 12:30 PM NPT and afternoon fixtures at 4:30 PM NPT. Playoff match timings will be published once CAN confirms the playoff broadcast arrangements.",
+      "NPL Season 3 league matches are scheduled in two standard daily slots: afternoon double-header fixtures starting at 12:30 PM NPT and evening fixtures at 5:00 PM NPT. Playoff match timings will be published once CAN confirms the playoff broadcast arrangements.",
   },
   {
     question: "Where can I find NPL match results and the updated points table?",

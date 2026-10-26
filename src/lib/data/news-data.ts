@@ -110,10 +110,10 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     slug: "npl-season-3-schedule-venues-announced",
     title: "NPL Season 3 Schedule & TU Ground Fixture Plan: 26 October – 21 November 2026",
     excerpt:
-      "All 32 fixtures for Nepal Premier League Season 3 will be held at TU International Cricket Stadium, Kirtipur, running from 26 October to 21 November 2026. The opening match — Lumbini Lions vs Sudurpaschim Royals — is scheduled for 26 October at 4:30 PM NPT.",
+      "All 32 fixtures for Nepal Premier League Season 3 will be held at TU International Cricket Stadium, Kirtipur, running from 26 October to 21 November 2026. The opening match — Lumbini Lions vs Sudurpaschim Royals — is scheduled for 26 October at 5:00 PM NPT.",
     content: [
       "Nepal Premier League Season 3 is scheduled to run from 9 Kartik 2083 BS (26 October 2026) to 5 Mangsir 2083 BS (21 November 2026), according to the fixture calendar published on the NPL Hub Nepal schedule page. The tournament dates are consistent with the fixtures listed at nplhubnepal.vercel.app/schedule.",
-      "The opening match of the tournament is Lumbini Lions vs Sudurpaschim Royals on 26 October 2026 (सोमबार, ९ कार्तिक २०८३) at 4:30 PM NPT at TU International Cricket Stadium, Kirtipur.",
+      "The opening match of the tournament is Lumbini Lions vs Sudurpaschim Royals on 26 October 2026 (सोमबार, ९ कार्तिक २०८३) at 5:00 PM NPT at TU International Cricket Stadium, Kirtipur.",
       "All 32 matches, including the league stage and four playoff fixtures, will be held at the TU International Cricket Stadium in Kirtipur, Kathmandu. The venue will serve as the sole host ground for the entire tournament.",
       "The league stage consists of 28 matches running from 26 October to 15 November 2026, after which the top four teams on the points table advance to the playoffs. The playoff schedule is: Qualifier 1 (17 November), Eliminator (18 November), Qualifier 2 (19 November), and the Final (21 November 2026).",
       "Eight franchise teams — Kathmandu Gorkhas, Biratnagar Kings, Janakpur Bolts, Pokhara Avengers, Chitwan Rhinos, Lumbini Lions, Karnali Yaks, and Sudurpaschim Royals — will participate in the 27-day competition across 32 T20 fixtures.",
@@ -339,7 +339,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
 
       "## What's Next: Opening Match, Schedule and Teams",
 
-      "The tournament begins on Monday, October 26, 2026, when Lumbini Lions take on Sudurpaschim Royals in NPL Match #1 at TU International Cricket Stadium at 4:30 PM NPT — see the full opening match details on the /matches/match-1-lumbini-lions-vs-sudurpaschim-royals page. Fans can explore the complete 32-match programme on the NPL Season 3 Schedule at /schedule and explore every franchise squad on the Teams Hub at /teams. Full franchise profile pages are available for the Kathmandu Gorkhas, Biratnagar Kings, Janakpur Bolts, Pokhara Avengers, Chitwan Rhinos, Lumbini Lions, Karnali Yaks, and Sudurpaschim Royals.",
+      "The tournament begins on Monday, October 26, 2026, when Lumbini Lions take on Sudurpaschim Royals in NPL Match #1 at TU International Cricket Stadium at 5:00 PM NPT — see the full opening match details on the /matches/match-1-lumbini-lions-vs-sudurpaschim-royals page. Fans can explore the complete 32-match programme on the NPL Season 3 Schedule at /schedule and explore every franchise squad on the Teams Hub at /teams. Full franchise profile pages are available for the Kathmandu Gorkhas, Biratnagar Kings, Janakpur Bolts, Pokhara Avengers, Chitwan Rhinos, Lumbini Lions, Karnali Yaks, and Sudurpaschim Royals.",
 
       "NPL Hub Nepal is not affiliated with the official NPL or CAN. All player confirmation details have been cross-referenced against the sources listed below.",
 
@@ -374,11 +374,11 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     slug: "npl-season-3-first-match-date-time-venue-nepali-date",
     title: "NPL Season 3 First Match: Date, Time, Venue, Nepali Date",
     excerpt:
-      "The npl season 3 first match is Lumbini Lions vs Sudurpaschim Royals on Oct 26, 2026 at 4:30 PM NPT in Kirtipur, Kartik 9, 2083 in Nepali calendar.",
+      "The npl season 3 first match is Lumbini Lions vs Sudurpaschim Royals on Oct 26, 2026 at 5:00 PM NPT in Kirtipur, Kartik 9, 2083 in Nepali calendar.",
     content: [
       {
         type: "paragraph",
-        text: "The npl season 3 first match will be played between defending champions Lumbini Lions and two-time runners-up Sudurpaschim Royals on Monday, October 26, 2026, which is Kartik 9, 2083 in the Nepali calendar, at 4:30 PM Nepal Standard Time at the TU International Cricket Ground in Kirtipur, Kathmandu.",
+        text: "The npl season 3 first match will be played between defending champions Lumbini Lions and two-time runners-up Sudurpaschim Royals on Monday, October 26, 2026, which is Kartik 9, 2083 in the Nepali calendar, at 5:00 PM Nepal Standard Time at the TU International Cricket Ground in Kirtipur, Kathmandu.",
       },
       {
         type: "heading",
@@ -396,7 +396,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
       },
       {
         type: "paragraph",
-        text: "The opening match is Match 1 of the season: Lumbini Lions vs Sudurpaschim Royals on Monday, October 26, 2026, at 4:30 PM NST. The venue is TU International Cricket Stadium, Kirtipur, the home of Nepali cricket and the sole venue for the third consecutive season. According to the official schedule, single-header days will have one evening game at 4:30 PM, while double-header days will have games at 12:30 PM and 4:30 PM. The tournament opens with a single-header evening fixture under lights.",
+        text: "The opening match is Match 1 of the season: Lumbini Lions vs Sudurpaschim Royals on Monday, October 26, 2026, at 5:00 PM NST. The venue is TU International Cricket Stadium, Kirtipur, the home of Nepali cricket and the sole venue for the third consecutive season. According to the official schedule, single-header days will have one evening game at 5:00 PM, while double-header days will have games at 12:30 PM and 5:00 PM. The tournament opens with a single-header evening fixture under lights.",
       },
       {
         type: "match",
@@ -411,7 +411,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
           ["Fixture", "Match #1 · Lumbini Lions vs Sudurpaschim Royals"],
           ["Date (English)", "Monday, 26 October 2026"],
           ["Nepali Date (BS)", "सोमबार, ९ कार्तिक २०८३ (Kartik 9, 2083 BS)"],
-          ["Start Time (NPT)", "4:30 PM Nepal Time (UTC +5:45)"],
+          ["Start Time (NPT)", "5:00 PM Nepal Time (UTC +5:45)"],
           ["Venue", "TU International Cricket Stadium, Kirtipur, Kathmandu"],
           ["Session Type", "Single-header evening clash under floodlights"],
           ["Format", "Twenty20 (20 Overs per side) · White Ball"],
@@ -447,7 +447,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
       },
       {
         type: "paragraph",
-        text: "The opening match starts at 4:30 PM NPT, which is UTC plus 5:45. For diaspora fans on October 26, 2026, that is 4:15 PM in India, 4:45 PM in Bangladesh, 2:45 PM in the UAE, 10:45 AM in the UK, 6:45 AM US Eastern Daylight Time and 9:45 PM in Sydney. Day-night games at Kirtipur are played under floodlights, so the evening slot is the prime time slot in Nepal.",
+        text: "The opening match starts at 5:00 PM NPT, which is UTC plus 5:45. For diaspora fans on October 26, 2026, that is 4:45 PM in India, 5:15 PM in Bangladesh, 3:15 PM in the UAE, 12:15 PM in the UK, 7:15 AM US Eastern Daylight Time and 10:15 PM in Sydney. Day-night games at Kirtipur are played under floodlights, so the evening slot is the prime time slot in Nepal.",
       },
       {
         type: "heading",
@@ -467,7 +467,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
         type: "faq",
         question: "When is the first match of NPL Season 3?",
         answer:
-          "The first match of NPL Season 3 is on Monday, October 26, 2026, at 4:30 PM NPT. The tournament runs until November 21, 2026, with 32 matches at Kirtipur.",
+          "The first match of NPL Season 3 is on Monday, October 26, 2026, at 5:00 PM NPT. The tournament runs until November 21, 2026, with 32 matches at Kirtipur.",
       },
       {
         type: "faq",
@@ -479,7 +479,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
         type: "faq",
         question: "What time does the first match start?",
         answer:
-          "The first match starts at 4:30 PM Nepal Standard Time. On double-header days, the first game starts at 12:30 PM and the second at 4:30 PM.",
+          "The first match starts at 5:00 PM Nepal Standard Time. On double-header days, the first game starts at 12:30 PM and the second at 5:00 PM.",
       },
       {
         type: "faq",
@@ -522,10 +522,10 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     excerpt:
       "Follow the NPL 2026 points table, live score and today's match for Season 3, with standings, fixtures, results and how to watch, updated every match day.",
     content: [
-      "The NPL 2026 points table will start to fill up on Monday, October 26, when Lumbini Lions face Sudurpaschim Royals in the opening match of Nepal Premier League Season 3 at TU International Cricket Ground in Kirtipur, Kathmandu. The first ball is scheduled for 4:30 PM Nepal time. This page tracks the NPL points table, the live score, today's NPL match, the latest results and the upcoming fixtures, and it is updated after every match day.",
+      "The NPL 2026 points table will start to fill up on Monday, October 26, when Lumbini Lions face Sudurpaschim Royals in the opening match of Nepal Premier League Season 3 at TU International Cricket Ground in Kirtipur, Kathmandu. The first ball is scheduled for 5:00 PM Nepal time. This page tracks the NPL points table, the live score, today's NPL match, the latest results and the upcoming fixtures, and it is updated after every match day.",
       "## Today's NPL match",
       "[[TODAY_MATCH]]",
-      "Before the tournament starts, the next match is the season opener: Lumbini Lions against Sudurpaschim Royals on Monday, October 26, 2026, at 4:30 PM Nepal time at TU International Cricket Ground. It is a rematch of last season's final, which Lumbini won by six wickets to take their first NPL title.",
+      "Before the tournament starts, the next match is the season opener: Lumbini Lions against Sudurpaschim Royals on Monday, October 26, 2026, at 5:00 PM Nepal time at TU International Cricket Ground. It is a rematch of last season's final, which Lumbini won by six wickets to take their first NPL title.",
       "## NPL 2026 points table",
       "All eight teams start the season on zero points. The table below is sorted by points and then by net run rate, and it highlights the four teams currently in the playoff places.",
       "[[POINTS_TABLE]]",
@@ -540,16 +540,16 @@ export const NEWS_ARTICLES: NewsArticle[] = [
       "## How to watch NPL 2026 live",
       "NetTV holds the worldwide streaming rights for NPL Season 3. Reports put the price at Rs 400 for viewers in Nepal, $4 in the Middle East and $10 in Europe, the United States, Australia, Japan and South Korea. Himalaya Television Network holds the television rights in Nepal. Tickets for matches at the TU ground are sold through eSewa. Official Season 3 ticket prices and sale dates had not been announced at the time of writing, so check the official channels for the latest details.",
       "## NPL 2026 schedule at a glance",
-      "NPL Season 3 runs from October 26 to November 21, 2026, with 32 matches in total: 28 league matches and four playoff matches. All matches are played at TU International Cricket Ground in Kirtipur. Matches on single-match days start at 4:30 PM Nepal time, and double-header days are reported to start at 12:30 PM and 4:30 PM.",
+      "NPL Season 3 runs from October 26 to November 21, 2026, with 32 matches in total: 28 league matches and four playoff matches. All matches are played at TU International Cricket Ground in Kirtipur. Matches on single-match days start at 5:00 PM Nepal time, and double-header days are reported to start at 12:30 PM and 5:00 PM.",
       "## Frequently asked questions",
       "When does NPL 2026 start?",
       "NPL Season 3 starts on Monday, October 26, 2026, and the final is on November 21, 2026.",
       "Which teams play in the first match of NPL 2026?",
-      "Lumbini Lions, the defending champions, play Sudurpaschim Royals in the opening match at 4:30 PM Nepal time.",
+      "Lumbini Lions, the defending champions, play Sudurpaschim Royals in the opening match at 5:00 PM Nepal time.",
       "How many teams qualify for the NPL playoffs?",
       "The top four teams in the points table qualify for the playoffs.",
       "What time do NPL matches start?",
-      "Single-match days start at 4:30 PM Nepal time. Double-header days are reported to start at 12:30 PM and 4:30 PM.",
+      "Single-match days start at 5:00 PM Nepal time. Double-header days are reported to start at 12:30 PM and 5:00 PM.",
       "Where can I watch NPL 2026 live?",
       "NetTV streams the matches worldwide, and Himalaya Television Network broadcasts them on television in Nepal.",
       "Where is NPL 2026 played?",

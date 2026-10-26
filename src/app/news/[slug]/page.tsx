@@ -604,7 +604,7 @@ export default async function ArticlePage({ params }: PageProps) {
     },
     {
       q: "Which teams play in the first match of NPL 2026?",
-      a: "Lumbini Lions, the defending champions, play Sudurpaschim Royals in the opening match at 4:30 PM Nepal time.",
+      a: "Lumbini Lions, the defending champions, play Sudurpaschim Royals in the opening match at 5:00 PM Nepal time.",
     },
     {
       q: "How many teams qualify for the NPL playoffs?",
@@ -612,7 +612,7 @@ export default async function ArticlePage({ params }: PageProps) {
     },
     {
       q: "What time do NPL matches start?",
-      a: "Single-match days start at 4:30 PM Nepal time. Double-header days are reported to start at 12:30 PM and 4:30 PM.",
+      a: "Single-match days start at 5:00 PM Nepal time. Double-header days are scheduled for 12:30 PM and 5:00 PM.",
     },
     {
       q: "Where can I watch NPL 2026 live?",

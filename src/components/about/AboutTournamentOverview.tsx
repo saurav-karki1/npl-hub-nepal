@@ -66,7 +66,7 @@ export function AboutTournamentOverview() {
     },
     {
       label: "Official Match Timing (NPT)",
-      value: "12:30 PM & 4:30 PM Nepal Standard Time (UTC+5:45)",
+      value: "12:30 PM & 5:00 PM Nepal Standard Time (UTC+5:45)",
     },
     {
       label: "Calendar Systems Displayed",
