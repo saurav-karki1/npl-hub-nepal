@@ -37,6 +37,11 @@ interface LiveCommentaryFeedProps {
   matchStatus: string;
 }
 
+// Seed-based variety picker so same-run balls get different phrases
+function pickVariant(variants: string[], seed: number): string {
+  return variants[seed % variants.length];
+}
+
 function formatEasyCommentary(item: CommentaryItem): string {
   const isWicket = item.isWicket || item.eventType === "wicket";
   const isSix = item.isSix;
@@ -44,48 +49,89 @@ function formatEasyCommentary(item: CommentaryItem): string {
   const batter = item.batterName || "The batter";
   const bowler = item.bowlerName || "the bowler";
 
-  // Wicket dismissal formatting
+  // Use over*10+ball as seed. Fall back to over*100 if ballNumber is 0 (use a hash of the text).
+  const textSeed = item.text ? item.text.charCodeAt(0) + (item.text.charCodeAt(4) || 0) : 0;
+  const seed = Math.round(item.overNumber * 10) + textSeed;
+
+  // ── Wicket ────────────────────────────────────────────────────────────────
   if (isWicket) {
     const raw = item.text || "";
-    const match = raw.match(/^([A-Za-z\s]+?)\s+([bc]\s+[A-Za-z\s]+)?\s*(\d+)\s*\((.*?)\)/);
-    if (match) {
-      const name = match[1].trim();
-      const howOut = match[2]?.trim() || `bowled by ${bowler}`;
-      const runs = match[3];
-      const balls = match[4];
-      return `OUT! ${name} is dismissed (${howOut}) for ${runs} runs off ${balls}. Crucial wicket for the bowling side!`;
+    // Try to parse "Name b/c FielderName Runs (Balls)" pattern from ESPN text
+    const m = raw.match(/([A-Za-z .'-]+?)\s+(b\s+[A-Za-z .'-]+|c\s+[A-Za-z .'-]+\s+b\s+[A-Za-z .'-]+|lbw b\s+[A-Za-z .'-]+|run out|st\s+[A-Za-z .'-]+)[\s]*(\d+)\s*\((\d+)\)/i);
+    if (m) {
+      const name = m[1].trim();
+      const howOut = m[2].trim();
+      const runs = m[3];
+      const balls = m[4];
+      return `OUT! ${name} is dismissed (${howOut}) for ${runs} runs off ${balls} balls. Big moment — the bowling side celebrate!`;
     }
-    return `WICKET! ${batter} is out! Key breakthrough taken by ${bowler}.`;
+    return pickVariant([
+      `WICKET! ${batter} is out! A big breakthrough for the bowling side. ${bowler} is thrilled!`,
+      `OUT! ${batter} has to walk back. That is a massive wicket for the team! ${bowler} deserves full credit.`,
+      `${batter} is gone! A crucial dismissal — ${bowler} strikes at the perfect time.`,
+    ], seed);
   }
 
-  // Boundaries
+  // ── Six ───────────────────────────────────────────────────────────────────
   if (isSix) {
-    return `SIX! Smashed high and handsome over the ropes by ${batter}! Huge maximum off ${bowler}.`;
+    return pickVariant([
+      `SIX! ${batter} sends it sailing over the boundary! Massive hit off ${bowler} — the crowd goes wild!`,
+      `MAXIMUM! ${batter} clears the ropes with ease. ${bowler} can only watch as that disappears into the stands!`,
+      `SIX! What a shot by ${batter}! Picked up the length early and launched it out of the ground off ${bowler}.`,
+      `BANG! Over the fence! ${batter} hits ${bowler} for a huge SIX — pure timing and power!`,
+    ], seed);
   }
 
+  // ── Four ──────────────────────────────────────────────────────────────────
   if (isFour) {
-    return `FOUR! Beautifully timed by ${batter}, finding the boundary rope with precision off ${bowler}.`;
+    return pickVariant([
+      `FOUR! Cracking shot from ${batter}! Finds the gap and races to the boundary off ${bowler}.`,
+      `BOUNDARY! ${batter} times it perfectly through the covers off ${bowler}. No chance for the fielders!`,
+      `FOUR runs! ${batter} clips it off the pads and the ball speeds away to the fence. ${bowler} is frustrated.`,
+      `That's a FOUR! ${batter} reads the line well and flicks it past the fielder — great cricket shot!`,
+    ], seed);
   }
 
-  // Runs
-  if (item.runs === 1) {
-    return `1 run. ${batter} works it into the gap off ${bowler} and comfortably rotates the strike.`;
-  }
-
-  if (item.runs === 2) {
-    return `2 runs. Nicely placed into the outfield by ${batter}; good sharp running between the wickets.`;
-  }
-
+  // ── 3 runs ────────────────────────────────────────────────────────────────
   if (item.runs === 3) {
-    return `3 runs. Driven deep into the gap; excellent running allows three runs.`;
+    return pickVariant([
+      `3 runs! ${batter} hits it into the deep and they run hard between the wickets off ${bowler}. Good effort!`,
+      `Three runs! The ball goes to the boundary region — sharp running by both batters off ${bowler}.`,
+    ], seed);
   }
 
-  // Dot balls
-  if (item.runs === 0 || item.text.toLowerCase().includes("no run")) {
-    return `No run. Dot ball. Disciplined line and length by ${bowler}; defended cleanly by ${batter}.`;
+  // ── 2 runs ────────────────────────────────────────────────────────────────
+  if (item.runs === 2) {
+    return pickVariant([
+      `2 runs. ${batter} places it wide of mid-on and they scamper back for two. Quick between the wickets!`,
+      `Two runs. ${batter} pushes it through the gap off ${bowler} — good running converts one into two.`,
+      `A couple of runs here. ${batter} and their partner communicate well and pick up two off ${bowler}.`,
+    ], seed);
   }
 
-  return item.text;
+  // ── 1 run ─────────────────────────────────────────────────────────────────
+  if (item.runs === 1) {
+    return pickVariant([
+      `1 run. ${batter} tucks it off the hip off ${bowler} and takes a single to rotate the strike.`,
+      `Single taken. ${batter} nudges it into the leg side off ${bowler} — keeps the scoreboard ticking.`,
+      `1 run. ${batter} pushes ${bowler} into the covers and calls for a quick single.`,
+      `Just a run. ${batter} steers it to fine leg off ${bowler} — sensible cricket, keeps things moving.`,
+      `1 run. Nicely worked by ${batter} off the pads of ${bowler} — easy single taken.`,
+    ], seed);
+  }
+
+  // ── Dot ball ──────────────────────────────────────────────────────────────
+  if (item.runs === 0) {
+    return pickVariant([
+      `Dot ball! ${bowler} bowls a tight line and ${batter} can only block it back down the wicket.`,
+      `No run. Good delivery by ${bowler} — ${batter} has no option but to defend solidly.`,
+      `Dot! ${bowler} hits the right length and keeps ${batter} quiet. Good pressure from the bowling side.`,
+      `Defended! ${batter} plays it safe against ${bowler}. No run scored — scoreboard pressure building.`,
+    ], seed);
+  }
+
+  // Fallback: return original ESPN text cleaned up a little
+  return item.text || `${item.runs} run(s) off ${bowler} by ${batter}.`;
 }
 
 export function LiveCommentaryFeed({
@@ -349,17 +395,25 @@ export function LiveCommentaryFeed({
                 key={item.id}
                 className={`group relative rounded-xl border p-3.5 sm:p-4 transition-all duration-200 ${
                   isWicket
-                    ? "bg-gradient-to-r from-red-950/50 via-red-900/15 to-[#0b101b] border-red-500/40 shadow-sm"
+                    ? "bg-[#1a0505] border-red-500/50"
                     : isSix
-                    ? "bg-gradient-to-r from-purple-950/50 via-purple-900/15 to-[#0b101b] border-purple-500/40 shadow-sm"
+                    ? "bg-[#110a1c] border-purple-500/40"
                     : isFour
-                    ? "bg-gradient-to-r from-amber-950/50 via-amber-900/15 to-[#0b101b] border-amber-500/40 shadow-sm"
+                    ? "bg-[#1a1000] border-amber-500/40"
                     : isLatest
-                    ? "bg-gradient-to-r from-emerald-950/40 via-emerald-900/10 to-[#0b101b] border-emerald-500/40 shadow-sm"
+                    ? "bg-[#071410] border-emerald-500/30"
                     : "bg-[#0b101b] border-[var(--color-rule)] hover:border-slate-600"
                 }`}
               >
-                <div className="flex items-start gap-3">
+                {/* Left accent bar */}
+                <div className={`absolute left-0 top-3 bottom-3 w-1 rounded-r-full ${
+                  isWicket ? "bg-red-500" :
+                  isSix ? "bg-purple-500" :
+                  isFour ? "bg-amber-500" :
+                  isLatest ? "bg-emerald-500" :
+                  "bg-slate-700"
+                }`} />
+                <div className="flex items-start gap-3 pl-2">
                   {/* Over Pill & Event Badge */}
                   <div className="shrink-0 flex flex-col items-center">
                     <span className="text-xs font-black font-mono tracking-tight px-2 py-1 rounded-md bg-black/70 border border-white/10 text-white min-w-[42px] text-center shadow-xs">
@@ -385,14 +439,16 @@ export function LiveCommentaryFeed({
                   {/* Easy Commentary Text & Tags */}
                   <div className="flex-1 min-w-0 space-y-1">
                     {/* Easy Friendly Text */}
-                    <p className={`text-xs sm:text-sm leading-relaxed ${
+                    <p className={`text-xs sm:text-sm leading-relaxed font-medium ${
                       isWicket
-                        ? "text-red-200 font-semibold"
+                        ? "text-white"
                         : isSix
-                        ? "text-purple-200 font-semibold"
+                        ? "text-white"
                         : isFour
-                        ? "text-amber-200 font-semibold"
-                        : "text-slate-200"
+                        ? "text-white"
+                        : isLatest
+                        ? "text-slate-100"
+                        : "text-slate-300"
                     }`}>
                       {easyText}
                     </p>
