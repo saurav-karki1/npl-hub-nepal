@@ -5,7 +5,7 @@ import { UpcomingMatchSection } from "@/components/home/UpcomingMatchSection";
 import { PointsTablePreview } from "@/components/home/PointsTablePreview";
 import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
 import { TeamsPreview } from "@/components/home/TeamsPreview";
-import { getFeaturedUpcomingMatch, getStandingsAsync } from "@/lib/repository/matches";
+import { getFeaturedUpcomingMatch, getStandingsAsync, getAllMatches } from "@/lib/repository/matches";
 import { getLatestArticles } from "@/lib/repository/news";
 
 export const dynamic = "force-dynamic";
@@ -81,10 +81,11 @@ const homeJsonLd = {
 };
 
 export default async function HomePage() {
-  const [featuredMatch, standings, latestNews] = await Promise.all([
+  const [featuredMatch, standings, latestNews, allMatches] = await Promise.all([
     getFeaturedUpcomingMatch(),
     getStandingsAsync(),
     getLatestArticles(4),
+    getAllMatches(),
   ]);
 
   return (
@@ -94,8 +95,8 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
       <Container className="space-y-12 sm:space-y-16">
-        {/* 1. Hero Section with Constellation Background */}
-        <HeroSection />
+        {/* 1. Hero Section with Constellation Background & Dynamic Countdown */}
+        <HeroSection matches={allMatches} />
 
         {/* 2. Featured Upcoming Match */}
         <UpcomingMatchSection match={featuredMatch} />

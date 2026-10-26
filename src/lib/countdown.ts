@@ -116,6 +116,18 @@ export function resolveCountdownState(
   let isLive = false;
 
   for (const match of matches) {
+    // Skip matches that are already completed, abandoned, or postponed
+    if (match.status === "completed" || match.status === "abandoned" || match.status === "postponed") {
+      continue;
+    }
+
+    // Explicit live status takes highest precedence
+    if (match.status === "live") {
+      focusMatch = match;
+      isLive = true;
+      break;
+    }
+
     const startMs = parseMatchStartMs(match.date, match.time);
 
     if (startMs === null) {

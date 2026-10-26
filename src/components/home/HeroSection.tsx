@@ -2,7 +2,7 @@ import { ConstellationBackground } from "@/components/ui/ConstellationBackground
 import { LinkButton } from "@/components/ui/Button";
 import { MatchCountdown } from "@/components/home/MatchCountdown";
 import { getAllMatchesSync, resolveMatchTeams } from "@/lib/repository/matches";
-import type { MatchTeamInfo } from "@/lib/data/schedule-data";
+import type { MatchTeamInfo, ScheduleMatch } from "@/lib/data/schedule-data";
 
 /**
  * HeroSection — server component.
@@ -17,8 +17,12 @@ import type { MatchTeamInfo } from "@/lib/data/schedule-data";
  * The countdown component is rendered ONCE; CSS flex/grid handles its position
  * at each breakpoint without duplicate timers.
  */
-export function HeroSection() {
-  const matches = getAllMatchesSync();
+interface HeroSectionProps {
+  matches?: ScheduleMatch[];
+}
+
+export function HeroSection({ matches: propMatches }: HeroSectionProps = {}) {
+  const matches = propMatches ?? getAllMatchesSync();
 
   // Pre-resolve teams for every match so the client component never needs
   // to call any data function — it's a pure UI ticker.

@@ -436,7 +436,7 @@ export async function getSeasonStats(seasonId: SeasonId = "season-2"): Promise<S
           status: seasonRow.status as SeasonStatus,
           summary,
           standings,
-          awards,
+          awards: awards.length > 0 ? awards : staticFallbackDataset.awards,
           leaderboards,
           playerStats: playerStatsList.length > 0 ? playerStatsList : staticFallbackDataset.playerStats,
           playoffs: staticFallbackDataset.playoffs,

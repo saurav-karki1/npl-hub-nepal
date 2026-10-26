@@ -20,7 +20,7 @@ export interface SeasonOption {
   name: string;
   shortName: string;
   year: number;
-  status: "completed" | "pre-tournament";
+  status: SeasonStatus;
   badgeText: string;
 }
 

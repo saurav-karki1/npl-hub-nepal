@@ -329,11 +329,32 @@ export function FullFixturesSection({
                       </td>
 
                       {/* Status Badge */}
-                      <td className="py-3.5 px-4 text-center align-middle">
+                      <td className="py-3.5 px-4 text-center align-middle space-y-1">
                         <StatusBadge
-                          status={match.status === "tba" ? "neutral" : "upcoming"}
-                          label={match.status === "tba" ? "Time TBA" : "Scheduled"}
+                          status={
+                            match.status === "completed"
+                              ? "completed"
+                              : match.status === "live"
+                              ? "live"
+                              : match.status === "tba"
+                              ? "neutral"
+                              : "upcoming"
+                          }
+                          label={
+                            match.status === "completed"
+                              ? "Completed"
+                              : match.status === "live"
+                              ? "Live Now"
+                              : match.status === "tba"
+                              ? "Time TBA"
+                              : "Scheduled"
+                          }
                         />
+                        {match.status === "completed" && match.result && (
+                          <span className="block text-[10px] font-semibold text-emerald-700 truncate max-w-[140px] mx-auto" title={match.result}>
+                            {match.result}
+                          </span>
+                        )}
                       </td>
 
                       {/* Action */}
@@ -369,8 +390,24 @@ export function FullFixturesSection({
                         Match #{match.matchNumber} · {match.stage}
                       </Link>
                       <StatusBadge
-                        status={match.status === "tba" ? "neutral" : "upcoming"}
-                        label={match.status === "tba" ? "Time TBA" : "Scheduled"}
+                        status={
+                          match.status === "completed"
+                            ? "completed"
+                            : match.status === "live"
+                            ? "live"
+                            : match.status === "tba"
+                            ? "neutral"
+                            : "upcoming"
+                        }
+                        label={
+                          match.status === "completed"
+                            ? "Completed"
+                            : match.status === "live"
+                            ? "Live Now"
+                            : match.status === "tba"
+                            ? "Time TBA"
+                            : "Scheduled"
+                        }
                       />
                     </div>
 

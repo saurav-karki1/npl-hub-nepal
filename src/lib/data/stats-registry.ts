@@ -16,11 +16,19 @@ export interface SeasonOption {
   name: string;
   shortName: string;
   year: number;
-  status: "completed" | "pre-tournament";
+  status: "completed" | "pre-tournament" | "in-progress";
   badgeText: string;
 }
 
 export const AVAILABLE_SEASONS: SeasonOption[] = [
+  {
+    id: "season-3",
+    name: "NPL Season 3 (2026)",
+    shortName: "Season 3 — 2026",
+    year: 2026,
+    status: "in-progress",
+    badgeText: "Current Tournament",
+  },
   {
     id: "season-2",
     name: "NPL Season 2 (2025)",
@@ -29,25 +37,17 @@ export const AVAILABLE_SEASONS: SeasonOption[] = [
     status: "completed",
     badgeText: "Verified Historical",
   },
-  {
-    id: "season-3",
-    name: "NPL Season 3 (2026)",
-    shortName: "Season 3 — 2026",
-    year: 2026,
-    status: "pre-tournament",
-    badgeText: "Pre-Tournament",
-  },
 ];
 
 /** Lookup statistics dataset by season id */
-export function getSeasonStats(seasonId: SeasonId = "season-2"): SeasonStatsDataset {
+export function getSeasonStats(seasonId: SeasonId = "season-3"): SeasonStatsDataset {
   switch (seasonId) {
-    case "season-2":
-      return SEASON_2_STATS_DATASET;
     case "season-3":
       return SEASON_3_STATS_DATASET;
-    default:
+    case "season-2":
       return SEASON_2_STATS_DATASET;
+    default:
+      return SEASON_3_STATS_DATASET;
   }
 }
 

@@ -23,7 +23,7 @@ interface StatsHubClientProps {
 }
 
 export function StatsHubClient({
-  initialSeasonId = "season-2",
+  initialSeasonId = "season-3",
   datasets,
   availableSeasons,
   allTeams,
@@ -32,7 +32,7 @@ export function StatsHubClient({
   const router = useRouter();
   const [, startTransition] = useTransition();
 
-  // Initialize season from URL query param or default to initialSeasonId (season-2)
+  // Initialize season from URL query param or default to initialSeasonId (season-3)
   const querySeason = searchParams.get("season");
   const validSeason =
     querySeason && querySeason in datasets ? (querySeason as SeasonId) : initialSeasonId;
@@ -51,13 +51,13 @@ export function StatsHubClient({
   const handleSelectSeason = (seasonId: SeasonId) => {
     setSelectedSeasonId(seasonId);
     startTransition(() => {
-      const url = seasonId === "season-2" ? "/stats" : `/stats?season=${seasonId}`;
+      const url = seasonId === "season-3" ? "/stats" : `/stats?season=${seasonId}`;
       router.replace(url, { scroll: false });
     });
   };
 
   const currentDataset = datasets[selectedSeasonId] ?? datasets[initialSeasonId];
-  const isCompleted = currentDataset.status === "completed";
+  const isAvailable = currentDataset.status === "completed" || currentDataset.status === "in-progress";
 
   return (
     <div className="space-y-8 sm:space-y-10 lg:space-y-12">
@@ -71,23 +71,25 @@ export function StatsHubClient({
       />
 
       {/* ── 2. Content for Selected Season ── */}
-      {isCompleted ? (
-        /* Season 2 (Verified Historical Records) */
+      {isAvailable ? (
+        /* Active / Completed Season Statistics */
         <div id={`stats-panel-${selectedSeasonId}`} className="space-y-10 sm:space-y-12">
           {/* Section 1: Tournament Overview */}
           <TournamentOverviewSection summary={currentDataset.summary} />
 
-          {/* Section 2: Authoritative Final League Points Table */}
+          {/* Section 2: Authoritative League Points Table */}
           <FinalStandingsTable
             standings={currentDataset.standings}
             seasonName={currentDataset.seasonName}
           />
 
-          {/* Section 3: Tournament Awards */}
-          <TournamentAwardsGrid
-            awards={currentDataset.awards}
-            seasonName={currentDataset.seasonName}
-          />
+          {/* Section 3: Tournament Awards (Player of the Match, etc.) */}
+          {currentDataset.awards.length > 0 && (
+            <TournamentAwardsGrid
+              awards={currentDataset.awards}
+              seasonName={currentDataset.seasonName}
+            />
+          )}
 
           {/* Section 4: Verified Player Leaderboards */}
           <PlayerLeaderboardsSection
@@ -95,26 +97,32 @@ export function StatsHubClient({
             seasonName={currentDataset.seasonName}
           />
 
-          {/* Section 5: Playoff Results */}
-          <PlayoffsSection
-            playoffs={currentDataset.playoffs}
-            seasonName={currentDataset.seasonName}
-          />
+          {/* Section 5: Playoff Results (if available) */}
+          {currentDataset.playoffs.length > 0 && (
+            <PlayoffsSection
+              playoffs={currentDataset.playoffs}
+              seasonName={currentDataset.seasonName}
+            />
+          )}
 
           {/* Section 6: Verified Player Statistics Table */}
-          <VerifiedPlayerStatsTable
-            playerStats={currentDataset.playerStats}
-            seasonName={currentDataset.seasonName}
-          />
+          {currentDataset.playerStats.length > 0 && (
+            <VerifiedPlayerStatsTable
+              playerStats={currentDataset.playerStats}
+              seasonName={currentDataset.seasonName}
+            />
+          )}
 
           {/* Section 7: Verified League Scorecards */}
-          <VerifiedMatchesSection
-            matches={currentDataset.verifiedLeagueMatches}
-            seasonName={currentDataset.seasonName}
-          />
+          {currentDataset.verifiedLeagueMatches.length > 0 && (
+            <VerifiedMatchesSection
+              matches={currentDataset.verifiedLeagueMatches}
+              seasonName={currentDataset.seasonName}
+            />
+          )}
         </div>
       ) : (
-        /* Season 3 (Pre-Tournament State) */
+        /* Pre-Tournament State */
         <div id={`stats-panel-${selectedSeasonId}`} className="space-y-10 sm:space-y-12">
           <PreTournamentStatsState dataset={currentDataset} />
         </div>

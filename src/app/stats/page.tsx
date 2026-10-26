@@ -102,7 +102,7 @@ export default async function StatsPage() {
             }
           >
             <StatsHubClient
-              initialSeasonId="season-2"
+              initialSeasonId="season-3"
               datasets={datasets}
               availableSeasons={availableSeasons}
               allTeams={allTeams}

@@ -1,0 +1,206 @@
+import { createClient } from "@supabase/supabase-js";
+
+const SUPABASE_URL = "https://zohmcgjixebuiconrven.supabase.co";
+const SERVICE_ROLE_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvaG1jZ2ppeGVidWljb25ydmVuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MDYxMDU5NCwiZXhwIjoyMTA2MTg2NTk0fQ.gvchNbBCDUdijT58NCpbwAQJSRcgPfyphmBvHhIX0Gw";
+
+const sb = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+
+const s3PlayerStats = [
+  {
+    id: "s3_matthew-short",
+    season_id: "season-3",
+    player_name: "Matthew Short",
+    player_slug: "matthew-short",
+    team_id: "lumbini-lions",
+    team_name: "Lumbini Lions",
+    matches: 1,
+    innings: 1,
+    runs: 40,
+    highest_score: "40",
+    average: 40.0,
+    strike_rate: 222.22,
+    wickets: null,
+    best_bowling: null,
+    economy: null,
+    fours: 4,
+    sixes: 3,
+    hundreds: 0,
+    fifties: 0,
+    confidence: "High",
+    source_note: "Match 1 vs Sudurpaschim Royals at TU Stadium",
+  },
+  {
+    id: "s3_aasif-sheikh",
+    season_id: "season-3",
+    player_name: "Aasif Sheikh",
+    player_slug: "aasif-sheikh",
+    team_id: "lumbini-lions",
+    team_name: "Lumbini Lions",
+    matches: 1,
+    innings: 1,
+    runs: 32,
+    highest_score: "32",
+    average: 32.0,
+    strike_rate: 128.0,
+    wickets: null,
+    best_bowling: null,
+    economy: null,
+    fours: 2,
+    sixes: 2,
+    hundreds: 0,
+    fifties: 0,
+    confidence: "High",
+    source_note: "Match 1 vs Sudurpaschim Royals at TU Stadium",
+  },
+  {
+    id: "s3_dipendra-singh-airee",
+    season_id: "season-3",
+    player_name: "Dipendra Singh Airee",
+    player_slug: "dipendra-singh-airee",
+    team_id: "sudurpaschim-royals",
+    team_name: "Sudurpaschim Royals",
+    matches: 1,
+    innings: 1,
+    runs: 27,
+    highest_score: "27",
+    average: 27.0,
+    strike_rate: 117.39,
+    wickets: 1,
+    best_bowling: "1/31",
+    economy: 8.08,
+    fours: 2,
+    sixes: 0,
+    hundreds: 0,
+    fifties: 0,
+    confidence: "High",
+    source_note: "Match 1 vs Lumbini Lions at TU Stadium",
+  },
+  {
+    id: "s3_abinash-kharel",
+    season_id: "season-3",
+    player_name: "Abinash Kharel",
+    player_slug: "abinash-kharel",
+    team_id: "sudurpaschim-royals",
+    team_name: "Sudurpaschim Royals",
+    matches: 1,
+    innings: 1,
+    runs: 15,
+    highest_score: "15",
+    average: 15.0,
+    strike_rate: 57.69,
+    wickets: 2,
+    best_bowling: "2/9",
+    economy: 4.5,
+    fours: 1,
+    sixes: 0,
+    hundreds: 0,
+    fifties: 0,
+    confidence: "High",
+    source_note: "Match 1 vs Lumbini Lions at TU Stadium",
+  },
+  {
+    id: "s3_bibek-mahato",
+    season_id: "season-3",
+    player_name: "Bibek Mahato",
+    player_slug: "bibek-mahato",
+    team_id: "lumbini-lions",
+    team_name: "Lumbini Lions",
+    matches: 1,
+    innings: 0,
+    runs: 0,
+    highest_score: null,
+    average: null,
+    strike_rate: null,
+    wickets: 4,
+    best_bowling: "4/14",
+    economy: 3.5,
+    fours: 0,
+    sixes: 0,
+    hundreds: 0,
+    fifties: 0,
+    confidence: "High",
+    source_note: "Match 1: 4 wickets for 14 runs in 4.0 overs",
+  },
+  {
+    id: "s3_sher-malla",
+    season_id: "season-3",
+    player_name: "Sher Malla",
+    player_slug: "sher-malla",
+    team_id: "lumbini-lions",
+    team_name: "Lumbini Lions",
+    matches: 1,
+    innings: 0,
+    runs: 0,
+    highest_score: null,
+    average: null,
+    strike_rate: null,
+    wickets: 3,
+    best_bowling: "3/11",
+    economy: 2.75,
+    fours: 0,
+    sixes: 0,
+    hundreds: 0,
+    fifties: 0,
+    confidence: "High",
+    source_note: "Match 1 Player of the Match: 3 wickets for 11 runs in 4.0 overs",
+  },
+  {
+    id: "s3_rohit-paudel",
+    season_id: "season-3",
+    player_name: "Rohit Paudel",
+    player_slug: "rohit-paudel",
+    team_id: "lumbini-lions",
+    team_name: "Lumbini Lions",
+    matches: 1,
+    innings: 1,
+    runs: 5,
+    highest_score: "5*",
+    average: null,
+    strike_rate: 166.66,
+    wickets: 1,
+    best_bowling: "1/10",
+    economy: 4.28,
+    fours: 1,
+    sixes: 0,
+    hundreds: 0,
+    fifties: 0,
+    confidence: "High",
+    source_note: "Match 1 vs Sudurpaschim Royals at TU Stadium",
+  },
+];
+
+async function sync() {
+  console.log("Upserting Season 3 player stats into Supabase...");
+  const { error } = await sb.from("player_season_stats").upsert(s3PlayerStats);
+  if (error) {
+    console.error("Error upserting player stats:", error.message);
+  } else {
+    console.log("Successfully upserted 7 Season 3 player stats into Supabase!");
+  }
+
+  // Also upsert Player of the Match award for Match 1
+  const potmAward = {
+    id: "00000003-0000-0000-0000-000000000001",
+    season_id: "season-3",
+    award_name: "Player of the Match (Match #1)",
+    award_type: "player-of-match",
+    recipient_name: "Sher Malla",
+    recipient_team_id: "lumbini-lions",
+    recipient_team_name: "Lumbini Lions",
+    recipient_player_slug: "sher-malla",
+    stat_metric: "3/11 (4.0 ov, Econ: 2.75)",
+    secondary_detail: "Match 1 opener vs Sudurpaschim Royals",
+    confidence: "High",
+    sort_order: 1,
+  };
+
+  const { error: awardErr } = await sb.from("tournament_awards").upsert([potmAward]);
+  if (awardErr) {
+    console.error("Error upserting award:", awardErr.message);
+  } else {
+    console.log("Successfully upserted Match 1 award into Supabase!");
+  }
+}
+
+sync();
