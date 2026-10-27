@@ -146,20 +146,138 @@ export async function GET(
           }
         }
 
-        // Match result detection
-        const isCompleted = d.match?.result !== "0" && Boolean(d.match?.result);
+        // Match status & result detection
+        const liveStatusStr = String(d.live?.status || "").trim();
+        const liveStatusLower = liveStatusStr.toLowerCase();
+
+        const hasWonString =
+          liveStatusLower.includes("won by") ||
+          liveStatusLower.includes("won the match") ||
+          liveStatusLower.includes("beat") ||
+          liveStatusLower.includes("defeat");
+
+        const isTiedOrAbandoned =
+          liveStatusLower.includes("match tied") ||
+          liveStatusLower.includes("tied") ||
+          liveStatusLower.includes("no result") ||
+          liveStatusLower.includes("abandoned") ||
+          liveStatusLower.includes("match over");
+
+        const inn1 = d.innings?.[0];
+        const inn2 = d.innings?.[1];
+        const inn2Completed = Boolean(
+          inn2 &&
+          (Number(inn2.wickets) >= 10 ||
+            parseFloat(inn2.overs) >= 20 ||
+            (inn2.target && Number(inn2.runs) >= Number(inn2.target)))
+        );
+
+        const isCompleted =
+          (d.match?.result !== "0" && Boolean(d.match?.result)) ||
+          hasWonString ||
+          isTiedOrAbandoned ||
+          inn2Completed;
+
+        // Auto-detect live match: start time passed, or toss conducted, or innings in progress
+        const hasTossOrLiveStatus =
+          liveStatusLower.includes("toss") ||
+          liveStatusLower.includes("opted to") ||
+          liveStatusLower.includes("elected to") ||
+          liveStatusLower.includes("chose to") ||
+          liveStatusLower.includes("in progress") ||
+          liveStatusLower.includes("delayed");
+
         const hasInningsData = Boolean(
           (d.innings && d.innings.length > 0) ||
           (d.live?.innings && d.live.innings.runs !== undefined)
         );
-        const isLiveMatch = !isCompleted && hasInningsData;
+
+        // Parse scheduled start time in Nepal time
+        let startMs: number | null = null;
+        if (match.date && match.time && match.time !== "Time TBA") {
+          const m = match.time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+          if (m) {
+            let h = parseInt(m[1], 10);
+            const mins = parseInt(m[2], 10);
+            if (m[3].toUpperCase() === "PM" && h !== 12) h += 12;
+            if (m[3].toUpperCase() === "AM" && h === 12) h = 0;
+            const iso = `${match.date}T${String(h).padStart(2, "0")}:${String(mins).padStart(2, "0")}:00+05:45`;
+            const parsed = new Date(iso).getTime();
+            if (!isNaN(parsed)) startMs = parsed;
+          }
+        }
+        const nowMs = Date.now();
+
+        const isLiveMatch =
+          !isCompleted &&
+          (hasInningsData || hasTossOrLiveStatus || (startMs !== null && nowMs >= startMs));
+
+        const team1Name = teams[0]?.team_name?.replace(/\s*\(NPL\)/gi, "").trim() || "Team 1";
+        const team2Name = teams[1]?.team_name?.replace(/\s*\(NPL\)/gi, "").trim() || "Team 2";
 
         const winnerEspnId = String(d.match?.winner_team_id);
-        const winnerTeamSlug =
-          winnerEspnId === team1Id ? match.team1Id : winnerEspnId === team2Id ? match.team2Id : undefined;
-        const winMargin =
+        let winMargin =
           d.match?.amount && d.match?.amount_name ? `${d.match.amount} ${d.match.amount_name}` : undefined;
-        const winType = d.match?.amount_name?.includes("run") ? "runs" : "wickets";
+        let winType: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" | undefined =
+          d.match?.amount_name?.includes("run") ? "runs" : "wickets";
+
+        let winnerName: string | undefined = undefined;
+        let winnerTeamSlug: string | undefined = undefined;
+        let resultStatement = "";
+
+        if (isCompleted) {
+          if (hasWonString) {
+            resultStatement = liveStatusStr.replace(/\s*\(NPL\)/gi, "").trim();
+            const wonMatch = resultStatement.match(/^(.*?)\s+won by\s+(.*)$/i);
+            if (wonMatch) {
+              winnerName = wonMatch[1].trim();
+              winMargin = wonMatch[2].trim();
+              winType = winMargin.toLowerCase().includes("run") ? "runs" : "wickets";
+            }
+          } else if (isTiedOrAbandoned) {
+            resultStatement = liveStatusStr.replace(/\s*\(NPL\)/gi, "").trim();
+          } else if (inn1 && inn2) {
+            const inn1Runs = Number(inn1.runs) || 0;
+            const inn2Runs = Number(inn2.runs) || 0;
+            const inn2Wickets = Number(inn2.wickets) || 0;
+            const inn1TeamId = String(inn1.batting_team_id);
+            const inn1TeamName = inn1TeamId === team1Id ? team1Name : team2Name;
+            const inn2TeamName = inn1TeamId === team1Id ? team2Name : team1Name;
+
+            if (inn2Runs > inn1Runs) {
+              const wktMargin = 10 - inn2Wickets;
+              winnerName = inn2TeamName;
+              winMargin = `${wktMargin} wicket${wktMargin === 1 ? "" : "s"}`;
+              winType = "wickets";
+              resultStatement = `${winnerName} won by ${winMargin}`;
+            } else if (inn1Runs > inn2Runs) {
+              const runMargin = inn1Runs - inn2Runs;
+              winnerName = inn1TeamName;
+              winMargin = `${runMargin} run${runMargin === 1 ? "" : "s"}`;
+              winType = "runs";
+              resultStatement = `${winnerName} won by ${winMargin}`;
+            } else {
+              resultStatement = "Match tied";
+            }
+          } else {
+            resultStatement = "Match Completed";
+          }
+
+          if (winnerName) {
+            if (team1Name && winnerName.toLowerCase().includes(team1Name.toLowerCase())) {
+              winnerTeamSlug = match.team1Id ?? undefined;
+            } else if (team2Name && winnerName.toLowerCase().includes(team2Name.toLowerCase())) {
+              winnerTeamSlug = match.team2Id ?? undefined;
+            }
+          } else if (winnerEspnId && winnerEspnId !== "0") {
+            winnerTeamSlug = winnerEspnId === team1Id ? (match.team1Id ?? undefined) : winnerEspnId === team2Id ? (match.team2Id ?? undefined) : undefined;
+            winnerName = winnerEspnId === team1Id ? team1Name : team2Name;
+          }
+        } else {
+          resultStatement = d.match?.current_summary || liveStatusStr || "";
+        }
+
+        const summary = d.match?.current_summary || "";
 
         const scores = {
           team1: team1Score,
@@ -201,11 +319,6 @@ export async function GET(
           text: ball.text || ball.dismissal || ball.event || "",
         }));
 
-        const summary = d.match?.current_summary || "";
-        const resultStatement = isCompleted
-          ? `${winnerEspnId === team1Id ? match.team1Id : match.team2Id} won${winMargin ? ` by ${winMargin}` : ""}`
-          : summary;
-
         // Asynchronously sync to Supabase when active or completed
         if (isCompleted || isLiveMatch) {
           try {
@@ -216,10 +329,11 @@ export async function GET(
                 status: isCompleted ? "completed" : "live",
                 scores,
                 result: isCompleted ? resultStatement : undefined,
-                result_statement: summary || resultStatement,
-                winner_team_id: winnerTeamSlug,
-                win_margin: winMargin,
-                win_type: winType,
+                result_statement: resultStatement,
+                winner_team_id: isCompleted ? winnerTeamSlug : undefined,
+                winner_name: isCompleted ? winnerName : undefined,
+                win_margin: isCompleted ? winMargin : undefined,
+                win_type: isCompleted ? winType : undefined,
               })
               .eq("slug", slug);
 

@@ -7,6 +7,7 @@
  */
 
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { parseMatchStartMs } from "@/lib/countdown";
 import {
   SCHEDULE_FIXTURES,
   ScheduleMatch,
@@ -181,14 +182,42 @@ function mapSupabaseMatch(row: any): ScheduleMatch {
     (m) => m.slug === row.slug || m.id === row.id
   );
 
+  const nowMs = Date.now();
+  let status = row.status;
+
+  // Auto-flip: If scheduled time has arrived and match is not marked completed, treat as live
+  if (status === "upcoming" && row.match_date && row.match_time) {
+    const startMs = parseMatchStartMs(row.match_date, row.match_time);
+    if (startMs !== null && nowMs >= startMs) {
+      if (nowMs <= startMs + 4.5 * 60 * 60 * 1000) {
+        status = "live";
+      }
+    }
+  }
+
+  // Sanitize statement & result
+  let cleanStatement = (row.result_statement || "").replace(/\s*\(NPL\)/gi, "").trim();
+  if (row.status === "completed" && cleanStatement.includes(" ov,")) {
+    if (row.winner_name && row.win_margin) {
+      cleanStatement = `${row.winner_name} won by ${row.win_margin}`;
+    } else {
+      cleanStatement = "Match Completed";
+    }
+  }
+
+  let cleanResult = (row.result || cleanStatement || "").replace(/\s*\(NPL\)/gi, "").trim();
+  if (cleanResult.includes(" ov,")) {
+    cleanResult = cleanStatement;
+  }
+
   const resultDetails: MatchResultDetails | undefined =
-    row.winner_team_id || row.result_statement || row.winner_name
+    row.winner_team_id || cleanStatement || row.winner_name
       ? {
           winnerId: row.winner_team_id ?? undefined,
-          winnerName: row.winner_name ?? undefined,
+          winnerName: row.winner_name?.replace(/\s*\(NPL\)/gi, "").trim() ?? undefined,
           winMargin: row.win_margin ?? undefined,
           winType: row.win_type ?? undefined,
-          statement: row.result_statement ?? undefined,
+          statement: cleanStatement || undefined,
           playerOfTheMatch: row.player_of_the_match ?? undefined,
           tossWinner: row.toss_winner_team_id ?? undefined,
           tossDecision: row.toss_decision ?? undefined,
@@ -210,8 +239,8 @@ function mapSupabaseMatch(row: any): ScheduleMatch {
     dayOfWeek: row.day_of_week,
     time: row.match_time,
     venue: row.venue,
-    status: row.status,
-    result: row.result ?? undefined,
+    status,
+    result: cleanResult || undefined,
     scores: row.scores ?? undefined,
     resultDetails,
     slug: row.slug,
@@ -319,7 +348,11 @@ export async function getCompletedMatches(): Promise<ScheduleMatch[]> {
  */
 export async function getFeaturedUpcomingMatch(): Promise<ScheduleMatch | undefined> {
   const matches = await getAllMatches();
-  return matches.find((m) => m.status === "upcoming") || matches[0];
+  return (
+    matches.find((m) => m.status === "live") ||
+    matches.find((m) => m.status === "upcoming") ||
+    matches[0]
+  );
 }
 
 /**

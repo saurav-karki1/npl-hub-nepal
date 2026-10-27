@@ -420,4 +420,17 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Model Fallback Chain:** `gemini-news-generator.ts` immediately advances to the next candidate model upon encountering a 404, while preserving key rotation for 429 rate limits and 5xx transient errors.
   - **Test Suite & Verification:** 13/13 Gemini failover and fallback tests passed (`scripts/test-gemini-failover.mjs`); 20/20 admin authorization tests passed (`scripts/test-admin-authorization.mjs`); TypeScript check passed (0 errors); Next.js production build succeeded (229 routes).
 
+- **2026-10-27 (Match 2 Result Accuracy, Live Commentary Sync, and Status Transition Automation):**
+  - **Commentary Player Mismatch Resolved:** Purged 4 stale test commentary deliveries with fake players (`Mousley`, `Bopara`, `Russell` over 19.4-19.6) from `match_commentary` for Match 2. Top deliveries now accurately show final overs bowled by Taylor, Rijan Dhakal, and Kamal Singh Airee to Shubham Ranjane and Sandeep Lamichhane, aligning 100% with in-play statistics.
+  - **In-Play Batter/Bowler Fallback:** Enhanced `LiveCommentaryFeed.tsx` so if a delivery record lacks explicit player names, it gracefully falls back to the active striker/batter and current bowler from live in-play stats.
+  - **Match Result Statement Bug Fixed:** Eliminated bug where ESPN's `current_summary` (the losing side's scorecard string e.g. `"Biratnagar Kings (NPL) 149 (19.3 ov...)"`) was written to `result_statement`. Fixed in both `src/app/api/matches/[slug]/live-score/route.ts` and `scripts/live-sync-score.mjs` to extract or compute clean winner statements (e.g. `"Chitwan Rhinos won by 8 runs"`). Match 2 updated in Supabase and standings recomputed (Chitwan Rhinos #2, 2 pts, +0.400 NRR).
+  - **Automated Match Status Transitions (Scheduled → Live → Completed):**
+    - Both `scripts/live-sync-score.mjs` daemon and server-side `mapSupabaseMatch` now compare scheduled start time with Nepal Standard Time (`nowMs >= startMs`).
+    - When scheduled time is reached, toss occurs, or innings start, status flips automatically to `live` without requiring manual admin intervention.
+    - When ESPN reports outcome (`"won by"`, `"Match over"`, or innings complete), status flips automatically to `completed`, stores clean winner statement, and recalculates tournament standings.
+    - Updated `MatchHeader.tsx` to display a dedicated high-contrast `🔴 Live Match in Progress` banner during active play instead of falling back to pre-match notice.
+    - Updated `getFeaturedUpcomingMatch()` in `src/lib/repository/matches.ts` to prioritize `live` matches before upcoming fixtures.
+  - **Build & Verification:** ✅ `npm run build` passed with 0 errors across all 229 routes. Continuous live sync daemon active for Match 3 (Janakpur Bolts vs Karnali Yaks).
+
+
 

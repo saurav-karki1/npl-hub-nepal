@@ -33,6 +33,23 @@ interface LiveScoreData {
     team1?: { runs: number; overs: string; wickets: number };
     team2?: { runs: number; overs: string; wickets: number };
   };
+  batters?: Array<{
+    name: string;
+    runs: number;
+    balls: number;
+    fours: number;
+    sixes: number;
+    strikeRate: string;
+    isStriker: boolean;
+  }>;
+  bowlers?: Array<{
+    name: string;
+    overs: string;
+    maidens: number;
+    runs: number;
+    wickets: number;
+    economy: string;
+  }>;
 }
 
 interface LiveCommentaryFeedProps {
@@ -49,12 +66,16 @@ function pickVariant(variants: string[], seed: number): string {
   return variants[seed % variants.length];
 }
 
-function templateCommentary(item: CommentaryItem): string {
+function templateCommentary(
+  item: CommentaryItem,
+  fallbackBatter?: string,
+  fallbackBowler?: string
+): string {
   const isWicket = item.isWicket || item.eventType === "wicket";
   const isSix = item.isSix;
   const isFour = item.isBoundary && !isSix;
-  const batter = item.batterName || "The batter";
-  const bowler = item.bowlerName || "the bowler";
+  const batter = item.batterName || fallbackBatter || "The batter";
+  const bowler = item.bowlerName || fallbackBowler || "the bowler";
   const textSeed = item.text
     ? item.text.charCodeAt(0) + (item.text.charCodeAt(4) || 0)
     : 0;
@@ -157,8 +178,12 @@ function getAIEventType(
   return null; // normal balls use templates
 }
 
-function formatEasyCommentary(item: CommentaryItem): string {
-  return templateCommentary(item);
+function formatEasyCommentary(
+  item: CommentaryItem,
+  fallbackBatter?: string,
+  fallbackBowler?: string
+): string {
+  return templateCommentary(item, fallbackBatter, fallbackBowler);
 }
 
 export function LiveCommentaryFeed({
@@ -346,6 +371,25 @@ export function LiveCommentaryFeed({
     if (isCompleted) {
       return liveMeta?.resultStatement || "Match completed.";
     }
+    // Target chase scenario: "Team need X runs from Y balls to win"
+    if (
+      liveMeta?.runsNeeded !== undefined &&
+      liveMeta?.ballsLeft !== undefined &&
+      liveMeta.runsNeeded > 0
+    ) {
+      const team = liveMeta.battingTeam || "Batting team";
+      const targetStr = liveMeta.target ? ` (Target: ${liveMeta.target})` : "";
+      return `${team} need ${liveMeta.runsNeeded} runs in ${liveMeta.ballsLeft} balls to win${targetStr}`;
+    }
+    // 1st innings active state: "Team: X/Y in Z overs"
+    if (liveMeta?.battingTeam && liveMeta?.scores) {
+      const s1 = liveMeta.scores.team1;
+      const s2 = liveMeta.scores.team2;
+      const active = (s2 && (Number(s2.runs) > 0 || s2.overs !== "0.0")) ? s2 : s1;
+      if (active && (Number(active.runs) > 0 || active.overs !== "0.0")) {
+        return `${liveMeta.battingTeam}: ${active.runs}/${active.wickets} in ${active.overs} overs`;
+      }
+    }
     if (liveMeta?.summary) {
       return liveMeta.summary;
     }
@@ -489,6 +533,14 @@ export function LiveCommentaryFeed({
             const isLatest = idx === 0;
             const isKeyMoment = isWicket || isSix || isFour;
 
+            // Fallback active batter and bowler from in-play stats if delivery lacks names
+            const activeStriker =
+              liveMeta?.batters?.find((b) => b.isStriker)?.name ||
+              liveMeta?.batters?.[0]?.name;
+            const activeBowler = liveMeta?.bowlers?.[0]?.name;
+            const effectiveBatter = item.batterName || (isLatest ? activeStriker : undefined);
+            const effectiveBowler = item.bowlerName || (isLatest ? activeBowler : undefined);
+
             // Hybrid: use AI text if ready, else template, show ✨ badge for AI
             const cachedAI = aiCache.current.get(item.id);
             const aiReady = isKeyMoment && cachedAI !== undefined;
@@ -496,7 +548,7 @@ export function LiveCommentaryFeed({
             const displayText =
               isKeyMoment && cachedAI
                 ? cachedAI
-                : templateCommentary(item);
+                : templateCommentary(item, effectiveBatter, effectiveBowler);
             // suppress unused var warning — aiVersion used to force re-render
             void aiVersion;
 
@@ -578,16 +630,16 @@ export function LiveCommentaryFeed({
                       )}
 
                       {/* Bowler / Batter chips */}
-                      {item.bowlerName && (
+                      {effectiveBowler && (
                         <span className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-0.5 rounded text-[11px]">
                           <span className="text-[10px] text-sky-400 font-bold">Bowler:</span>
-                          <span className="text-slate-300">{item.bowlerName}</span>
+                          <span className="text-slate-300">{effectiveBowler}</span>
                         </span>
                       )}
-                      {item.batterName && (
+                      {effectiveBatter && (
                         <span className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-0.5 rounded text-[11px]">
                           <span className="text-[10px] text-amber-400 font-bold">Batter:</span>
-                          <span className="text-slate-300">{item.batterName}</span>
+                          <span className="text-slate-300">{effectiveBatter}</span>
                         </span>
                       )}
                     </div>

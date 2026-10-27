@@ -202,7 +202,7 @@ export function MatchHeader({ match }: MatchHeaderProps) {
             </div>
           </div>
 
-          {/* Completed Match Result or Pre-Match Scheduled State */}
+          {/* Completed Match Result, Live In-Progress, or Pre-Match Scheduled State */}
           {match.status === "completed" ? (
             <div className="bg-emerald-950/80 border border-emerald-700/60 rounded-[var(--radius-md)] p-3.5 text-center">
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 block">
@@ -216,6 +216,21 @@ export function MatchHeader({ match }: MatchHeaderProps) {
                   Player of the Match: <strong>{match.resultDetails.playerOfTheMatch}</strong>
                 </p>
               )}
+            </div>
+          ) : match.status === "live" ? (
+            <div className="bg-[#120406] border border-red-500/50 rounded-[var(--radius-md)] p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5 text-white">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shrink-0" aria-hidden="true" />
+                <span className="font-extrabold uppercase tracking-wider text-red-400">
+                  Live Match in Progress
+                </span>
+                <span className="text-zinc-300">
+                  {match.resultDetails?.statement || match.result || "Action underway at TU International Cricket Ground, Kirtipur."}
+                </span>
+              </div>
+              <span className="text-[11px] font-mono text-red-300 shrink-0 bg-red-950/60 px-2.5 py-1 rounded-[var(--radius-xs)] border border-red-500/30">
+                ● In Play
+              </span>
             </div>
           ) : (
             <div className="bg-emerald-950/60 border border-emerald-800/50 rounded-[var(--radius-md)] p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">

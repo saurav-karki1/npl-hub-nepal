@@ -7,6 +7,19 @@ const SERVICE_ROLE_KEY =
 
 const sb = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
+function parseMatchStartMs(dateStr, timeStr) {
+  if (!timeStr || timeStr === "Time TBA") return null;
+  const m = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!m) return null;
+  let hours = parseInt(m[1], 10);
+  const minutes = parseInt(m[2], 10);
+  if (m[3].toUpperCase() === "PM" && hours !== 12) hours += 12;
+  if (m[3].toUpperCase() === "AM" && hours === 12) hours = 0;
+  const isoNepal = `${dateStr}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00+05:45`;
+  const d = new Date(isoNepal);
+  return isNaN(d.getTime()) ? null : d.getTime();
+}
+
 /**
  * Sync a single match by match number (1 to 32).
  * Automatically resolves ESPN Cricinfo match ID (1558582 for Match 1, etc.)
@@ -16,6 +29,13 @@ export async function syncMatch(matchNumber = 1) {
   const matchIdStr = `match-${String(matchNumber).padStart(2, "0")}`;
 
   try {
+    // Fetch match metadata from Supabase
+    const { data: dbMatch } = await sb
+      .from("matches")
+      .select("id, slug, match_date, match_time, status, team1_id, team2_id")
+      .eq("id", matchIdStr)
+      .single();
+
     const res = await fetch(`https://www.espncricinfo.com/ci/engine/match/${espnMatchId}.json`, {
       headers: {
         "User-Agent":
@@ -33,6 +53,8 @@ export async function syncMatch(matchNumber = 1) {
     const teams = d.team || [];
     const team1Id = teams[0] ? String(teams[0].team_id) : undefined;
     const team2Id = teams[1] ? String(teams[1].team_id) : undefined;
+    const team1Name = teams[0]?.team_name?.replace(/\s*\(NPL\)/gi, "").trim() || "Team 1";
+    const team2Name = teams[1]?.team_name?.replace(/\s*\(NPL\)/gi, "").trim() || "Team 2";
 
     // Build player name lookup dictionary
     const players = {};
@@ -97,38 +119,129 @@ export async function syncMatch(matchNumber = 1) {
       economy: bw.economy_rate ? String(bw.economy_rate) : "0.00",
     }));
 
-    const isCompleted = d.match?.result !== "0" && Boolean(d.match?.result);
+    // Detect match completion
+    const liveStatusStr = String(d.live?.status || "").trim();
+    const liveStatusLower = liveStatusStr.toLowerCase();
+
+    const hasWonString =
+      liveStatusLower.includes("won by") ||
+      liveStatusLower.includes("won the match") ||
+      liveStatusLower.includes("beat") ||
+      liveStatusLower.includes("defeat");
+
+    const isTiedOrAbandoned =
+      liveStatusLower.includes("match tied") ||
+      liveStatusLower.includes("tied") ||
+      liveStatusLower.includes("no result") ||
+      liveStatusLower.includes("abandoned") ||
+      liveStatusLower.includes("match over");
+
+    const inn1 = d.innings?.[0];
+    const inn2 = d.innings?.[1];
+    const inn2Completed = Boolean(
+      inn2 &&
+      (Number(inn2.wickets) >= 10 ||
+        parseFloat(inn2.overs) >= 20 ||
+        (inn2.target && Number(inn2.runs) >= Number(inn2.target)))
+    );
+
+    const isCompleted =
+      (d.match?.result !== "0" && Boolean(d.match?.result)) ||
+      hasWonString ||
+      isTiedOrAbandoned ||
+      inn2Completed;
+
+    // Detect if match is live
+    const hasTossOrLiveStatus =
+      liveStatusLower.includes("toss") ||
+      liveStatusLower.includes("opted to") ||
+      liveStatusLower.includes("elected to") ||
+      liveStatusLower.includes("chose to") ||
+      liveStatusLower.includes("in progress") ||
+      liveStatusLower.includes("delayed");
+
     const hasInningsData = Boolean(
       (d.innings && d.innings.length > 0) ||
       (d.live?.innings && d.live.innings.runs !== undefined)
     );
-    const isLiveMatch = !isCompleted && hasInningsData;
 
-    // If match is upcoming and hasn't started yet, do not falsely flip status
+    const matchDate = dbMatch?.match_date;
+    const matchTime = dbMatch?.match_time;
+    const startMs = parseMatchStartMs(matchDate, matchTime);
+    const nowMs = Date.now();
+
+    const isLiveMatch =
+      !isCompleted &&
+      (hasInningsData || hasTossOrLiveStatus || (startMs !== null && nowMs >= startMs));
+
+    // If upcoming and match start moment hasn't arrived, skip
     if (!isCompleted && !isLiveMatch) {
-      console.log(`[SYNC M${matchNumber}] Match is upcoming / not yet started (${d.live?.status || "Scheduled"}).`);
+      console.log(`[SYNC M${matchNumber}] Upcoming fixture (${d.live?.status || "Scheduled"}).`);
       return;
     }
 
-    const summary = d.match?.current_summary || "";
-    const toss = d.live?.status || "";
+    // Determine result statement & winner
+    let winnerName = undefined;
+    let winMargin = d.match?.amount && d.match?.amount_name ? `${d.match.amount} ${d.match.amount_name}` : undefined;
+    let winType = d.match?.amount_name?.includes("run") ? "runs" : "wickets";
+    let winnerTeamSlug = undefined;
+    let resultStatement = "";
 
-    const winMargin =
-      d.match?.amount && d.match?.amount_name ? `${d.match.amount} ${d.match.amount_name}` : undefined;
-    const winType = d.match?.amount_name?.includes("run") ? "runs" : "wickets";
+    if (isCompleted) {
+      if (hasWonString) {
+        resultStatement = liveStatusStr.replace(/\s*\(NPL\)/gi, "").trim();
+        const wonMatch = resultStatement.match(/^(.*?)\s+won by\s+(.*)$/i);
+        if (wonMatch) {
+          winnerName = wonMatch[1].trim();
+          winMargin = wonMatch[2].trim();
+          winType = winMargin.toLowerCase().includes("run") ? "runs" : "wickets";
+        }
+      } else if (isTiedOrAbandoned) {
+        resultStatement = liveStatusStr.replace(/\s*\(NPL\)/gi, "").trim();
+      } else if (inn1 && inn2) {
+        const inn1Runs = Number(inn1.runs) || 0;
+        const inn2Runs = Number(inn2.runs) || 0;
+        const inn2Wickets = Number(inn2.wickets) || 0;
+        const inn1TeamId = String(inn1.batting_team_id);
+        const inn1TeamName = inn1TeamId === team1Id ? team1Name : team2Name;
+        const inn2TeamName = inn1TeamId === team1Id ? team2Name : team1Name;
 
-    const winnerEspnId = String(d.match?.winner_team_id);
-    const winnerName =
-      winnerEspnId === team1Id ? teams[0]?.team_name?.replace(" (NPL)", "") : teams[1]?.team_name?.replace(" (NPL)", "");
-    const resultStatement = isCompleted
-      ? `${winnerName || "Match Winner"} won${winMargin ? ` by ${winMargin}` : ""}`
-      : summary || toss;
+        if (inn2Runs > inn1Runs) {
+          const wktMargin = 10 - inn2Wickets;
+          winnerName = inn2TeamName;
+          winMargin = `${wktMargin} wicket${wktMargin === 1 ? "" : "s"}`;
+          winType = "wickets";
+          resultStatement = `${winnerName} won by ${winMargin}`;
+        } else if (inn1Runs > inn2Runs) {
+          const runMargin = inn1Runs - inn2Runs;
+          winnerName = inn1TeamName;
+          winMargin = `${runMargin} run${runMargin === 1 ? "" : "s"}`;
+          winType = "runs";
+          resultStatement = `${winnerName} won by ${winMargin}`;
+        } else {
+          resultStatement = "Match tied";
+        }
+      } else {
+        resultStatement = "Match Completed";
+      }
+
+      if (winnerName) {
+        if (team1Name && winnerName.toLowerCase().includes(team1Name.toLowerCase())) {
+          winnerTeamSlug = dbMatch?.team1_id;
+        } else if (team2Name && winnerName.toLowerCase().includes(team2Name.toLowerCase())) {
+          winnerTeamSlug = dbMatch?.team2_id;
+        }
+      }
+    } else {
+      resultStatement = d.match?.current_summary || liveStatusStr || "";
+    }
 
     // 1. Update Supabase matches table
+    const targetStatus = isCompleted ? "completed" : "live";
     const { error: matchErr } = await sb
       .from("matches")
       .update({
-        status: isCompleted ? "completed" : "live",
+        status: targetStatus,
         scores: {
           team1: team1Score ?? { runs: 0, wickets: 0, overs: "0.0" },
           team2: team2Score ?? { runs: 0, wickets: 0, overs: "0.0" },
@@ -138,6 +251,7 @@ export async function syncMatch(matchNumber = 1) {
         result: isCompleted ? resultStatement : undefined,
         result_statement: resultStatement,
         winner_name: isCompleted ? winnerName : undefined,
+        winner_team_id: isCompleted ? winnerTeamSlug : undefined,
         win_margin: isCompleted ? winMargin : undefined,
         win_type: isCompleted ? winType : undefined,
       })
@@ -147,11 +261,11 @@ export async function syncMatch(matchNumber = 1) {
       console.error(`[SYNC M${matchNumber}] Error updating match:`, matchErr.message);
     } else {
       console.log(
-        `[SYNC ${new Date().toLocaleTimeString()}] Match #${matchNumber} ${isCompleted ? "[COMPLETED]" : "[LIVE]"}: ${resultStatement}`
+        `[SYNC ${new Date().toLocaleTimeString()}] Match #${matchNumber} [${targetStatus.toUpperCase()}]: ${resultStatement}`
       );
     }
 
-    // 2. Parse and sync commentary events to match_commentary across all overs
+    // 2. Parse and sync commentary events
     const allBalls = [];
     for (const page of d.comms || []) {
       for (const b of page.ball || []) {
@@ -160,7 +274,10 @@ export async function syncMatch(matchNumber = 1) {
     }
 
     let inserted = 0;
-    for (const ball of allBalls.slice(0, 50)) {
+    const activeStriker = batters.find((b) => b.isStriker)?.name || batters[0]?.name;
+    const activeBowler = bowlers[0]?.name;
+
+    for (const ball of allBalls.slice(0, 60)) {
       if (!ball.overs_actual) continue;
       const overNum = parseFloat(ball.overs_actual) || 0;
       const overInt = Math.floor(overNum);
@@ -201,8 +318,8 @@ export async function syncMatch(matchNumber = 1) {
         }
       }
 
-      const rawBatter = ball.players ? ball.players.split(" to ")[1]?.trim() : undefined;
-      const rawBowler = ball.players ? ball.players.split(" to ")[0]?.trim() : undefined;
+      const rawBatter = ball.players ? ball.players.split(" to ")[1]?.trim() : activeStriker;
+      const rawBowler = ball.players ? ball.players.split(" to ")[0]?.trim() : activeBowler;
 
       let commentaryText = ball.dismissal || ball.text;
       if (!commentaryText || commentaryText.trim() === "" || commentaryText === ball.event) {
@@ -245,7 +362,7 @@ export async function syncMatch(matchNumber = 1) {
       if (!commErr) inserted++;
     }
 
-    // 3. When a match is completed, immediately trigger points table recalculation
+    // 3. Trigger standings recalculation when completed
     if (isCompleted) {
       try {
         await recalculateStandings("season-3");
@@ -258,9 +375,9 @@ export async function syncMatch(matchNumber = 1) {
   }
 }
 
-// Run loop checking currently active/live matches or the next upcoming fixture
+// Continuous background monitoring loop
 async function runLoop() {
-  console.log("[SYNC SERVICE] Started live sync for NPL Season 3 matches...");
+  console.log("[SYNC SERVICE] Started live sync daemon for NPL Season 3 matches...");
   while (true) {
     try {
       // Find matches with status 'live'
@@ -273,17 +390,18 @@ async function runLoop() {
         ? liveMatches.map((m) => m.match_number)
         : [];
 
-      // If no match is marked live, inspect the next upcoming match to auto-detect start
-      if (matchesToSync.length === 0) {
-        const { data: upcomingMatches } = await sb
-          .from("matches")
-          .select("id,match_number,status")
-          .eq("status", "upcoming")
-          .order("match_number", { ascending: true })
-          .limit(1);
+      // Also inspect the next upcoming match to auto-detect kickoff
+      const { data: upcomingMatches } = await sb
+        .from("matches")
+        .select("id,match_number,status")
+        .eq("status", "upcoming")
+        .order("match_number", { ascending: true })
+        .limit(1);
 
-        if (upcomingMatches && upcomingMatches.length > 0) {
-          matchesToSync = [upcomingMatches[0].match_number];
+      if (upcomingMatches && upcomingMatches.length > 0) {
+        const nextNum = upcomingMatches[0].match_number;
+        if (!matchesToSync.includes(nextNum)) {
+          matchesToSync.push(nextNum);
         }
       }
 
@@ -297,4 +415,5 @@ async function runLoop() {
   }
 }
 
+// Auto-run if executed as main script
 runLoop();
