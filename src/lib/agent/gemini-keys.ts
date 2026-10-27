@@ -11,7 +11,8 @@
  * - Server-side ONLY. Never expose keys to client bundles, API responses, or logs.
  * - Only slot names (e.g., "key 1", "key 2") are recorded in logs and audit trails.
  * - Key failover ONLY triggers on temporary rate limits (429), quota limits, or transient 5xx errors.
- * - Permanent errors (400 Bad Request, 401/403 Authentication) fail immediately without rotation.
+ * - Permanent client errors (400 Bad Request, 401/403 Authentication) fail immediately without rotation.
+ * - Model Not Found (404) fails immediately with isModelNotFound=true so the caller skips to the next model candidate.
  */
 
 export interface GeminiKeySlot {
@@ -27,6 +28,8 @@ export interface GeminiExecuteResult<T> {
   tokensUsed?: number;
   error?: string;
   isQuotaExhausted?: boolean;
+  isModelNotFound?: boolean;
+  statusCode?: number;
 }
 
 /**
@@ -133,6 +136,20 @@ export async function executeWithKeyFailover<T>(
           data: response.data,
           slotUsed: slot.slotName,
           tokensUsed: response.tokensUsed ?? 0,
+          statusCode: response.status,
+        };
+      }
+
+      // Check for unavailable model (404 Not Found)
+      // Rotating keys will NEVER resolve a missing model endpoint — return immediately
+      if (response.status === 404) {
+        return {
+          success: false,
+          error: `Gemini model unavailable (404) on ${slot.slotName}: ${response.errorText ?? "Model not found"}`,
+          slotUsed: slot.slotName,
+          isModelNotFound: true,
+          statusCode: 404,
+          isQuotaExhausted: false,
         };
       }
 
@@ -147,6 +164,7 @@ export async function executeWithKeyFailover<T>(
           success: false,
           error: `Gemini permanent error (${response.status}) on ${slot.slotName}: ${response.errorText ?? "Permanent failure"}`,
           slotUsed: slot.slotName,
+          statusCode: response.status,
           isQuotaExhausted: false,
         };
       }
@@ -154,7 +172,7 @@ export async function executeWithKeyFailover<T>(
       // Check if eligible for failover (429 or 5xx)
       if (isTransientOrRateLimitError(response.status, response.errorText)) {
         lastError = `Gemini rate limit or server error (${response.status}) on ${slot.slotName}`;
-        
+
         // If there are more keys to try, wait briefly and failover
         if (attempt < keys.length - 1) {
           if (backoffMs > 0) {
@@ -173,6 +191,9 @@ export async function executeWithKeyFailover<T>(
 
       // Network timeouts can be retried on next key
       if (attempt < keys.length - 1) {
+        if (backoffMs > 0) {
+          await new Promise((res) => setTimeout(res, backoffMs));
+        }
         continue;
       }
     }

@@ -414,3 +414,10 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Real-time in-play roster: Ingests active batters (`batters`) and current bowlers (`bowlers`) directly into match state for immediate display.
   - **Build & Verification:** ✅ `npm run build` completed with 0 errors (230 routes compiled).
 
+- **2026-10-27 (AI News Agent — Gemini Fallback & Model Modernization):**
+  - **Model Modernization:** Replaced retired `gemini-1.5-flash` with verified active models in `gemini-news-generator.ts`: `gemini-2.5-flash` -> `gemini-3.5-flash-lite` -> `gemini-3.8-flash`, aligning with `gemini-structurer.ts`.
+  - **404 Model Not Found Fast-Fail:** Upgraded `executeWithKeyFailover` in `gemini-keys.ts` so HTTP 404 immediately returns `isModelNotFound=true`, preventing wasteful key-rotation attempts on non-existent model endpoints.
+  - **Model Fallback Chain:** `gemini-news-generator.ts` immediately advances to the next candidate model upon encountering a 404, while preserving key rotation for 429 rate limits and 5xx transient errors.
+  - **Test Suite & Verification:** 13/13 Gemini failover and fallback tests passed (`scripts/test-gemini-failover.mjs`); 20/20 admin authorization tests passed (`scripts/test-admin-authorization.mjs`); TypeScript check passed (0 errors); Next.js production build succeeded (229 routes).
+
+

@@ -14,6 +14,7 @@
  * - Uses executeWithKeyFailover() across GEMINI_API_KEY, GEMINI_API_KEY_2, etc.
  * - Fails over automatically on 429 rate limits or transient 5xx errors.
  * - Bounded retries: stops gracefully if all keys are exhausted.
+ * - HTTP 404 (model unavailable): skips immediately to the next candidate model without burning key attempts.
  *
  * Server-only: API keys are never exposed to the client.
  */
@@ -76,14 +77,20 @@ export interface GeminiGenerationResult {
   keySlotUsed?: string;
 }
 
+export interface GenerateNewsArticleOptions {
+  models?: readonly { id: string; api: string }[];
+  executeFn?: typeof executeWithKeyFailover;
+}
+
 // ---------------------------------------------------------------------------
 // Model fallback chain
+// Verified current Gemini model IDs (Oct 2026, confirmed from Google AI for Developers)
 // ---------------------------------------------------------------------------
 
-const MODELS = [
-  { id: "gemini-2.5-flash", api: "v1beta" },
-  { id: "gemini-2.0-flash", api: "v1beta" },
-  { id: "gemini-1.5-flash", api: "v1beta" },
+export const DEFAULT_MODELS = [
+  { id: "gemini-2.5-flash", api: "v1beta" },     // Balanced price-performance (where enabled)
+  { id: "gemini-3.5-flash-lite", api: "v1beta" }, // High-volume, low-latency, current stable Flash-Lite
+  { id: "gemini-3.8-flash", api: "v1beta" },      // Flagship workhorse fallback, current stable Flash
 ] as const;
 
 const VALID_CATEGORIES = [
@@ -95,11 +102,12 @@ const VALID_CATEGORIES = [
 ] as const;
 
 // ---------------------------------------------------------------------------
-// Main generation function with multi-key failover
+// Main generation function with multi-key failover and model fallback
 // ---------------------------------------------------------------------------
 
 export async function generateNewsArticleFromItem(
-  item: FetchedItem
+  item: FetchedItem,
+  options?: GenerateNewsArticleOptions
 ): Promise<{ success: boolean; result?: GeminiGenerationResult; error?: string }> {
   const userPrompt = `SOURCE HEADLINE: ${item.title}
 SOURCE SNIPPET: ${item.snippet}
@@ -109,10 +117,12 @@ PUBLISHED: ${item.publishedAt || "Unknown date"}
 Generate a factual NPL Hub Nepal news article based only on the above source.`;
 
   let lastError = "Gemini API unreachable.";
+  const models = options?.models ?? DEFAULT_MODELS;
+  const execFn = options?.executeFn ?? executeWithKeyFailover;
 
-  for (const { id: model, api } of MODELS) {
+  for (const { id: model, api } of models) {
     // Execute request with multi-key rotation and failover
-    const execution = await executeWithKeyFailover<GeminiGenerationResult>(
+    const execution = await execFn<GeminiGenerationResult>(
       async (slot: GeminiKeySlot) => {
         const url = `https://generativelanguage.googleapis.com/${api}/models/${model}:generateContent?key=${slot.key}`;
 
@@ -272,6 +282,12 @@ Generate a factual NPL Hub Nepal news article based only on the above source.`;
     }
 
     lastError = execution.error ?? lastError;
+
+    // If model was not found (404), immediately skip to the next candidate model
+    // without retrying the remaining keys on an unavailable model
+    if (execution.isModelNotFound) {
+      continue;
+    }
 
     // If quota is exhausted across all keys, do not hammer subsequent models
     if (execution.isQuotaExhausted) {
