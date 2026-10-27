@@ -366,33 +366,144 @@ export function LiveCommentaryFeed({
     );
   }
 
-  // Derive human-friendly match equation banner
-  const equationText = useMemo(() => {
+  // ── Build a crystal-clear, plain-English match situation sentence ──────────
+  // Replaces the raw ESPN string like "Janakpur Bolts (NPL)66/5 (10.4 ov, Harmeet Singh 7*...)"
+  // with something every fan instantly understands on first read.
+  const equationBanner = useMemo(() => {
     if (isCompleted) {
-      return liveMeta?.resultStatement || "Match completed.";
+      const result = liveMeta?.resultStatement || "Match completed.";
+      return { headline: "Final Result", body: result, icon: "🏆" };
     }
-    // Target chase scenario: "Team need X runs from Y balls to win"
+
+    const s1 = liveMeta?.scores?.team1;
+    const s2 = liveMeta?.scores?.team2;
+    const batters = liveMeta?.batters || [];
+    const bowlers = liveMeta?.bowlers || [];
+    const striker = batters.find((b) => b.isStriker) || batters[0];
+    const nonStriker = batters.find((b) => !b.isStriker) || batters[1];
+    const currentBowler = bowlers[0];
+
+    // ── 2nd innings chase: give a clear "X runs needed in Y balls" message ──
     if (
       liveMeta?.runsNeeded !== undefined &&
       liveMeta?.ballsLeft !== undefined &&
       liveMeta.runsNeeded > 0
     ) {
       const team = liveMeta.battingTeam || "Batting team";
-      const targetStr = liveMeta.target ? ` (Target: ${liveMeta.target})` : "";
-      return `${team} need ${liveMeta.runsNeeded} runs in ${liveMeta.ballsLeft} balls to win${targetStr}`;
-    }
-    // 1st innings active state: "Team: X/Y in Z overs"
-    if (liveMeta?.battingTeam && liveMeta?.scores) {
-      const s1 = liveMeta.scores.team1;
-      const s2 = liveMeta.scores.team2;
-      const active = (s2 && (Number(s2.runs) > 0 || s2.overs !== "0.0")) ? s2 : s1;
-      if (active && (Number(active.runs) > 0 || active.overs !== "0.0")) {
-        return `${liveMeta.battingTeam}: ${active.runs}/${active.wickets} in ${active.overs} overs`;
+      const overs = liveMeta.scores?.team2
+        ? liveMeta.scores.team2.overs
+        : liveMeta.scores?.team1?.overs;
+      const oversRemaining = overs
+        ? (() => {
+            const parts = overs.split(".");
+            const completedOvers = parseInt(parts[0], 10);
+            const ballsThisOver = parseInt(parts[1] || "0", 10);
+            const ballsBowled = completedOvers * 6 + ballsThisOver;
+            const ballsLeft = 120 - ballsBowled;
+            const oversLeft = Math.floor(ballsLeft / 6);
+            const extraBalls = ballsLeft % 6;
+            return extraBalls > 0
+              ? `${oversLeft}.${extraBalls} overs`
+              : `${oversLeft} overs`;
+          })()
+        : `${Math.ceil(liveMeta.ballsLeft / 6)} overs`;
+
+      const rr = liveMeta.ballsLeft > 0
+        ? ((liveMeta.runsNeeded / liveMeta.ballsLeft) * 6).toFixed(2)
+        : null;
+
+      let paceNote = "";
+      if (rr) {
+        const rrNum = parseFloat(rr);
+        if (rrNum <= 6) paceNote = "— well within reach";
+        else if (rrNum <= 9) paceNote = "— a tough chase, needs boundaries";
+        else if (rrNum <= 12) paceNote = "— very difficult from here";
+        else paceNote = "— almost impossible now";
       }
+
+      const strikerLine = striker
+        ? `${striker.name} ${striker.runs}* (${striker.balls}b)`
+        : "";
+      const nonStrikerLine = nonStriker
+        ? `${nonStriker.name} ${nonStriker.runs}* (${nonStriker.balls}b)`
+        : "";
+      const batsmenNote =
+        strikerLine && nonStrikerLine
+          ? `${strikerLine} & ${nonStrikerLine} at the crease`
+          : strikerLine || "";
+
+      const bowlerNote =
+        currentBowler
+          ? `${currentBowler.name} bowling (${currentBowler.overs} ov, ${currentBowler.wickets}W)`
+          : "";
+
+      const bodyLines = [
+        `${team} need ${liveMeta.runsNeeded} more runs from ${liveMeta.ballsLeft} balls (${oversRemaining}) ${paceNote}`,
+        rr ? `Required run rate: ${rr} per over` : "",
+        batsmenNote,
+        bowlerNote,
+      ].filter(Boolean);
+
+      return {
+        headline: "Chase In Progress",
+        body: bodyLines,
+        icon: "🎯",
+      };
     }
+
+    // ── 1st innings or no target yet: show a clean scorecard summary ──
+    const activeScore = s2 && (Number(s2.runs) > 0 || s2.overs !== "0.0") ? s2 : s1;
+    const battingTeam = liveMeta?.battingTeam || "Batting team";
+    const bowlingTeam = liveMeta?.bowlingTeam || "";
+
+    if (activeScore) {
+      const oversStr = activeScore.overs;
+      const parts = oversStr.split(".");
+      const completedOvers = parseInt(parts[0], 10);
+      const ballsThisOver = parseInt(parts[1] || "0", 10);
+      const ballsBowled = completedOvers * 6 + ballsThisOver;
+      const ballsLeft = 120 - ballsBowled;
+      const oversRemaining =
+        ballsLeft > 0
+          ? `${Math.floor(ballsLeft / 6)}.${ballsLeft % 6} overs remaining`
+          : "Last over";
+
+      const strikerLine = striker
+        ? `${striker.name} ${striker.runs}* off ${striker.balls} balls`
+        : "";
+      const nonStrikerLine = nonStriker
+        ? `${nonStriker.name} ${nonStriker.runs}* (${nonStriker.balls}b)`
+        : "";
+      const batsmenNote =
+        strikerLine && nonStrikerLine
+          ? `${strikerLine} · ${nonStrikerLine} at the other end`
+          : strikerLine || "";
+
+      const bowlerNote =
+        currentBowler
+          ? `${currentBowler.name} bowling — ${currentBowler.overs} ov, ${currentBowler.runs}R, ${currentBowler.wickets}W`
+          : "";
+
+      const bodyLines = [
+        `${battingTeam}: ${activeScore.runs}/${activeScore.wickets} in ${activeScore.overs} overs`,
+        oversRemaining,
+        batsmenNote,
+        bowlerNote,
+        bowlingTeam ? `${bowlingTeam} bowling` : "",
+      ].filter(Boolean);
+
+      return {
+        headline: "Live Match — 1st Innings",
+        body: bodyLines,
+        icon: "🏏",
+      };
+    }
+
+    // Fallback: show the raw summary if we have nothing better
     if (liveMeta?.summary) {
-      return liveMeta.summary;
+      return { headline: "Match Update", body: [liveMeta.summary], icon: "🏏" };
     }
+
     return null;
   }, [isCompleted, liveMeta]);
 
@@ -442,25 +553,43 @@ export function LiveCommentaryFeed({
         </div>
       </div>
 
-      {/* ── Match Situation & Equation Banner (Prominent & Clear) ── */}
-      {equationText && (
-        <div className="rounded-xl border border-emerald-500/30 bg-gradient-to-r from-[#062417] via-[#08301f] to-[#041b11] p-3.5 sm:p-4 shadow-md flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="text-xl shrink-0">
-              {isCompleted ? "🏆" : "🏏"}
-            </span>
-            <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400/90 block">
-                {isCompleted ? "Match Result" : "Current Match Equation"}
-              </span>
-              <p className="text-sm font-black text-white tracking-tight">
-                {equationText}
-              </p>
+      {/* ── Match Situation Banner — Plain English, fan-first ── */}
+      {equationBanner && (
+        <div className="rounded-xl border border-emerald-500/30 bg-gradient-to-r from-[#062417] via-[#08301f] to-[#041b11] p-4 sm:p-5 shadow-md">
+          <div className="flex items-start justify-between gap-3 flex-wrap">
+            <div className="flex items-start gap-3 min-w-0 flex-1">
+              <span className="text-2xl shrink-0 mt-0.5">{equationBanner.icon}</span>
+              <div className="min-w-0">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-emerald-400/90 block mb-1">
+                  {equationBanner.headline}
+                </span>
+                {/* Render each line separately for maximum readability */}
+                {Array.isArray(equationBanner.body) ? (
+                  <div className="space-y-1">
+                    {equationBanner.body.map((line, i) => (
+                      <p
+                        key={i}
+                        className={
+                          i === 0
+                            ? "text-base font-black text-white leading-snug"
+                            : i === 1
+                            ? "text-xs font-semibold text-emerald-300"
+                            : "text-xs text-slate-300 font-medium"
+                        }
+                      >
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm font-black text-white">{equationBanner.body}</p>
+                )}
+              </div>
             </div>
+            <span className="text-[11px] font-mono text-emerald-300/80 bg-black/40 border border-emerald-500/20 px-2.5 py-1 rounded-md shrink-0 self-start">
+              {isLive ? "● In Progress" : "Official Outcome"}
+            </span>
           </div>
-          <span className="text-[11px] font-mono text-emerald-300/80 bg-black/40 border border-emerald-500/20 px-2.5 py-1 rounded-md shrink-0">
-            {isLive ? "● In Progress" : "Official Outcome"}
-          </span>
         </div>
       )}
 

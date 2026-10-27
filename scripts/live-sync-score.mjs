@@ -267,23 +267,65 @@ export async function syncMatch(matchNumber = 1) {
     }
 
     // 2. Parse and sync commentary events
-    const allBalls = [];
-    for (const page of d.comms || []) {
-      for (const b of page.ball || []) {
-        allBalls.push(b);
+    // KEY FIX: Tag each ball with its innings number to prevent cross-innings confusion.
+    // ESPN's comms array contains ALL innings balls. When sorted by over_number DESC,
+    // 1st innings overs (e.g. 19.6) appear above 2nd innings overs (e.g. 10.4),
+    // causing wrong player names to show in the commentary feed.
+
+    // Map innings index → batting team id
+    const inningsBattingMap = {};
+    for (let i = 0; i < (d.innings || []).length; i++) {
+      inningsBattingMap[i + 1] = String(d.innings[i].batting_team_id);
+    }
+
+    // Identify the current active innings number
+    const activeBattingTeamId = d.live?.innings?.team_id
+      ? String(d.live.innings.team_id)
+      : null;
+    let currentInningsNum = d.innings?.length || 1;
+    if (activeBattingTeamId) {
+      for (const [num, teamId] of Object.entries(inningsBattingMap)) {
+        if (teamId === activeBattingTeamId) {
+          currentInningsNum = Number(num);
+          break;
+        }
       }
     }
+
+    const allBalls = [];
+    for (let pi = 0; pi < (d.comms || []).length; pi++) {
+      const page = d.comms[pi];
+      // ESPN comms pages are in innings order: page 0 = innings 1, page 1 = innings 2
+      // Use page.innings_number if present, else infer from page index
+      const pageInnings = page.innings_number
+        ? Number(page.innings_number)
+        : pi + 1;
+      for (const b of page.ball || []) {
+        allBalls.push({ ...b, _inningsNum: pageInnings });
+      }
+    }
+
+    // Only sync balls from the CURRENT active innings to avoid stale 1st-innings
+    // player names showing at the top of the live feed
+    const currentInningsBalls = allBalls.filter(
+      (b) => b._inningsNum === currentInningsNum
+    );
+    const ballsToSync = currentInningsBalls.length > 0
+      ? currentInningsBalls
+      : allBalls;
 
     let inserted = 0;
     const activeStriker = batters.find((b) => b.isStriker)?.name || batters[0]?.name;
     const activeBowler = bowlers[0]?.name;
 
-    for (const ball of allBalls.slice(0, 60)) {
+    for (const ball of ballsToSync.slice(0, 80)) {
       if (!ball.overs_actual) continue;
       const overNum = parseFloat(ball.overs_actual) || 0;
       const overInt = Math.floor(overNum);
       const ballInt = Math.round((overNum - overInt) * 10);
-      const eventId = `espn_${espnMatchId}_${ball.overs_actual}`;
+      // Include innings number in eventId to prevent cross-innings ID collisions
+      const inningsTag = ball._inningsNum || currentInningsNum;
+      const eventId = `espn_${espnMatchId}_inn${inningsTag}_${ball.overs_actual}`;
 
       const evStr = String(ball.event || "");
       const evLower = evStr.toLowerCase();
@@ -353,6 +395,7 @@ export async function syncMatch(matchNumber = 1) {
         is_six: Boolean(isSix),
         batter_name: rawBatter,
         bowler_name: rawBowler,
+        innings_number: inningsTag,
         provider: "manual",
       };
 
