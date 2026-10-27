@@ -447,14 +447,11 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Integrity count: `verifiedLeagueMatchesCount: 2`.
   - **Build & Commit:** ✅ `npm run build` → 228 routes, 0 TypeScript errors. Committed `e03de82`, pushed to `origin/master`. Vercel redeploy triggered. Live sync daemon active for Match 3.
 
-- **2026-10-27 (Match 3 Official Result Ingestion & Standings Correction):**
-  - **Match 3 Official Verification:** Karnali Yaks 132/9 (20.0 ov) defeated Janakpur Bolts 113 all out (19.3 ov) by 19 runs. Player of the Match: Unish Singh Thakuri (3/22 in 4.0 ov).
-  - **Inverted Winner Logic Fixed:** Removed `"match over"` from `isTiedOrAbandoned` list in both `live-sync-score.mjs` and `route.ts`. The engine now correctly compares `inn1Runs` and `inn2Runs` so the winning team is always accurately awarded the victory regardless of ESPN's transient live status strings.
-  - **Supabase & Fallback Synced:**
-    - Match 3 set to `completed`, winner `karnali-yaks`, margin `19 runs`, PotM `Unish Singh Thakuri`.
-    - `tournament_awards` upserted with Match 3 PotM (Unish Singh Thakuri, 3/22).
-    - `team_seasons` standings recomputed: 1. Lumbini Lions (2 pts, +4.599), 2. Karnali Yaks (2 pts, +0.950), 3. Chitwan Rhinos (2 pts, +0.400), 4. Kathmandu Gorkhas (0 pts), 5. Pokhara Avengers (0 pts), 6. Biratnagar Kings (0 pts, -0.400), 7. Janakpur Bolts (0 pts, -0.950), 8. Sudurpaschim Royals (0 pts, -4.599).
-  - **Build:** Verified clean production build (228 routes, 0 TypeScript errors). Committed `d1e225b` and pushed to `master`.
+- **2026-10-27 (Cloud Live Sync Endpoint & Laptopless Architecture):**
+  - **Endpoint Created (`src/app/api/cron/live-sync/route.ts`):** Exposes `GET`/`POST /api/cron/live-sync` callable by external schedulers (cron-job.org, Vercel cron).
+  - **Core Engine (`src/lib/sync/live-sync-core.ts`):** 100% serverless TypeScript implementation of match sync. Auto-detects active/upcoming matches, fetches ESPN live JSON, persists dual-innings scores, streams commentary tagged by innings, auto-detects completion, recalculates points table, and updates player stats.
+  - **Laptopless Guarantee:** With cron-job.org pinging `/api/cron/live-sync?key=npl2026live`, the entire match sync lifecycle executes in the cloud on Vercel without requiring any local laptop process.
+  - **Build & Verification:** ✅ `npm run build` passed with 0 errors across 229 routes. Committed `23af0aa` and pushed to `master`.
 
 
 
