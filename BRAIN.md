@@ -404,3 +404,13 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - `✨ AI Commentary` badge for Gemini-generated moments and subtle `enhancing…` indicator during streaming.
     - Varied template seed algorithm ensuring consecutive 1-run or dot balls display distinct phrasing without repeating.
   - **Build & Verification:** ✅ `npm run build` completed with 0 errors (230 routes compiled).
+
+- **2026-10-27 (Match 2 Live Scoreboard & Commentary Feed Polish):**
+  - **Live Scoreboard Visibility & Contrast Fix:** Replaced light-pink low-contrast banner with solid deep dark crimson `#120406` and bright white typography for the live match status banner, rendering `🔴 LIVE MATCH IN PROGRESS` and current score summary with 100% readability in both light and dark modes.
+  - **Graceful "Yet to bat" Handling:** Configured `MatchScoreboard.tsx` so fielding teams with 0.0 overs display `"Yet to bat"` instead of confusing `0/0 (0.0)` figures while the opposing side is actively batting.
+  - **Live Sync Daemon Upgrade (`scripts/live-sync-score.mjs`):**
+    - Multi-over aggregation: Iterates through all ESPN `comms` over blocks instead of just `comms[0]`, capturing all deliveries from ball 0.1 onward into Supabase.
+    - Full-text event synthesis: Automatically translates raw event codes (`FOUR`, `SIX`, `no run`, `1 run`) into clean descriptive ball commentary with real player names.
+    - Real-time in-play roster: Ingests active batters (`batters`) and current bowlers (`bowlers`) directly into match state for immediate display.
+  - **Build & Verification:** ✅ `npm run build` completed with 0 errors (230 routes compiled).
+

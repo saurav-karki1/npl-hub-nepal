@@ -188,8 +188,13 @@ export async function GET(
         }));
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const commsList: any[] = d.comms?.[0]?.ball || [];
-        const recentBalls: LiveBallEvent[] = commsList.slice(0, 15).map((ball) => ({
+        const allBalls: any[] = [];
+        for (const page of d.comms || []) {
+          for (const b of page.ball || []) {
+            allBalls.push(b);
+          }
+        }
+        const recentBalls: LiveBallEvent[] = allBalls.slice(0, 20).map((ball) => ({
           over: ball.overs_actual ? String(ball.overs_actual) : "",
           event: ball.event ? String(ball.event) : "",
           dismissal: ball.dismissal ? String(ball.dismissal) : "",
@@ -280,8 +285,8 @@ export async function GET(
           summary: dbMatch.result_statement || "",
           resultStatement: dbMatch.result_statement || dbMatch.result || "",
           toss: dbMatch.result_statement || "",
-          batters: [],
-          bowlers: [],
+          batters: (dbMatch.scores as any)?.batters || [],
+          bowlers: (dbMatch.scores as any)?.bowlers || [],
           recentBalls,
           updatedAt,
         });

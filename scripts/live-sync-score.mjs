@@ -34,6 +34,16 @@ export async function syncMatch(matchNumber = 1) {
     const team1Id = teams[0] ? String(teams[0].team_id) : undefined;
     const team2Id = teams[1] ? String(teams[1].team_id) : undefined;
 
+    // Build player name lookup dictionary
+    const players = {};
+    for (const t of teams) {
+      for (const p of t.player || []) {
+        if (p.player_id && p.known_as) {
+          players[String(p.player_id)] = p.known_as;
+        }
+      }
+    }
+
     let team1Score = undefined;
     let team2Score = undefined;
 
@@ -66,6 +76,26 @@ export async function syncMatch(matchNumber = 1) {
         team2Score = liveParsed;
       }
     }
+
+    // Parse active live batters and bowlers
+    const batters = (d.live?.batting || []).map((b) => ({
+      name: players[String(b.player_id)] || b.player_id || "Batter",
+      runs: Number(b.runs) || 0,
+      balls: Number(b.balls_faced) || 0,
+      fours: Number(b.fours) || 0,
+      sixes: Number(b.sixes) || 0,
+      strikeRate: b.strike_rate ? String(b.strike_rate) : "0.00",
+      isStriker: b.live_current_name === "striker",
+    }));
+
+    const bowlers = (d.live?.bowling || []).map((bw) => ({
+      name: players[String(bw.player_id)] || bw.player_id || "Bowler",
+      overs: String(bw.overs || "0.0"),
+      maidens: Number(bw.maidens) || 0,
+      runs: Number(bw.conceded) || 0,
+      wickets: Number(bw.wickets) || 0,
+      economy: bw.economy_rate ? String(bw.economy_rate) : "0.00",
+    }));
 
     const isCompleted = d.match?.result !== "0" && Boolean(d.match?.result);
     const hasInningsData = Boolean(
@@ -100,8 +130,10 @@ export async function syncMatch(matchNumber = 1) {
       .update({
         status: isCompleted ? "completed" : "live",
         scores: {
-          ...(team1Score ? { team1: team1Score } : {}),
-          ...(team2Score ? { team2: team2Score } : {}),
+          team1: team1Score ?? { runs: 0, wickets: 0, overs: "0.0" },
+          team2: team2Score ?? { runs: 0, wickets: 0, overs: "0.0" },
+          batters: batters.length > 0 ? batters : undefined,
+          bowlers: bowlers.length > 0 ? bowlers : undefined,
         },
         result: isCompleted ? resultStatement : undefined,
         result_statement: resultStatement,
@@ -119,20 +151,75 @@ export async function syncMatch(matchNumber = 1) {
       );
     }
 
-    // 2. Parse and sync commentary events to match_commentary
-    const commsList = d.comms?.[0]?.ball || [];
+    // 2. Parse and sync commentary events to match_commentary across all overs
+    const allBalls = [];
+    for (const page of d.comms || []) {
+      for (const b of page.ball || []) {
+        allBalls.push(b);
+      }
+    }
+
     let inserted = 0;
-    for (const ball of commsList.slice(0, 30)) {
+    for (const ball of allBalls.slice(0, 50)) {
       if (!ball.overs_actual) continue;
       const overNum = parseFloat(ball.overs_actual) || 0;
       const overInt = Math.floor(overNum);
       const ballInt = Math.round((overNum - overInt) * 10);
       const eventId = `espn_${espnMatchId}_${ball.overs_actual}`;
 
-      const isWicket = Boolean(ball.dismissal || ball.event === "OUT");
-      const isSix = ball.event?.includes("6") || ball.text?.toLowerCase().includes("six");
-      const isFour = ball.event?.includes("4") || ball.text?.toLowerCase().includes("four");
-      const runs = parseInt(ball.event, 10) || 0;
+      const evStr = String(ball.event || "");
+      const evLower = evStr.toLowerCase();
+      const txtLower = String(ball.text || "").toLowerCase();
+
+      const isWicket = Boolean(
+        ball.dismissal ||
+        evLower.includes("out") ||
+        evLower.includes("wicket") ||
+        txtLower.includes("out")
+      );
+      const isSix =
+        evLower.includes("six") ||
+        evLower.includes("6") ||
+        txtLower.includes("six");
+      const isFour =
+        !isSix &&
+        (evLower.includes("four") ||
+          evLower.includes("4") ||
+          txtLower.includes("four"));
+
+      let runs = 0;
+      if (isSix) {
+        runs = 6;
+      } else if (isFour) {
+        runs = 4;
+      } else {
+        const runMatch = evLower.match(/(\d+)\s*run/);
+        if (runMatch) {
+          runs = parseInt(runMatch[1], 10) || 0;
+        } else {
+          runs = parseInt(evStr, 10) || 0;
+        }
+      }
+
+      const rawBatter = ball.players ? ball.players.split(" to ")[1]?.trim() : undefined;
+      const rawBowler = ball.players ? ball.players.split(" to ")[0]?.trim() : undefined;
+
+      let commentaryText = ball.dismissal || ball.text;
+      if (!commentaryText || commentaryText.trim() === "" || commentaryText === ball.event) {
+        if (isWicket) {
+          commentaryText = `OUT! ${rawBatter || "The batter"} is dismissed by ${rawBowler || "the bowler"}.`;
+        } else if (isSix) {
+          commentaryText = `SIX! ${rawBatter || "The batter"} hits a massive maximum off ${rawBowler || "the bowler"}!`;
+        } else if (isFour) {
+          commentaryText = `FOUR! ${rawBatter || "The batter"} drives it to the boundary off ${rawBowler || "the bowler"}.`;
+        } else if (runs === 1) {
+          commentaryText = `1 run. ${rawBatter || "The batter"} rotates the strike with a single off ${rawBowler || "the bowler"}.`;
+        } else if (runs > 1) {
+          commentaryText = `${runs} runs scored off ${rawBowler || "the bowler"}.`;
+        } else {
+          commentaryText = `Dot ball. Good delivery by ${rawBowler || "the bowler"}.`;
+        }
+      }
 
       const commentaryRow = {
         match_id: matchIdStr,
@@ -140,14 +227,14 @@ export async function syncMatch(matchNumber = 1) {
         over_number: overNum,
         ball_number: ballInt,
         event_type: isWicket ? "wicket" : (isFour || isSix) ? "boundary" : "ball",
-        commentary_text: ball.dismissal || ball.text || ball.event || "No run",
+        commentary_text: commentaryText,
         headline: isWicket ? "WICKET!" : isSix ? "SIX!" : isFour ? "FOUR!" : undefined,
         runs,
         is_wicket: isWicket,
         is_boundary: Boolean(isFour || isSix),
         is_six: Boolean(isSix),
-        batter_name: ball.players ? ball.players.split(" to ")[1] : undefined,
-        bowler_name: ball.players ? ball.players.split(" to ")[0] : undefined,
+        batter_name: rawBatter,
+        bowler_name: rawBowler,
         provider: "manual",
       };
 

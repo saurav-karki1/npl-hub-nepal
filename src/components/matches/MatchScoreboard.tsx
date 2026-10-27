@@ -35,10 +35,7 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
           const data = await res.json();
           if (data.live && isMounted) {
             if (data.scores) {
-              setLiveScores((prev) => ({
-                team1: data.scores.team1 ?? prev?.team1,
-                team2: data.scores.team2 ?? prev?.team2,
-              }));
+              setLiveScores(data.scores);
             }
             if (data.summary) {
               setLiveSummary(data.summary);
@@ -104,15 +101,15 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                 )}
               </div>
             ) : isLive ? (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-[var(--radius-md)] p-3.5 text-center space-y-1.5">
+              <div className="bg-[#120406] border border-red-500/50 rounded-xl p-4 text-center space-y-1.5 shadow-md">
                 <div className="flex items-center justify-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-red-400">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                  <span className="text-xs font-black uppercase tracking-wider text-red-400">
                     LIVE MATCH IN PROGRESS
                   </span>
                 </div>
                 {liveSummary && (
-                  <p className="text-sm sm:text-base font-extrabold text-white font-mono tracking-tight">
+                  <p className="text-sm sm:text-base font-black text-white font-mono tracking-tight">
                     {liveSummary}
                   </p>
                 )}
@@ -133,68 +130,100 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                 </thead>
                 <tbody className="divide-y divide-[var(--color-rule)]">
                   {/* Team 1 */}
-                  <tr>
-                    <td className="py-3 px-4 font-bold text-xs text-[var(--color-ink)] flex items-center gap-2">
-                      <TeamLogo
-                        name={team1.name}
-                        shortName={team1.shortName}
-                        initials={team1.initials}
-                        logoUrl={team1.logoUrl || team1Detail?.logoUrl}
-                        crestBg={team1Detail?.crestBg}
-                        crestText={team1Detail?.crestText}
-                        size="xs"
-                      />
-                      {team1.name}
-                    </td>
-                    <td className="py-3 px-4 text-center font-black text-sm text-[var(--color-ink)]">
-                      {liveScores?.team1?.runs ?? "—"}
-                    </td>
-                    <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {liveScores?.team1?.wickets ?? "—"}
-                    </td>
-                    <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {liveScores?.team1?.overs ?? "—"}
-                    </td>
-                    <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
-                      {(() => {
-                        if (!liveScores?.team1 || liveScores.team1.runs == null) return "—";
-                        const dec = oversToDecimal(liveScores.team1.overs, liveScores.team1.wickets);
-                        return dec > 0 ? (liveScores.team1.runs / dec).toFixed(2) : "—";
-                      })()}
-                    </td>
-                  </tr>
+                  {(() => {
+                    const isTeam1Batting = (Number(liveScores?.team1?.runs) > 0) || (liveScores?.team1?.overs && liveScores.team1.overs !== "0.0");
+                    const isTeam2Active = (Number(liveScores?.team2?.runs) > 0) || (liveScores?.team2?.overs && liveScores.team2.overs !== "0.0");
+                    const isTeam1YetToBat = isLive && !isTeam1Batting && isTeam2Active;
+
+                    return (
+                      <tr>
+                        <td className="py-3 px-4 font-bold text-xs text-[var(--color-ink)] flex items-center gap-2">
+                          <TeamLogo
+                            name={team1.name}
+                            shortName={team1.shortName}
+                            initials={team1.initials}
+                            logoUrl={team1.logoUrl || team1Detail?.logoUrl}
+                            crestBg={team1Detail?.crestBg}
+                            crestText={team1Detail?.crestText}
+                            size="xs"
+                          />
+                          {team1.name}
+                        </td>
+                        {isTeam1YetToBat ? (
+                          <td colSpan={4} className="py-3 px-4 text-center text-xs font-semibold text-[var(--color-ink-muted)] italic">
+                            Yet to bat
+                          </td>
+                        ) : (
+                          <>
+                            <td className="py-3 px-4 text-center font-black text-sm text-[var(--color-ink)]">
+                              {liveScores?.team1?.runs ?? "—"}
+                            </td>
+                            <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
+                              {liveScores?.team1?.wickets ?? "—"}
+                            </td>
+                            <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
+                              {liveScores?.team1?.overs ?? "—"}
+                            </td>
+                            <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
+                              {(() => {
+                                if (!liveScores?.team1 || liveScores.team1.runs == null) return "—";
+                                const dec = oversToDecimal(liveScores.team1.overs, liveScores.team1.wickets);
+                                return dec > 0 ? (liveScores.team1.runs / dec).toFixed(2) : "—";
+                              })()}
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })()}
 
                   {/* Team 2 */}
-                  <tr>
-                    <td className="py-3 px-4 font-bold text-xs text-[var(--color-ink)] flex items-center gap-2">
-                      <TeamLogo
-                        name={team2.name}
-                        shortName={team2.shortName}
-                        initials={team2.initials}
-                        logoUrl={team2.logoUrl || team2Detail?.logoUrl}
-                        crestBg={team2Detail?.crestBg}
-                        crestText={team2Detail?.crestText}
-                        size="xs"
-                      />
-                      {team2.name}
-                    </td>
-                    <td className="py-3 px-4 text-center font-black text-sm text-[var(--color-ink)]">
-                      {liveScores?.team2?.runs ?? "—"}
-                    </td>
-                    <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {liveScores?.team2?.wickets ?? "—"}
-                    </td>
-                    <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
-                      {liveScores?.team2?.overs ?? "—"}
-                    </td>
-                    <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
-                      {(() => {
-                        if (!liveScores?.team2 || liveScores.team2.runs == null) return "—";
-                        const dec = oversToDecimal(liveScores.team2.overs, liveScores.team2.wickets);
-                        return dec > 0 ? (liveScores.team2.runs / dec).toFixed(2) : "—";
-                      })()}
-                    </td>
-                  </tr>
+                  {(() => {
+                    const isTeam2Batting = (Number(liveScores?.team2?.runs) > 0) || (liveScores?.team2?.overs && liveScores.team2.overs !== "0.0");
+                    const isTeam1Active = (Number(liveScores?.team1?.runs) > 0) || (liveScores?.team1?.overs && liveScores.team1.overs !== "0.0");
+                    const isTeam2YetToBat = isLive && !isTeam2Batting && isTeam1Active;
+
+                    return (
+                      <tr>
+                        <td className="py-3 px-4 font-bold text-xs text-[var(--color-ink)] flex items-center gap-2">
+                          <TeamLogo
+                            name={team2.name}
+                            shortName={team2.shortName}
+                            initials={team2.initials}
+                            logoUrl={team2.logoUrl || team2Detail?.logoUrl}
+                            crestBg={team2Detail?.crestBg}
+                            crestText={team2Detail?.crestText}
+                            size="xs"
+                          />
+                          {team2.name}
+                        </td>
+                        {isTeam2YetToBat ? (
+                          <td colSpan={4} className="py-3 px-4 text-center text-xs font-semibold text-[var(--color-ink-muted)] italic">
+                            Yet to bat
+                          </td>
+                        ) : (
+                          <>
+                            <td className="py-3 px-4 text-center font-black text-sm text-[var(--color-ink)]">
+                              {liveScores?.team2?.runs ?? "—"}
+                            </td>
+                            <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
+                              {liveScores?.team2?.wickets ?? "—"}
+                            </td>
+                            <td className="py-3 px-4 text-center text-xs text-[var(--color-ink-secondary)]">
+                              {liveScores?.team2?.overs ?? "—"}
+                            </td>
+                            <td className="py-3 px-4 text-right text-xs font-mono text-[var(--color-ink)]">
+                              {(() => {
+                                if (!liveScores?.team2 || liveScores.team2.runs == null) return "—";
+                                const dec = oversToDecimal(liveScores.team2.overs, liveScores.team2.wickets);
+                                return dec > 0 ? (liveScores.team2.runs / dec).toFixed(2) : "—";
+                              })()}
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    );
+                  })()}
                 </tbody>
               </table>
             </div>
