@@ -43,7 +43,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
     confidenceNote: "Tournament in progress. Match statistics updated after each fixture concludes.",
   },
 
-  /* ── 2. Standings (Reflecting completed Matches 1 & 2) ── */
+  /* ── 2. Standings (Reflecting completed Matches 1, 2 & 3) ── */
   standings: [
     {
       position: 1,
@@ -61,6 +61,19 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
     },
     {
       position: 2,
+      teamId: "karnali-yaks",
+      teamName: "Karnali Yaks",
+      played: 1,
+      won: 1,
+      lost: 0,
+      tied: 0,
+      noResult: 0,
+      points: 2,
+      netRunRate: 0.95,
+      formattedNRR: "+0.950",
+    },
+    {
+      position: 3,
       teamId: "chitwan-rhinos",
       teamName: "Chitwan Rhinos",
       played: 1,
@@ -73,33 +86,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
       formattedNRR: "+0.400",
     },
     {
-      position: 3,
-      teamId: "janakpur-bolts",
-      teamName: "Janakpur Bolts",
-      played: 0,
-      won: 0,
-      lost: 0,
-      tied: 0,
-      noResult: 0,
-      points: 0,
-      netRunRate: null,
-      formattedNRR: "—",
-    },
-    {
       position: 4,
-      teamId: "karnali-yaks",
-      teamName: "Karnali Yaks",
-      played: 0,
-      won: 0,
-      lost: 0,
-      tied: 0,
-      noResult: 0,
-      points: 0,
-      netRunRate: null,
-      formattedNRR: "—",
-    },
-    {
-      position: 5,
       teamId: "kathmandu-gorkhas",
       teamName: "Kathmandu Gorkhas",
       played: 0,
@@ -112,7 +99,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
       formattedNRR: "—",
     },
     {
-      position: 6,
+      position: 5,
       teamId: "pokhara-avengers",
       teamName: "Pokhara Avengers",
       played: 0,
@@ -125,7 +112,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
       formattedNRR: "—",
     },
     {
-      position: 7,
+      position: 6,
       teamId: "biratnagar-kings",
       teamName: "Biratnagar Kings",
       played: 1,
@@ -136,6 +123,19 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
       points: 0,
       netRunRate: -0.4,
       formattedNRR: "-0.400",
+    },
+    {
+      position: 7,
+      teamId: "janakpur-bolts",
+      teamName: "Janakpur Bolts",
+      played: 1,
+      won: 0,
+      lost: 1,
+      tied: 0,
+      noResult: 0,
+      points: 0,
+      netRunRate: -0.95,
+      formattedNRR: "-0.950",
     },
     {
       position: 8,
@@ -153,7 +153,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
     },
   ],
 
-  /* ── 3. Awards (Match 1 & 2 Honours) ── */
+  /* ── 3. Awards (Match 1, 2 & 3 Honours) ── */
   awards: [
     {
       id: "award-m01-potm",
@@ -173,6 +173,16 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
       teamName: "Chitwan Rhinos",
       playerSlug: "kamal-airee",
       detail: "4 wickets for 26 runs (4.0 overs, Econ: 6.50)",
+      confidence: "High",
+    },
+    {
+      id: "award-m03-potm",
+      title: "Player of the Match (Match #3)",
+      recipient: "Unish Singh Thakuri",
+      teamId: "karnali-yaks",
+      teamName: "Karnali Yaks",
+      playerSlug: "unish-singh-thakuri",
+      detail: "3 wickets for 22 runs (4.0 overs, Econ: 5.50)",
       confidence: "High",
     },
   ],
@@ -223,6 +233,27 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
       result: "Chitwan Rhinos won by 8 runs",
       winnerTeamId: "chitwan-rhinos",
       playerOfTheMatch: null,
+    },
+    {
+      matchNumber: 3,
+      date: "2026-10-27",
+      formattedDate: "27 October 2026",
+      team1: {
+        id: "karnali-yaks",
+        name: "Karnali Yaks",
+        score: "132/9",
+        overs: "20.0",
+      },
+      team2: {
+        id: "janakpur-bolts",
+        name: "Janakpur Bolts",
+        score: "113/10",
+        overs: "19.3",
+      },
+      rawScoreSummary: "KAY 132/9 (20.0); JKB 113 all out (19.3)",
+      result: "Karnali Yaks won by 19 runs",
+      winnerTeamId: "karnali-yaks",
+      playerOfTheMatch: "Unish Singh Thakuri",
     },
   ],
 
@@ -916,12 +947,13 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
 
   /* ── 8. Integrity & Live Status Note ── */
   integrity: {
-    verifiedLeagueMatchesCount: 2,
+    verifiedLeagueMatchesCount: 3,
     totalLeagueMatchesCount: 28,
     authoritativePointsTableSource: "Official Match Scorecards · Cricket Association of Nepal (CAN)",
     integrityWarnings: [
       "Tournament in progress. Match 1 completed: Lumbini Lions defeated Sudurpaschim Royals by 7 wickets.",
       "Match 2 completed: Chitwan Rhinos defeated Biratnagar Kings by 8 runs.",
+      "Match 3 completed: Karnali Yaks defeated Janakpur Bolts by 19 runs.",
       "In accordance with NPL Hub Nepal accuracy standards, all player metrics reflect verified official match scorecards.",
     ],
     missingResearchItems: [],

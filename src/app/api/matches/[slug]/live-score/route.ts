@@ -160,8 +160,7 @@ export async function GET(
           liveStatusLower.includes("match tied") ||
           liveStatusLower.includes("tied") ||
           liveStatusLower.includes("no result") ||
-          liveStatusLower.includes("abandoned") ||
-          liveStatusLower.includes("match over");
+          liveStatusLower.includes("abandoned");
 
         const inn1 = d.innings?.[0];
         const inn2 = d.innings?.[1];
@@ -176,6 +175,7 @@ export async function GET(
           (d.match?.result !== "0" && Boolean(d.match?.result)) ||
           hasWonString ||
           isTiedOrAbandoned ||
+          liveStatusLower.includes("match over") ||
           inn2Completed;
 
         // Auto-detect live match: start time passed, or toss conducted, or innings in progress

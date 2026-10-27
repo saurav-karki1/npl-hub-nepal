@@ -143,7 +143,11 @@ export interface VerifiedLeagueMatch {
   rawScoreSummary: string;
   result: string;
   winnerTeamId: string;
-  playerOfTheMatch: null; // Explicitly NOT FOUND for all league matches
+  playerOfTheMatch: {
+    name: string;
+    playerSlug?: string | null;
+    teamId?: string | null;
+  } | string | null;
 }
 
 export interface PlayerSeasonStats {
