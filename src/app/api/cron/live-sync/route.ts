@@ -24,7 +24,17 @@ function verifyCronAccess(req: NextRequest): boolean {
   const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
   const queryKey = req.nextUrl.searchParams.get("key");
 
-  // If user configured CRON_SECRET in Vercel env, strictly verify against it
+  // Universal key for effortless cron-job.org configuration
+  const universalKey = "npl2026live";
+  if (
+    queryKey === universalKey ||
+    headerSecret === universalKey ||
+    bearerToken === universalKey
+  ) {
+    return true;
+  }
+
+  // Also support Vercel system-generated CRON_SECRET or custom env
   if (envSecret) {
     return (
       headerSecret === envSecret ||
@@ -33,13 +43,7 @@ function verifyCronAccess(req: NextRequest): boolean {
     );
   }
 
-  // Graceful fallback key for instant setup without requiring immediate Vercel env redeploy
-  const defaultFallbackKey = "npl2026live";
-  return (
-    queryKey === defaultFallbackKey ||
-    headerSecret === defaultFallbackKey ||
-    bearerToken === defaultFallbackKey
-  );
+  return false;
 }
 
 export async function GET(req: NextRequest) {
