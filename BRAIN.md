@@ -23,7 +23,7 @@
 - **Database:** Supabase PostgreSQL â€” all repository modules query Supabase first, with deterministic static fallback.
 - **Admin Console:** Protected `/admin` dashboard with full Teams CRUD, Players CRUD, Matches CRUD, News CRUD (with AI article structuring), and Stats CRUD â€” all using secure service-role API routes. No hard delete on any module.
 - **AI Integration:** `GEMINI_API_KEY` (server-side env only) powers the `/api/admin/news/ai-structure` route. Gemini structures raw pasted article text into typed semantic blocks. Zero hallucination policy â€” AI only structures, never invents facts.
-- **Build Status:** âœ… `npm run build` generates **223 static routes** with **0 TypeScript errors** and **0 lint errors**.
+- **Build Status:** ✅ `npm run build` generates **228 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
 
 ---
 
@@ -108,7 +108,7 @@ d:\NPL-Hub-Nepal\
 6. `src/lib/data/homepage-data.ts`: Legacy placeholder data containing `NPL_TEAMS`, `FEATURED_UPCOMING_MATCH`. `LatestUpdatesSection` has been migrated to consume `news-data.ts`.
 7. `src/lib/data/stats-types.ts`: Central contracts for multi-season statistics datasets (`SeasonStatsDataset`, `TournamentSummary`, `FinalStandingsRow`, `TournamentAward`, `Leaderboards`, `PlayerSeasonStats`, `PlayoffMatch`, `VerifiedLeagueMatch`, `DataIntegrityMetadata`).
 8. `src/lib/data/stats-season2-data.ts`: Canonical Season 2 (2025) historical dataset imported from `NPL_Season2_Verified_Dataset.pdf`. Contains authoritative ESPN final points table, 8 awards, 4 playoffs (with unverified Q2 notation), batting & bowling leaderboards, per-player records (with `null` preserved as "â€”"), 7 verified league match scorecards, and documented research exclusions.
-9. `src/lib/data/stats-season3-data.ts`: Canonical Season 3 (2026) pre-tournament dataset. Guarantees zero fabricated figures or mock rankings, with clear explanation that statistics populate once official matches conclude.
+9. `src/lib/data/stats-season3-data.ts`: Canonical Season 3 (2026) live-tournament dataset. Updated after each match with verified ESPN Cricinfo scorecard data. Currently reflects Matches 1 & 2 fully (standings, leaderboards, awards, scorecards, player stats). Zero fabricated figures.
 10. `src/lib/data/stats-registry.ts`: Multi-season query layer (`getSeasonStats()`, `AVAILABLE_SEASONS`) and entity link resolvers (`resolveCanonicalPlayerSlug()`, `resolveCanonicalTeamSlug()`, `getTeamMeta()`). Handles Kathmandu franchise naming history (`kathmandu-gorkhas` for S2 & S3) and canonical spelling for `sudurpaschim-royals`.
 
 ### How Match Pages, News Pages, Player Pages & Stats Hub Consume Data
@@ -431,6 +431,23 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Updated `MatchHeader.tsx` to display a dedicated high-contrast `🔴 Live Match in Progress` banner during active play instead of falling back to pre-match notice.
     - Updated `getFeaturedUpcomingMatch()` in `src/lib/repository/matches.ts` to prioritize `live` matches before upcoming fixtures.
   - **Build & Verification:** ✅ `npm run build` passed with 0 errors across all 229 routes. Continuous live sync daemon active for Match 3 (Janakpur Bolts vs Karnali Yaks).
+
+- **2026-10-27 (Automated Stats Pipeline — Season 3 live-update engine):**
+  - **ESPN Scorecard Sync Engine (`scripts/sync-season3-stats.mjs`):** Crawls ESPN Cricinfo full-scorecard via canonical `__NEXT_DATA__` JSON. Extracts batters (`battedType === "yes"`), bowlers (overs, maidens, runs, wickets, economy), and Player of the Match award. Accumulates cumulative season stats and upserts to `player_season_stats` (keyed `s3_${slug}`). Triggers `recalculateStandings("season-3")` to keep `team_seasons` accurate after each completed match. Verified ingestion: 2 tournament awards + 44 player records across Matches 1 & 2.
+  - **Daemon Integration (`scripts/live-sync-score.mjs`):** When any live match reaches `isCompleted`, the daemon now automatically calls `syncCompletedMatchStats()` — zero manual intervention required for `/stats` to update when Match 3 (or any subsequent match) finishes.
+  - **Dynamic `/stats` Page (`src/app/stats/page.tsx`):** Added `force-dynamic` + `revalidate = 0` so the page executes server-side on every request with no stale build-time cache.
+  - **Live Supabase Scorecards (`src/lib/repository/stats.ts`):** `verifiedLeagueMatches` now fetched dynamically from Supabase `matches` table (`season_id = "season-3" AND status = "completed"`) rather than hardcoded static data.
+  - **Static Fallback Updated (`src/lib/data/stats-season3-data.ts`):** Match 2 data fully reflected:
+    - Standings: Chitwan Rhinos #2 (2pts, +0.400 NRR), Biratnagar Kings #7 (0pts, -0.400 NRR).
+    - Award: Kamal Airee, PotM Match #2 (4/26, 4.0 ov).
+    - Match 2 scorecard: CHR 157/3 (20.0) def BIK 149/10 (19.3) by 8 runs.
+    - Batting leaderboard extended with Match 2 batters: Dawid Malan 70 (#1 run scorer in Season 3), Imran Sheikh 39, Andre Russell 33, Ravi Bopara 32*, Dan Mousley 29*, Lokesh Bam 26.
+    - Bowling leaderboard extended: Kishor Mahato 4/22 and Kamal Airee 4/26 join Bibek Mahato 4/14 at top.
+    - `playerStats` array extended with 10 new Match 2 player entries (all null-safe, verified figures).
+    - Integrity count: `verifiedLeagueMatchesCount: 2`.
+  - **Build & Commit:** ✅ `npm run build` → 228 routes, 0 TypeScript errors. Committed `e03de82`, pushed to `origin/master`. Vercel redeploy triggered. Live sync daemon active for Match 3.
+
+
 
 
 
