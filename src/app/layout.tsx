@@ -4,6 +4,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { Header } from "@/components/ui/Header";
 import { Footer } from "@/components/ui/Footer";
+import { AdstraBanner } from "@/components/ads/AdstraBanner";
 
 /**
  * Inter — variable font, excellent readability at all sizes.
@@ -125,6 +126,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8861868952444352"
           crossOrigin="anonymous"
         />
+        <script
+          async
+          data-cfasync="false"
+          src="https://czernik.org/21/3b5bf07b9b8bde0648233957a035a39b"
+        />
       </head>
       <body className="min-h-full flex flex-col bg-[var(--color-canvas)] text-[var(--color-ink)]">
         <script
@@ -134,6 +140,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <Header />
+        <AdstraBanner />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

@@ -447,11 +447,13 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Integrity count: `verifiedLeagueMatchesCount: 2`.
   - **Build & Commit:** ✅ `npm run build` → 228 routes, 0 TypeScript errors. Committed `e03de82`, pushed to `origin/master`. Vercel redeploy triggered. Live sync daemon active for Match 3.
 
-- **2026-10-27 (Cloud Live Sync Endpoint & Laptopless Architecture):**
-  - **Endpoint Created (`src/app/api/cron/live-sync/route.ts`):** Exposes `GET`/`POST /api/cron/live-sync` callable by external schedulers (cron-job.org, Vercel cron).
-  - **Core Engine (`src/lib/sync/live-sync-core.ts`):** 100% serverless TypeScript implementation of match sync. Auto-detects active/upcoming matches, fetches ESPN live JSON, persists dual-innings scores, streams commentary tagged by innings, auto-detects completion, recalculates points table, and updates player stats.
-  - **Laptopless Guarantee:** With cron-job.org pinging `/api/cron/live-sync?key=npl2026live`, the entire match sync lifecycle executes in the cloud on Vercel without requiring any local laptop process.
-  - **Build & Verification:** ✅ `npm run build` passed with 0 errors across 229 routes. Committed `23af0aa` and pushed to `master`.
+- **2026-10-27 (Adstra Advertising Integration & Scope Invariant Fix):**
+  - **Adstra / Adsterra Integration:** Added Adstra advertising container (`#container-3b5bf07b9b8bde0648233957a035a39b`) and script (`https://czernik.org/21/3b5bf07b9b8bde0648233957a035a39b`) for monetization during NPL Season 3 while AdSense review remains pending.
+  - **Modular Architecture:** Created `src/components/ads/AdstraBanner.tsx` client component positioned beneath `<Header />` across all public pages, safely disabled on `/admin` management routes.
+  - **AdSense & SEO Preserved:** Retained existing Google AdSense verification script (`ca-pub-8861868952444352`), `public/ads.txt`, GA4 tracking, and JSON-LD schema intact.
+  - **Core Sync Scope Fix:** Resolved variable redeclaration (`matchDate`, `matchTime`, `startMs`, `nowMs`) in `src/lib/sync/live-sync-core.ts`.
+  - **Build & Verification:** ✅ `npx tsc --noEmit` passed with 0 errors. `npm run build` generated 228 routes cleanly in Turbopack. Confirmed script and container presence in SSR HTML.
+
 
 
 

@@ -203,11 +203,6 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       (d.live?.innings && d.live.innings.runs !== undefined)
     );
 
-    const matchDate = dbMatch?.match_date;
-    const matchTime = dbMatch?.match_time;
-    const startMs = parseMatchStartMs(matchDate, matchTime);
-    const nowMs = Date.now();
-
     const isLiveMatch =
       !isCompleted &&
       (hasInningsData || hasTossOrLiveStatus || (startMs !== null && nowMs >= startMs));
