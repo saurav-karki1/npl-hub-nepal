@@ -426,32 +426,46 @@ export async function runCloudLiveSync(): Promise<SyncMatchResult[]> {
     .select("id, match_number, status")
     .eq("status", "live");
 
-  const matchesToSync: number[] = (liveMatches && liveMatches.length > 0)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ? liveMatches.map((m: any) => m.match_number)
-    : [];
+  const results: SyncMatchResult[] = [];
 
-  // 2. Also check the next upcoming match to auto-detect kickoff
+  // If matches are currently live, sync them immediately
+  if (liveMatches && liveMatches.length > 0) {
+    for (const m of liveMatches) {
+      const r = await syncMatchCore(m.match_number);
+      results.push(r);
+    }
+    return results;
+  }
+
+  // 2. If no matches are live, inspect the next upcoming match
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: upcomingMatches } = await (sb as any)
     .from("matches")
-    .select("id, match_number, status")
+    .select("id, match_number, match_date, match_time, status")
     .eq("status", "upcoming")
     .order("match_number", { ascending: true })
     .limit(1);
 
-  if (upcomingMatches && upcomingMatches.length > 0) {
-    const nextNum = upcomingMatches[0].match_number;
-    if (!matchesToSync.includes(nextNum)) {
-      matchesToSync.push(nextNum);
-    }
+  if (!upcomingMatches || upcomingMatches.length === 0) {
+    return [{ matchNumber: 0, status: "upcoming", message: "Tournament complete or no upcoming matches." }];
   }
 
-  const results: SyncMatchResult[] = [];
-  for (const mNum of matchesToSync) {
-    const r = await syncMatchCore(mNum);
-    results.push(r);
+  const next = upcomingMatches[0];
+  const startMs = parseMatchStartMs(next.match_date, next.match_time);
+  const nowMs = Date.now();
+
+  // If kickoff is more than 30 minutes away, return clean upcoming message without calling ESPN
+  if (startMs !== null && nowMs < startMs - 30 * 60 * 1000) {
+    return [
+      {
+        matchNumber: next.match_number,
+        status: "upcoming",
+        message: `Match #${next.match_number} is scheduled for ${next.match_date} at ${next.match_time}. Polling will activate 30 mins before kickoff.`,
+      },
+    ];
   }
 
-  return results;
+  // Kickoff is near or passed: sync match to detect toss/start
+  const r = await syncMatchCore(next.match_number);
+  return [r];
 }
