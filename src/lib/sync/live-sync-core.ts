@@ -47,12 +47,33 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       return { matchNumber, status: "error", message: `Match not found: ${dbErr?.message}` };
     }
 
-    // 2. Fetch ESPN Cricinfo JSON
+    const matchDate = dbMatch?.match_date;
+    const matchTime = dbMatch?.match_time;
+    const startMs = parseMatchStartMs(matchDate, matchTime);
+    const nowMs = Date.now();
+
+    // Optimization: If upcoming fixture is scheduled in the future (more than 30 mins before toss),
+    // skip polling ESPN to avoid unnecessary calls and rate-limiting.
+    if (
+      dbMatch?.status === "upcoming" &&
+      startMs !== null &&
+      nowMs < startMs - 30 * 60 * 1000
+    ) {
+      return {
+        matchNumber,
+        status: "upcoming",
+        message: `Match #${matchNumber} is scheduled for ${matchDate} at ${matchTime}.`,
+      };
+    }
+
+    // 2. Fetch ESPN Cricinfo JSON with full browser headers
     const res = await fetch(`https://www.espncricinfo.com/ci/engine/match/${espnMatchId}.json`, {
       headers: {
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
         Accept: "application/json, text/plain, */*",
+        "Accept-Language": "en-US,en;q=0.9",
+        Referer: "https://www.espncricinfo.com/",
       },
       next: { revalidate: 0 },
     });
