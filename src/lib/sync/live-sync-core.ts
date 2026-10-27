@@ -79,6 +79,13 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
     });
 
     if (!res.ok) {
+      if (res.status === 403 || res.status === 404) {
+        return {
+          matchNumber,
+          status: "upcoming",
+          message: `Match #${matchNumber} is upcoming (${matchDate} at ${matchTime}). Live feed will activate once match starts.`,
+        };
+      }
       return { matchNumber, status: "error", message: `ESPN returned HTTP ${res.status}` };
     }
 
@@ -455,12 +462,12 @@ export async function runCloudLiveSync(): Promise<SyncMatchResult[]> {
   const nowMs = Date.now();
 
   // If kickoff is more than 30 minutes away, return clean upcoming message without calling ESPN
-  if (startMs !== null && nowMs < startMs - 30 * 60 * 1000) {
+  if (!startMs || nowMs < startMs - 30 * 60 * 1000) {
     return [
       {
         matchNumber: next.match_number,
         status: "upcoming",
-        message: `Match #${next.match_number} is scheduled for ${next.match_date} at ${next.match_time}. Polling will activate 30 mins before kickoff.`,
+        message: `Match #${next.match_number} is scheduled for ${next.match_date || "upcoming"} at ${next.match_time || "TBA"}. Polling will activate 30 mins before kickoff.`,
       },
     ];
   }
