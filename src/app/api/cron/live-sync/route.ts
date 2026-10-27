@@ -60,6 +60,7 @@ export async function GET(req: NextRequest) {
   try {
     const results = await runCloudLiveSync();
     return NextResponse.json({
+      version: "1.0.1",
       success: true,
       timestamp: new Date().toISOString(),
       nepalTime: new Date().toLocaleTimeString("en-US", {
