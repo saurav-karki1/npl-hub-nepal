@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { recalculateStandings } from "./recalculate-standings.mjs";
+import { syncCompletedMatchStats } from "./sync-season3-stats.mjs";
 
 const SUPABASE_URL = "https://zohmcgjixebuiconrven.supabase.co";
 const SERVICE_ROLE_KEY =
@@ -362,12 +363,13 @@ export async function syncMatch(matchNumber = 1) {
       if (!commErr) inserted++;
     }
 
-    // 3. Trigger standings recalculation when completed
+    // 3. Trigger standings and full stats recalculation when completed
     if (isCompleted) {
       try {
         await recalculateStandings("season-3");
+        await syncCompletedMatchStats();
       } catch (err) {
-        console.error(`[SYNC M${matchNumber}] Standings recalculation error:`, err.message);
+        console.error(`[SYNC M${matchNumber}] Standings/stats recalculation error:`, err.message);
       }
     }
   } catch (err) {

@@ -40,6 +40,9 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function StatsPage() {
   const season2Dataset = await getSeasonStats("season-2");
   const season3Dataset = await getSeasonStats("season-3");

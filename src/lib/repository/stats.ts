@@ -429,6 +429,53 @@ export async function getSeasonStats(seasonId: SeasonId = "season-2"): Promise<S
           sourceNote: r.source_note ?? undefined,
         }));
 
+        // 5. Fetch completed matches from Supabase for verifiedLeagueMatches
+        const { data: dbMatchesRaw } = await client
+          .from("matches")
+          .select("*")
+          .eq("season_id", seasonId)
+          .eq("status", "completed")
+          .order("match_number", { ascending: true });
+
+        let verifiedLeagueMatches: VerifiedLeagueMatch[] = staticFallbackDataset.verifiedLeagueMatches;
+
+        if (dbMatchesRaw && dbMatchesRaw.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          verifiedLeagueMatches = dbMatchesRaw.map((m: any) => {
+            const team1Score = m.scores?.team1;
+            const team2Score = m.scores?.team2;
+            const team1Obj = m.team1_id ? getTeamBySlugSync(m.team1_id) : undefined;
+            const team2Obj = m.team2_id ? getTeamBySlugSync(m.team2_id) : undefined;
+            const team1Name = team1Obj?.name || m.team1_id || "Team 1";
+            const team2Name = team2Obj?.name || m.team2_id || "Team 2";
+            return {
+              matchNumber: m.match_number,
+              date: m.match_date,
+              formattedDate: m.formatted_date || m.match_date,
+              team1: {
+                id: m.team1_id,
+                name: team1Name,
+                score: team1Score ? `${team1Score.runs}/${team1Score.wickets}` : "—",
+                overs: team1Score?.overs ? String(team1Score.overs) : "—",
+              },
+              team2: {
+                id: m.team2_id,
+                name: team2Name,
+                score: team2Score ? `${team2Score.runs}/${team2Score.wickets}` : "—",
+                overs: team2Score?.overs ? String(team2Score.overs) : "—",
+              },
+              rawScoreSummary: `${team1Name} ${team1Score?.runs ?? "—"}/${team1Score?.wickets ?? "—"} (${team1Score?.overs ?? "—"} ov); ${team2Name} ${team2Score?.runs ?? "—"}/${team2Score?.wickets ?? "—"} (${team2Score?.overs ?? "—"} ov)`,
+              result: (m.result_statement || m.result || "Match Completed").replace(/\s*\(NPL\)/gi, "").trim(),
+              winnerTeamId: m.winner_team_id ?? undefined,
+              playerOfTheMatch: m.player_of_the_match ?? undefined,
+            };
+          });
+        }
+
+        if (seasonId === "season-3" && verifiedLeagueMatches.length > 0) {
+          summary.confidenceNote = `Tournament in progress. ${verifiedLeagueMatches.length} match${verifiedLeagueMatches.length === 1 ? "" : "es"} completed and verified.`;
+        }
+
         return {
           seasonId,
           seasonName: seasonRow.name,
@@ -440,7 +487,7 @@ export async function getSeasonStats(seasonId: SeasonId = "season-2"): Promise<S
           leaderboards,
           playerStats: playerStatsList.length > 0 ? playerStatsList : staticFallbackDataset.playerStats,
           playoffs: staticFallbackDataset.playoffs,
-          verifiedLeagueMatches: staticFallbackDataset.verifiedLeagueMatches,
+          verifiedLeagueMatches,
           integrity: staticFallbackDataset.integrity,
           preTournamentNotice: staticFallbackDataset.preTournamentNotice,
         };
