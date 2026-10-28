@@ -11,7 +11,8 @@
     "verify:supabase": "node --env-file=.env.local scripts/verify-supabase-connection.mjs",
     "seed:generate": "npx tsx scripts/generate-seed-sql.ts",
     "seed:run": "node --env-file=.env.local scripts/run-seed.mjs",
-    "sync:news": "npx tsx scripts/sync-news-to-supabase.ts"
+    "sync:news": "npx tsx scripts/sync-news-to-supabase.ts",
+    "worker:start": "node render-worker.mjs"
   },
   "dependencies": {
     "@next/third-parties": "^16.3.8",
