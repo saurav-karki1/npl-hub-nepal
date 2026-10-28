@@ -485,3 +485,13 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Mobile: docks as a slim 320x50 bottom bar with an easy-to-tap `✕ Close` button.
     - Session Persistence: Once dismissed, stores preference in `sessionStorage` and remains hidden.
   - **Build & Verification:** ✅ `npx tsc --noEmit` and `npm run build` passed with 0 errors across 228 routes.
+
+
+- **2026-10-28 (Cloud Live Sync Architecture: ESPN HTML Migration & Cloud 403 Bypass):**
+  - **Root Cause Identified:** ESPN Cricinfo's classic JSON API endpoint (`/ci/engine/match/{id}.json`) blocks cloud datacenter IPs (Vercel Serverless / AWS) with HTTP 403 Forbidden, while allowing residential/local machine connections. Consequently, when Vercel's automated cloud cron (`/api/cron/live-sync`) and visitor route (`/api/matches/[slug]/live-score`) ran in the cloud, they were rejected with 403, preventing Match 4 live scores from updating in Supabase without a local daemon running.
+  - **Architectural Solution Implemented:**
+    1. **HTML `__NEXT_DATA__` Engine (`src/lib/sync/live-sync-core.ts`):** Migrated live data fetching to ESPN's official full-scorecard HTML endpoint (`/series/a-1558581/b-{id}/full-scorecard`). Confirmed this endpoint consistently serves HTTP 200 with complete embedded `__NEXT_DATA__` JSON across both cloud and local environments.
+    2. **Scorecard & In-Play Extraction:** Structured parsing of `data.match` and `data.content` for real-time match state (`LIVE`, `POST`, `PRE`), innings scores (runs, wickets, overs), active not-out batters at the crease, active bowlers with economy/maidens, and ball-by-ball commentary from `inningOvers`.
+    3. **Visitor-Driven Cloud Sync (`src/app/api/matches/[slug]/live-score/route.ts`):** Refactored route to trigger `syncMatchCore()` on demand during live/upcoming fixtures, persisting to Supabase and immediately returning real-time scores, active players, and recent balls.
+    4. **Verified Live Match 4:** Successfully synced Pokhara Avengers vs Sudurpaschim Royals with authentic real-time scores and commentary feed.
+  - **Build & Verification:** ✅ `npx tsc --noEmit` passed. `npm run build` completed with 0 errors across 228 routes.

@@ -3,6 +3,10 @@
  *
  * Runs seamlessly on Vercel Serverless (via /api/cron/live-sync)
  * without requiring any local laptop process.
+ *
+ * Primary Data Source: ESPN Cricinfo full-scorecard HTML (__NEXT_DATA__).
+ * This endpoint returns HTTP 200 reliably from Vercel datacenter IPs,
+ * avoiding the HTTP 403 Forbidden error of the old JSON API.
  */
 
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
@@ -21,12 +25,64 @@ function parseMatchStartMs(dateStr?: string, timeStr?: string): number | null {
   return isNaN(d.getTime()) ? null : d.getTime();
 }
 
+function mapTeamSlug(name = ""): string {
+  const n = name.toLowerCase();
+  if (n.includes("lumbini")) return "lumbini-lions";
+  if (n.includes("sudurpaschim") || n.includes("sudur paschim") || n.includes("paschim") || n.includes("royals")) return "sudurpaschim-royals";
+  if (n.includes("chitwan") || n.includes("rhinos")) return "chitwan-rhinos";
+  if (n.includes("biratnagar") || n.includes("kings")) return "biratnagar-kings";
+  if (n.includes("janakpur") || n.includes("bolts")) return "janakpur-bolts";
+  if (n.includes("karnali") || n.includes("yaks")) return "karnali-yaks";
+  if (n.includes("kathmandu") || n.includes("gorkhas")) return "kathmandu-gorkhas";
+  if (n.includes("pokhara") || n.includes("avengers")) return "pokhara-avengers";
+  return n.replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
 export interface SyncMatchResult {
   matchNumber: number;
   status: "live" | "completed" | "upcoming" | "error";
   message: string;
   scoreSummary?: string;
   winner?: string;
+}
+
+// ─── ESPN HTML Parser ────────────────────────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function fetchEspnMatchData(espnMatchId: string): Promise<any> {
+  const url = `https://www.espncricinfo.com/series/a-1558581/b-${espnMatchId}/full-scorecard`;
+
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        Referer: "https://www.espncricinfo.com/",
+      },
+      next: { revalidate: 0 },
+    });
+
+    if (!res.ok) return null;
+
+    const html = await res.text();
+    const scriptMatch = html.match(
+      /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/
+    );
+    if (!scriptMatch) return null;
+
+    const json = JSON.parse(scriptMatch[1]);
+    const data = json.props?.appPageProps?.data;
+    if (!data) return null;
+
+    return {
+      match: data.match || {},
+      content: data.content || {},
+    };
+  } catch (err) {
+    console.error(`[ESPN FETCH] Error fetching match ${espnMatchId}:`, err);
+    return null;
+  }
 }
 
 export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResult> {
@@ -52,12 +108,11 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
     const startMs = parseMatchStartMs(matchDate, matchTime);
     const nowMs = Date.now();
 
-    // Optimization: If upcoming fixture is scheduled in the future (more than 30 mins before toss),
-    // skip polling ESPN to avoid unnecessary calls and rate-limiting.
+    // Skip polling if kickoff is > 45 minutes in future
     if (
       dbMatch?.status === "upcoming" &&
       startMs !== null &&
-      nowMs < startMs - 30 * 60 * 1000
+      nowMs < startMs - 45 * 60 * 1000
     ) {
       return {
         matchNumber,
@@ -66,222 +121,178 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       };
     }
 
-    // 2. Fetch ESPN Cricinfo JSON with full browser headers
-    const res = await fetch(`https://www.espncricinfo.com/ci/engine/match/${espnMatchId}.json`, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-        Accept: "application/json, text/plain, */*",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: "https://www.espncricinfo.com/",
-      },
-      next: { revalidate: 0 },
-    });
+    // 2. Fetch ESPN data via HTML __NEXT_DATA__
+    const espnData = await fetchEspnMatchData(espnMatchId);
 
-    if (!res.ok) {
-      if (res.status === 403 || res.status === 404) {
-        return {
-          matchNumber,
-          status: "upcoming",
-          message: `Match #${matchNumber} is upcoming (${matchDate} at ${matchTime}). Live feed will activate once match starts.`,
-        };
-      }
-      return { matchNumber, status: "error", message: `ESPN returned HTTP ${res.status}` };
+    if (!espnData) {
+      return {
+        matchNumber,
+        status: dbMatch.status,
+        message: `Unable to fetch ESPN data for Match #${matchNumber}.`,
+      };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const d: any = await res.json();
-    const teams = d.team || [];
-    const team1Id = teams[0] ? String(teams[0].team_id) : undefined;
-    const team2Id = teams[1] ? String(teams[1].team_id) : undefined;
-    const team1Name = teams[0]?.team_name?.replace(/\s*\(NPL\)/gi, "").trim() || "Team 1";
-    const team2Name = teams[1]?.team_name?.replace(/\s*\(NPL\)/gi, "").trim() || "Team 2";
+    const { match, content } = espnData;
+    const matchState = String(match.state || "").toUpperCase();
+    const isCompleted = matchState === "POST" || match.resultStatus === "COMPLETE";
 
-    const players: Record<string, string> = {};
-    for (const t of teams) {
-      for (const p of t.player || []) {
-        if (p.player_id && p.known_as) {
-          players[String(p.player_id)] = p.known_as;
+    // 3. Parse Innings & Scores
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rawInnings: any[] = content.innings || [];
+    const team1DbSlug = dbMatch.team1_id;
+    const team2DbSlug = dbMatch.team2_id;
+
+    let team1Score = { runs: 0, wickets: 0, overs: "0.0" };
+    let team2Score = { runs: 0, wickets: 0, overs: "0.0" };
+    let hasScoreData = false;
+
+    for (const inn of rawInnings) {
+      const innTeamSlug = mapTeamSlug(inn.team?.name || "");
+      const score = {
+        runs: Number(inn.runs || 0),
+        wickets: Number(inn.wickets || 0),
+        overs: String(inn.overs || "0.0"),
+      };
+
+      if (score.runs > 0 || score.wickets > 0 || parseFloat(score.overs) > 0) {
+        hasScoreData = true;
+      }
+
+      if (innTeamSlug === team1DbSlug) {
+        team1Score = score;
+      } else if (innTeamSlug === team2DbSlug) {
+        team2Score = score;
+      } else if (team1Score.runs === 0 && team1Score.wickets === 0 && team1Score.overs === "0.0") {
+        team1Score = score;
+      } else if (team2Score.runs === 0 && team2Score.wickets === 0 && team2Score.overs === "0.0") {
+        team2Score = score;
+      }
+    }
+
+    // Fallback: check match.teams if innings array is empty
+    if (!hasScoreData && match.teams && Array.isArray(match.teams)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const t of match.teams as any[]) {
+        const tSlug = mapTeamSlug(t.name || t.team?.name || "");
+        if (t.score) {
+          hasScoreData = true;
+          const parts = String(t.score).split("/");
+          const runs = parseInt(parts[0], 10) || 0;
+          const wickets = parts[1] ? parseInt(parts[1], 10) : 0;
+          const ovMatch = String(t.scoreInfo || "").match(/([0-9.]+)\//);
+          const overs = ovMatch ? ovMatch[1] : "0.0";
+          if (tSlug === team1DbSlug) {
+            team1Score = { runs, wickets, overs };
+          } else if (tSlug === team2DbSlug) {
+            team2Score = { runs, wickets, overs };
+          }
         }
       }
     }
 
-    let team1Score: { runs: number; wickets: number; overs: string } | undefined = undefined;
-    let team2Score: { runs: number; wickets: number; overs: string } | undefined = undefined;
-
-    for (const inn of d.innings || []) {
-      const battingId = String(inn.batting_team_id);
-      const parsed = {
-        runs: Number(inn.runs) || 0,
-        wickets: Number(inn.wickets) || 0,
-        overs: String(inn.overs || "0.0"),
-      };
-      if (team1Id && battingId === team1Id) {
-        team1Score = parsed;
-      } else if (team2Id && battingId === team2Id) {
-        team2Score = parsed;
-      }
-    }
-
-    if (d.live?.innings) {
-      const activeBattingId = String(d.live.innings.team_id);
-      const liveParsed = {
-        runs: Number(d.live.innings.runs) || 0,
-        wickets: Number(d.live.innings.wickets) || 0,
-        overs: String(d.live.innings.overs || "0.0"),
-      };
-      if (activeBattingId === team1Id) {
-        team1Score = liveParsed;
-      } else if (activeBattingId === team2Id) {
-        team2Score = liveParsed;
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const batters = (d.live?.batting || []).map((b: any) => ({
-      name: players[String(b.player_id)] || b.player_id || "Batter",
-      runs: Number(b.runs) || 0,
-      balls: Number(b.balls_faced) || 0,
-      fours: Number(b.fours) || 0,
-      sixes: Number(b.sixes) || 0,
-      strikeRate: b.strike_rate ? String(b.strike_rate) : "0.00",
-      isStriker: b.live_current_name === "striker",
-    }));
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const bowlers = (d.live?.bowling || []).map((bw: any) => ({
-      name: players[String(bw.player_id)] || bw.player_id || "Bowler",
-      overs: String(bw.overs || "0.0"),
-      maidens: Number(bw.maidens) || 0,
-      runs: Number(bw.conceded) || 0,
-      wickets: Number(bw.wickets) || 0,
-      economy: bw.economy_rate ? String(bw.economy_rate) : "0.00",
-    }));
-
-    // Detect match completion
-    const liveStatusStr = String(d.live?.status || "").trim();
-    const liveStatusLower = liveStatusStr.toLowerCase();
-
-    const hasWonString =
-      liveStatusLower.includes("won by") ||
-      liveStatusLower.includes("won the match") ||
-      liveStatusLower.includes("beat") ||
-      liveStatusLower.includes("defeat");
-
-    const isTiedOrAbandoned =
-      liveStatusLower.includes("match tied") ||
-      liveStatusLower.includes("tied") ||
-      liveStatusLower.includes("no result") ||
-      liveStatusLower.includes("abandoned");
-
-    const inn1 = d.innings?.[0];
-    const inn2 = d.innings?.[1];
-    const inn2Completed = Boolean(
-      inn2 &&
-      (Number(inn2.wickets) >= 10 ||
-        parseFloat(inn2.overs) >= 20 ||
-        (inn2.target && Number(inn2.runs) >= Number(inn2.target)))
-    );
-
-    const isCompleted =
-      (d.match?.result !== "0" && Boolean(d.match?.result)) ||
-      hasWonString ||
-      isTiedOrAbandoned ||
-      liveStatusLower.includes("match over") ||
-      inn2Completed;
-
-    const hasTossOrLiveStatus =
-      liveStatusLower.includes("toss") ||
-      liveStatusLower.includes("opted to") ||
-      liveStatusLower.includes("elected to") ||
-      liveStatusLower.includes("chose to") ||
-      liveStatusLower.includes("in progress") ||
-      liveStatusLower.includes("delayed");
-
-    const hasInningsData = Boolean(
-      (d.innings && d.innings.length > 0) ||
-      (d.live?.innings && d.live.innings.runs !== undefined)
-    );
-
     const isLiveMatch =
-      !isCompleted &&
-      (hasInningsData || hasTossOrLiveStatus || (startMs !== null && nowMs >= startMs));
+      matchState === "LIVE" ||
+      (!isCompleted && (hasScoreData || (startMs !== null && nowMs >= startMs)));
 
     if (!isCompleted && !isLiveMatch) {
       return {
         matchNumber,
         status: "upcoming",
-        message: `Fixture is upcoming (${d.live?.status || "Scheduled"}).`,
+        message: `Fixture is scheduled (${match.statusText || "Upcoming"}).`,
       };
     }
 
-    // Determine result statement & winner
+    // 4. Parse Batters & Bowlers from Current Innings
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let currentInning = rawInnings.find((i: any) => i.isCurrent);
+    if (!currentInning && rawInnings.length > 0) {
+      currentInning = rawInnings[rawInnings.length - 1];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const batters: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const bowlers: any[] = [];
+
+    if (currentInning) {
+      // Batters currently at the crease (not out)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const activeBatsmen = (currentInning.inningBatsmen || []).filter((b: any) => {
+        return (
+          b.battedType === "yes" &&
+          (!b.dismissalText || b.dismissalText?.short === "not out")
+        );
+      });
+
+      for (const b of activeBatsmen) {
+        batters.push({
+          name: b.player?.longName || b.player?.name || "Batter",
+          runs: Number(b.runs || 0),
+          balls: Number(b.balls || 0),
+          fours: Number(b.fours || 0),
+          sixes: Number(b.sixes || 0),
+          strikeRate: b.balls ? ((b.runs / b.balls) * 100).toFixed(1) : "0.00",
+          isStriker: false,
+        });
+      }
+
+      // Bowlers in current innings
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const currentBowlers = (currentInning.inningBowlers || []).slice(-2);
+      for (const bw of currentBowlers) {
+        bowlers.push({
+          name: bw.player?.longName || bw.player?.name || "Bowler",
+          overs: String(bw.overs || "0.0"),
+          maidens: Number(bw.maidens || 0),
+          runs: Number(bw.conceded || 0),
+          wickets: Number(bw.wickets || 0),
+          economy: bw.overs
+            ? (bw.conceded / Math.max(0.1, parseFloat(bw.overs))).toFixed(2)
+            : "0.00",
+        });
+      }
+    }
+
+    // 5. Result Statement & Winner Logic
     let winnerName: string | undefined = undefined;
-    let winMargin: string | undefined =
-      d.match?.amount && d.match?.amount_name ? `${d.match.amount} ${d.match.amount_name}` : undefined;
-    let winType: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" =
-      d.match?.amount_name?.includes("run") ? "runs" : "wickets";
+    let winMargin: string | undefined = undefined;
+    let winType: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" = "wickets";
     let winnerTeamSlug: string | undefined = undefined;
     let resultStatement = "";
 
     if (isCompleted) {
-      if (hasWonString) {
-        resultStatement = liveStatusStr.replace(/\s*\(NPL\)/gi, "").trim();
-        const wonMatch = resultStatement.match(/^(.*?)\s+won by\s+(.*)$/i);
-        if (wonMatch) {
-          winnerName = wonMatch[1].trim();
-          winMargin = wonMatch[2].trim();
-          winType = winMargin.toLowerCase().includes("run") ? "runs" : "wickets";
-        }
-      } else if (isTiedOrAbandoned) {
-        resultStatement = liveStatusStr.replace(/\s*\(NPL\)/gi, "").trim();
-      } else if (inn1 && inn2) {
-        const inn1Runs = Number(inn1.runs) || 0;
-        const inn2Runs = Number(inn2.runs) || 0;
-        const inn2Wickets = Number(inn2.wickets) || 0;
-        const inn1TeamId = String(inn1.batting_team_id);
-        const inn1TeamName = inn1TeamId === team1Id ? team1Name : team2Name;
-        const inn2TeamName = inn1TeamId === team1Id ? team2Name : team1Name;
-
-        if (inn2Runs > inn1Runs) {
-          const wktMargin = 10 - inn2Wickets;
-          winnerName = inn2TeamName;
-          winMargin = `${wktMargin} wicket${wktMargin === 1 ? "" : "s"}`;
-          winType = "wickets";
-          resultStatement = `${winnerName} won by ${winMargin}`;
-        } else if (inn1Runs > inn2Runs) {
-          const runMargin = inn1Runs - inn2Runs;
-          winnerName = inn1TeamName;
-          winMargin = `${runMargin} run${runMargin === 1 ? "" : "s"}`;
-          winType = "runs";
-          resultStatement = `${winnerName} won by ${winMargin}`;
-        } else {
-          resultStatement = "Match tied";
-        }
-      } else {
-        resultStatement = "Match Completed";
-      }
-
-      if (winnerName) {
-        if (team1Name && winnerName.toLowerCase().includes(team1Name.toLowerCase())) {
-          winnerTeamSlug = dbMatch?.team1_id;
-        } else if (team2Name && winnerName.toLowerCase().includes(team2Name.toLowerCase())) {
-          winnerTeamSlug = dbMatch?.team2_id;
+      resultStatement = match.statusText || match.status || "Match Completed";
+      const wonMatch = resultStatement.match(/^(.*?)\s+won by\s+(.*)$/i);
+      if (wonMatch) {
+        winnerName = wonMatch[1].trim();
+        winMargin = wonMatch[2].trim();
+        winType = winMargin.toLowerCase().includes("run") ? "runs" : "wickets";
+        winnerTeamSlug = mapTeamSlug(winnerName);
+      } else if (match.winnerTeamId && Array.isArray(match.teams)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const wTeam = match.teams.find((t: any) => t.team?.id === match.winnerTeamId || t.id === match.winnerTeamId);
+        if (wTeam) {
+          winnerName = wTeam.team?.name || wTeam.name;
+          winnerTeamSlug = mapTeamSlug(winnerName);
         }
       }
     } else {
-      resultStatement = d.match?.current_summary || liveStatusStr || "";
+      // Live state: summarize score
+      const activeScore = team1Score.runs > 0 || parseFloat(team1Score.overs) > 0 ? team1Score : team2Score;
+      resultStatement = match.statusText
+        ? `${match.statusText} (${activeScore.runs}/${activeScore.wickets} in ${activeScore.overs} ov)`
+        : `${activeScore.runs}/${activeScore.wickets} (${activeScore.overs} ov)`;
     }
 
     const targetStatus = isCompleted ? "completed" : "live";
     const scores = {
-      team1: team1Score ?? { runs: 0, wickets: 0, overs: "0.0" },
-      team2: team2Score ?? { runs: 0, wickets: 0, overs: "0.0" },
+      team1: team1Score,
+      team2: team2Score,
       batters: batters.length > 0 ? batters : undefined,
       bowlers: bowlers.length > 0 ? bowlers : undefined,
     };
 
-    // Update matches table in Supabase
+    // 6. Update matches table in Supabase
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (sb as any)
       .from("matches")
@@ -297,106 +308,71 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       })
       .eq("id", matchIdStr);
 
-    // Sync commentary events
-    const inningsBattingMap: Record<number, string> = {};
-    for (let i = 0; i < (d.innings || []).length; i++) {
-      inningsBattingMap[i + 1] = String(d.innings[i].batting_team_id);
-    }
-    const activeBattingTeamId = d.live?.innings?.team_id ? String(d.live.innings.team_id) : null;
-    let currentInningsNum = d.innings?.length || 1;
-    if (activeBattingTeamId) {
-      for (const [num, tId] of Object.entries(inningsBattingMap)) {
-        if (tId === activeBattingTeamId) {
-          currentInningsNum = Number(num);
-          break;
+    // 7. Sync ball-by-ball commentary from inningOvers
+    if (currentInning && Array.isArray(currentInning.inningOvers)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recentOvers = currentInning.inningOvers.slice(-4);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const overGroup of recentOvers as any[]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        for (const ball of (overGroup.balls || []) as any[]) {
+          const overNum = ball.oversActual ? parseFloat(ball.oversActual) : overGroup.overNumber;
+          const overInt = Math.floor(overNum);
+          const ballInt = Math.round((overNum - overInt) * 10);
+          const eventId = `espn_${espnMatchId}_inn${currentInning.inningNumber || 1}_${ball.oversActual || overNum}`;
+
+          const batterName =
+            ball.batsmanStatText?.long?.replace(/\s*\d+.*$/, "").trim() ||
+            ball.batsmanStatText?.short?.replace(/\s*\d+.*$/, "").trim() ||
+            batters[0]?.name ||
+            "Batter";
+          const bowlerName =
+            ball.bowlerStatText?.long?.replace(/\s*\d+.*$/, "").trim() ||
+            ball.bowlerStatText?.short?.replace(/\s*\d+.*$/, "").trim() ||
+            bowlers[0]?.name ||
+            "Bowler";
+
+          const runs = Number(ball.totalRuns || 0);
+          const isWicket = Boolean(ball.isWicket);
+          const isFour = Boolean(ball.isFour);
+          const isSix = Boolean(ball.isSix);
+
+          let commentaryText = "";
+          if (isWicket) commentaryText = `OUT! ${batterName} is dismissed off ${bowlerName}.`;
+          else if (isSix) commentaryText = `SIX! ${batterName} smashes a maximum off ${bowlerName}!`;
+          else if (isFour) commentaryText = `FOUR! ${batterName} strikes a boundary off ${bowlerName}.`;
+          else if (runs === 1) commentaryText = `1 run. ${batterName} rotates the strike off ${bowlerName}.`;
+          else if (runs > 1) commentaryText = `${runs} runs scored off ${bowlerName}.`;
+          else commentaryText = `Dot ball. Good delivery by ${bowlerName}.`;
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          await (sb as any)
+            .from("match_commentary")
+            .upsert(
+              {
+                match_id: matchIdStr,
+                external_event_id: eventId,
+                over_number: overNum,
+                ball_number: ballInt,
+                event_type: isWicket ? "wicket" : isFour || isSix ? "boundary" : "ball",
+                commentary_text: commentaryText,
+                headline: isWicket ? "WICKET!" : isSix ? "SIX!" : isFour ? "FOUR!" : undefined,
+                runs,
+                is_wicket: isWicket,
+                is_boundary: Boolean(isFour || isSix),
+                is_six: isSix,
+                batter_name: batterName,
+                bowler_name: bowlerName,
+                innings_number: currentInning.inningNumber || 1,
+                provider: "manual",
+              },
+              { onConflict: "match_id,external_event_id" }
+            );
         }
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allBalls: any[] = [];
-    for (let pi = 0; pi < (d.comms || []).length; pi++) {
-      const page = d.comms[pi];
-      const pageInnings = page.innings_number ? Number(page.innings_number) : pi + 1;
-      for (const b of page.ball || []) {
-        allBalls.push({ ...b, _inningsNum: pageInnings });
-      }
-    }
-
-    const currentInningsBalls = allBalls.filter((b) => b._inningsNum === currentInningsNum);
-    const ballsToSync = currentInningsBalls.length > 0 ? currentInningsBalls : allBalls;
-
-    const activeStriker = batters.find((b: { isStriker: boolean }) => b.isStriker)?.name || batters[0]?.name;
-    const activeBowler = bowlers[0]?.name;
-
-    for (const ball of ballsToSync.slice(0, 50)) {
-      if (!ball.overs_actual) continue;
-      const overNum = parseFloat(ball.overs_actual) || 0;
-      const overInt = Math.floor(overNum);
-      const ballInt = Math.round((overNum - overInt) * 10);
-      const inningsTag = ball._inningsNum || currentInningsNum;
-      const eventId = `espn_${espnMatchId}_inn${inningsTag}_${ball.overs_actual}`;
-
-      const evStr = String(ball.event || "");
-      const evLower = evStr.toLowerCase();
-      const txtLower = String(ball.text || "").toLowerCase();
-
-      const isWicket = Boolean(
-        ball.dismissal ||
-        evLower.includes("out") ||
-        evLower.includes("wicket") ||
-        txtLower.includes("out")
-      );
-      const isSix = evLower.includes("six") || evLower.includes("6") || txtLower.includes("six");
-      const isFour = !isSix && (evLower.includes("four") || evLower.includes("4") || txtLower.includes("four"));
-
-      let runs = 0;
-      if (isSix) runs = 6;
-      else if (isFour) runs = 4;
-      else {
-        const runMatch = evLower.match(/(\d+)\s*run/);
-        runs = runMatch ? parseInt(runMatch[1], 10) || 0 : parseInt(evStr, 10) || 0;
-      }
-
-      const rawBatter = ball.players ? ball.players.split(" to ")[1]?.trim() : activeStriker;
-      const rawBowler = ball.players ? ball.players.split(" to ")[0]?.trim() : activeBowler;
-
-      let commentaryText = ball.dismissal || ball.text;
-      if (!commentaryText || commentaryText.trim() === "" || commentaryText === ball.event) {
-        if (isWicket) commentaryText = `OUT! ${rawBatter || "The batter"} is dismissed by ${rawBowler || "the bowler"}.`;
-        else if (isSix) commentaryText = `SIX! ${rawBatter || "The batter"} hits a massive maximum off ${rawBowler || "the bowler"}!`;
-        else if (isFour) commentaryText = `FOUR! ${rawBatter || "The batter"} drives it to the boundary off ${rawBowler || "the bowler"}.`;
-        else if (runs === 1) commentaryText = `1 run. ${rawBatter || "The batter"} rotates the strike with a single off ${rawBowler || "the bowler"}.`;
-        else if (runs > 1) commentaryText = `${runs} runs scored off ${rawBowler || "the bowler"}.`;
-        else commentaryText = `Dot ball. Good delivery by ${rawBowler || "the bowler"}.`;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (sb as any)
-        .from("match_commentary")
-        .upsert(
-          {
-            match_id: matchIdStr,
-            external_event_id: eventId,
-            over_number: overNum,
-            ball_number: ballInt,
-            event_type: isWicket ? "wicket" : isFour || isSix ? "boundary" : "ball",
-            commentary_text: commentaryText,
-            headline: isWicket ? "WICKET!" : isSix ? "SIX!" : isFour ? "FOUR!" : undefined,
-            runs,
-            is_wicket: isWicket,
-            is_boundary: Boolean(isFour || isSix),
-            is_six: Boolean(isSix),
-            batter_name: rawBatter,
-            bowler_name: rawBowler,
-            innings_number: inningsTag,
-            provider: "manual",
-          },
-          { onConflict: "match_id,external_event_id" }
-        );
-    }
-
-    // Standings recalculation on completion
+    // 8. Standings recalculation when completed
     if (isCompleted) {
       try {
         await recalculateAndPersistStandings("season-3");
@@ -409,11 +385,12 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       matchNumber,
       status: targetStatus,
       message: resultStatement || `Match status is ${targetStatus}`,
-      scoreSummary: `${team1Name} ${team1Score?.runs || 0}/${team1Score?.wickets || 0} vs ${team2Name} ${team2Score?.runs || 0}/${team2Score?.wickets || 0}`,
+      scoreSummary: `${team1Score.runs}/${team1Score.wickets} (${team1Score.overs} ov) vs ${team2Score.runs}/${team2Score.wickets} (${team2Score.overs} ov)`,
       winner: winnerName,
     };
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error(`[CRON SYNC M${matchNumber}] Error:`, errorMsg);
     return { matchNumber, status: "error", message: errorMsg };
   }
 }
