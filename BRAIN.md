@@ -475,3 +475,13 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Scope Isolation & Redirect Containment:** Each banner executes within an independent `iframe` sandbox (`srcDoc`), preventing `window.atOptions` collision and triggering Adsterra's internal popunder/redirect abort (`if (window !== window.top) return`).
   - **Safety & Verification:** Master toggle `ADSTERRA_ENABLED = true` enabled for deployment; hidden on `/admin` routes. Google AdSense (`ca-pub-8861868952444352`), `public/ads.txt`, GA4, and SEO metadata remain 100% intact.
   - **Build & Verification:** ✅ `npx tsc --noEmit` and `npm run build` passed with 0 errors across 228 routes.
+
+- **2026-10-28 (High-Traffic In-Page Placements & Dismissible Floating Ad Integration):**
+  - **Match Page Break:** Added in-page 300x250 ad banner between the live scoreboard and live commentary feed on `/matches/[slug]`.
+  - **Homepage Break:** Added in-page 300x250 ad banner between the featured/upcoming match section and the points table preview on `/`.
+  - **Dismissible Floating Ad (`AdsterraFloatingAd`):**
+    - Triggers only after 300px scroll (keeping initial hero & headers 100% clean).
+    - Desktop ($\ge$ 2xl): docks in the empty right gutter margin without obstructing content.
+    - Mobile: docks as a slim 320x50 bottom bar with an easy-to-tap `✕ Close` button.
+    - Session Persistence: Once dismissed, stores preference in `sessionStorage` and remains hidden.
+  - **Build & Verification:** ✅ `npx tsc --noEmit` and `npm run build` passed with 0 errors across 228 routes.

@@ -17,6 +17,7 @@ import { MatchNavigation } from "@/components/matches/MatchNavigation";
 import { MatchRelatedLinks } from "@/components/matches/MatchRelatedLinks";
 import { LiveCommentaryFeed } from "@/components/matches/LiveCommentaryFeed";
 import { LiveScoreEmbed } from "@/components/matches/LiveScoreEmbed";
+import { AdsterraInContentBanner } from "@/components/ads/AdsterraBanner";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -109,6 +110,11 @@ export default async function MatchDetailPage({ params }: PageProps) {
             matchStatus={match.status}
           />
         )}
+
+        {/* In-Page Match Break Advertisement */}
+        <div className="flex justify-center -my-2 sm:-my-4">
+          <AdsterraInContentBanner />
+        </div>
 
         {/* Live Commentary Section */}
         <section className="mt-8">

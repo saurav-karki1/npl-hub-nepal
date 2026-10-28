@@ -5,6 +5,7 @@ import { UpcomingMatchSection } from "@/components/home/UpcomingMatchSection";
 import { PointsTablePreview } from "@/components/home/PointsTablePreview";
 import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
 import { TeamsPreview } from "@/components/home/TeamsPreview";
+import { AdsterraInContentBanner } from "@/components/ads/AdsterraBanner";
 import { getFeaturedUpcomingMatch, getStandingsAsync, getAllMatches } from "@/lib/repository/matches";
 import { getLatestArticles } from "@/lib/repository/news";
 
@@ -100,6 +101,11 @@ export default async function HomePage() {
 
         {/* 2. Featured Upcoming Match */}
         <UpcomingMatchSection match={featuredMatch} />
+
+        {/* In-Page Break Advertisement */}
+        <div className="flex justify-center -my-2 sm:-my-4">
+          <AdsterraInContentBanner />
+        </div>
 
         {/* 3. Points Table Standings Preview */}
         <PointsTablePreview standings={standings} />

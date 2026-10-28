@@ -4,7 +4,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { Header } from "@/components/ui/Header";
 import { Footer } from "@/components/ui/Footer";
-import { AdsterraTopBanner } from "@/components/ads/AdsterraBanner";
+import { AdsterraTopBanner, AdsterraFloatingAd } from "@/components/ads/AdsterraBanner";
 
 /**
  * Inter — variable font, excellent readability at all sizes.
@@ -139,6 +139,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AdsterraTopBanner />
         <main className="flex-1">{children}</main>
         <Footer />
+        <AdsterraFloatingAd />
       </body>
       <GoogleAnalytics gaId={gaId} />
     </html>
