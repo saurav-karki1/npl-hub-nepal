@@ -459,3 +459,19 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
 
 
 
+
+- **2026-10-28 (Adsterra Audit: Mobile Stacking, Redirect Analysis & Deactivation):**
+  - **Adsterra Deactivated:** Temporarily removed Adsterra script from `<head>` in `src/app/layout.tsx` and disabled rendering in `src/components/ads/AdstraBanner.tsx` (`ADSTERRA_ENABLED = false`).
+  - **Root Cause Confirmed:** Decompiled `https://czernik.org/21/3b5bf07b9b8bde0648233957a035a39b`. Confirmed that unit `3b5bf07b9b8bde0648233957a035a39b` is a 4-widget Native Banner with `columns: 4` and `oneColumnInMobile: true`, which forcibly stacks 4 large vertical ad cards on mobile screens into the single container.
+  - **Redirect Mechanism Identified:** Script includes dynamic child popunder injection (`createExtraPopunderInTarget` / `_cepf` via `mamshirt.com` / `czernik.org`), which intercepts document taps when aggressive ad categories are enabled in Adsterra.
+  - **Responsive Layout Architecture:** Redesigned `AdstraBanner.tsx` to support isolated `top` and `in-content` placements with strict max-height constraints, explicit advertisement labeling, and admin route isolation.
+  - **Build & Verification:** ✅ `npx tsc --noEmit` and `npm run build` passed with 0 errors across 228 routes. SSR output verified free of Adsterra scripts/containers while preserving Google AdSense intact.
+
+- **2026-10-28 (Adsterra Dual-Banner Deployment: 320x50 Top & 300x250 In-Content):**
+  - **Replaced Obsolete Native Banner:** Removed all traces of the 4-card native banner unit (`3b5bf07b9b8bde0648233957a035a39b`) and deleted `AdstraBanner.tsx`.
+  - **New Isolated Units Implemented (`src/components/ads/AdsterraBanner.tsx`):**
+    1. **Top Banner (320x50):** Key `7cc5aed2da8c4d1e9d3b134df3b651d0` placed in `src/app/layout.tsx` under `<Header />`, centered, non-intrusive, zero horizontal scroll on mobile.
+    2. **In-Content Banner (300x250):** Key `afae48f2bf409ba0ba6fd7dd958fd252` placed in `src/app/news/[slug]/page.tsx` midway through long editorial articles (>= 4 blocks).
+  - **Scope Isolation & Redirect Containment:** Each banner executes within an independent `iframe` sandbox (`srcDoc`), preventing `window.atOptions` collision and triggering Adsterra's internal popunder/redirect abort (`if (window !== window.top) return`).
+  - **Safety & Verification:** Master toggle `ADSTERRA_ENABLED = true` enabled for deployment; hidden on `/admin` routes. Google AdSense (`ca-pub-8861868952444352`), `public/ads.txt`, GA4, and SEO metadata remain 100% intact.
+  - **Build & Verification:** ✅ `npx tsc --noEmit` and `npm run build` passed with 0 errors across 228 routes.

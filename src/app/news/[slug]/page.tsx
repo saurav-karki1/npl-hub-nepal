@@ -20,6 +20,7 @@ import {
 import { normalizeArticleBlocks } from "@/lib/types/article-blocks";
 import { renderRichText } from "@/lib/seo/rich-text";
 import { ArticleMatchShowcase } from "@/components/news/ArticleMatchShowcase";
+import { AdsterraInContentBanner } from "@/components/ads/AdsterraBanner";
 import {
   TodayMatch,
   PointsTableWidget,
@@ -231,7 +232,9 @@ function ArticleBody({
               ? article.blocks
               : normalizeArticleBlocks(article.content);
 
+          const adInsertionIndex = blocks.length >= 4 ? Math.min(3, Math.floor(blocks.length / 2)) : -1;
           return blocks.map((block, i) => {
+            const renderBlock = () => {
             switch (block.type) {
               case "heading":
                 if (block.level === 3) {
@@ -447,6 +450,17 @@ function ArticleBody({
                 );
               }
             }
+            };
+            const node = renderBlock();
+            if (i === adInsertionIndex) {
+              return (
+                <div key={i} className="space-y-4">
+                  {node}
+                  <AdsterraInContentBanner />
+                </div>
+              );
+            }
+            return node;
           });
         })()}
       </div>
