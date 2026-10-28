@@ -363,8 +363,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
                 is_six: isSix,
                 batter_name: batterName,
                 bowler_name: bowlerName,
-                innings_number: currentInning.inningNumber || 1,
-                provider: "manual",
+                                provider: "manual",
               },
               { onConflict: "match_id,external_event_id" }
             );

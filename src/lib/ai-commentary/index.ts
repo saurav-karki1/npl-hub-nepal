@@ -98,43 +98,19 @@ export async function generateCommentaryForEvent(
 }
 
 /**
- * Retrieves all commentary items for a specific match, sorted by created_at descending.
- * Sorting by created_at (most recently synced first) is correct because:
- * - The live daemon always inserts the CURRENT innings deliveries last.
- * - Sorting by over_number DESC causes 1st-innings overs (e.g. 19.6) to appear
- *   above 2nd-innings overs (e.g. 10.4), showing wrong player names.
- * - Optionally filtered by innings_number if present.
+ * Retrieves all commentary items for a specific match, sorted by over_number descending.
  */
 export async function getMatchCommentary(matchId: string): Promise<CommentaryOutput[]> {
   // 1. Try fetching from Supabase
   try {
     const admin = getSupabaseAdminClient();
 
-    // Determine current innings number from the latest inserted row
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: latestRow } = await (admin as any)
-      .from("match_commentary")
-      .select("innings_number")
-      .eq("match_id", matchId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
-    const currentInnings: number | null = latestRow?.innings_number ?? null;
-
-    // Build query — filter to current innings when we know it
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query = (admin as any)
+    const { data, error } = await (admin as any)
       .from("match_commentary")
       .select("*")
-      .eq("match_id", matchId);
-
-    if (currentInnings !== null) {
-      query = query.eq("innings_number", currentInnings);
-    }
-
-    // Sort by created_at DESC: most recently synced = current over at the top
-    const { data, error } = await query
+      .eq("match_id", matchId)
+      .order("over_number", { ascending: false })
       .order("created_at", { ascending: false });
 
     if (!error && data && data.length > 0) {
@@ -147,6 +123,7 @@ export async function getMatchCommentary(matchId: string): Promise<CommentaryOut
         ballNumber: row.ball_number,
         eventType: row.event_type,
         text: row.commentary_text,
+        headline: row.headline,
         runs: row.runs,
         isWicket: row.is_wicket,
         isBoundary: row.is_boundary,

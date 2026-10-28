@@ -395,8 +395,7 @@ export async function syncMatch(matchNumber = 1) {
         is_six: Boolean(isSix),
         batter_name: rawBatter,
         bowler_name: rawBowler,
-        innings_number: inningsTag,
-        provider: "manual",
+                provider: "manual",
       };
 
       const { error: commErr } = await sb
