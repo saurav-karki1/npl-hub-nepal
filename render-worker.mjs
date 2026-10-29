@@ -24,7 +24,38 @@ let lastSyncedMatches = [];
 let lastSyncError = null;
 
 // 1. Lightweight HTTP server for Render health checks and uptime pinging
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
+  if (req.url === "/diag" || req.url === "/diagnostics") {
+    try {
+      const testUrl = "https://www.espncricinfo.com/series/a-1558581/b-1558586/ball-by-ball-commentary";
+      const espnRes = await fetch(testUrl, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+          Referer: "https://www.espncricinfo.com/",
+        },
+      });
+      const text = await espnRes.text();
+      const hasNextData = text.includes('id="__NEXT_DATA__"');
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          espnStatus: espnRes.status,
+          hasNextData,
+          bodyLength: text.length,
+          bodySnippet: text.slice(0, 300),
+        })
+      );
+    } catch (err) {
+      res.writeHead(500, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(
     JSON.stringify({
