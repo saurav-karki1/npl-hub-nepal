@@ -507,3 +507,19 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Root Cause Diagnosed:** In `src/app/news/[slug]/page.tsx`, `generateMetadata` was unconditionally prepending `${siteUrl}` to `article.imageUrl`. When images were uploaded via Admin Panel to Supabase Storage (`https://zohmcgjixebuiconrven.supabase.co/...`), this created a malformed double URL (`https://nplhubnepal.vercel.apphttps//zohmcgjixebuiconrven.supabase.co/...`), causing Facebook / Twitter social media link crawlers to fail fetching the preview image and render a blank gray box.
   - **Resolution Implemented:** Built `resolveAbsoluteImageUrl()` helper handling full HTTPS URLs, root-relative paths, and relative paths gracefully with automatic fallback to `og-image.png`. Added `og:image:secure_url`, image MIME type (`image/png`), and absolute canonical `og:url`. Updated JSON-LD `NewsArticle` schema image URL. Added `imageUrl` to static fallback for `article-11`.
   - **Verification:** Verified SSR metadata output generates valid direct image URL (`https://zohmcgjixebuiconrven.supabase.co/.../1793251260797-ii3gr5ol.png`); TypeScript compiled with 0 errors; `npm run build` passed with 229 static/dynamic routes.
+- **2026-10-29 (Match 5 Live Score & Ball-by-Ball Commentary Cloud Sync Fix):**
+  - **Root Cause Diagnosed:**
+    1. Render worker (`render-worker.mjs`) used `scripts/live-sync-score.mjs`, which was still calling the deprecated ESPN JSON API (`/ci/engine/match/{id}.json`) that blocked cloud IPs with 403 / returned stale "scheduled" status.
+    2. Commentary upserts in `live-sync-score.mjs` failed with `TypeError: ball.oversActual.replace is not a function` because `oversActual` was a number.
+    3. Commentary provider check constraint `match_commentary_provider_check` in Supabase rejected non-enum provider values (e.g. `espn_html`), requiring valid values such as `manual`.
+  - **Resolution Implemented:**
+    1. Rewrote `scripts/live-sync-score.mjs` and `src/lib/sync/live-sync-core.ts` to scrape ESPN's `ball-by-ball-commentary` HTML `__NEXT_DATA__` endpoint, with seamless fallback to `full-scorecard`.
+    2. Comprehensive 8-team slug normalizer (`mapTeamSlug`) mapping all NPL franchises correctly.
+    3. Clean extraction of live scores, active batters, and active bowlers from `content.innings`.
+    4. Ball-by-ball commentary ingestion parsing `content.comments` with valid `provider: "manual"`, correctly setting wickets, boundaries, sixes, and descriptions.
+    5. Started local background daemon and pushed fixes to GitHub (`master` & `main`) for Render & Vercel deployment.
+  - **Verification:**
+    - Live score endpoint: `https://nplhubnepal.vercel.app/api/matches/match-5-janakpur-bolts-vs-kathmandu-gorkhas/live-score` returning real-time score (Kathmandu 100/9 in 18.0 ov, active batters/bowlers, recent balls).
+    - Commentary endpoint: `https://nplhubnepal.vercel.app/api/matches/match-5-janakpur-bolts-vs-kathmandu-gorkhas/commentary` returning 24+ ball-by-ball items.
+    - Match page `https://nplhubnepal.vercel.app/matches/match-5-janakpur-bolts-vs-kathmandu-gorkhas` active and updating.
+    - `npm run build` passed with 229 routes and 0 TypeScript errors.
