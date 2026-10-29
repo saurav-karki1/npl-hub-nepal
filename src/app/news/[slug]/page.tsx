@@ -40,6 +40,19 @@ export async function generateStaticParams() {
   return getAllArticleSlugs();
 }
 
+function resolveAbsoluteImageUrl(
+  imagePath: string | null | undefined,
+  siteUrl: string
+): string {
+  if (!imagePath) {
+    return `${siteUrl}/og-image.png`;
+  }
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+  return `${siteUrl}${imagePath.startsWith("/") ? "" : "/"}${imagePath}`;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
@@ -52,9 +65,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
   const metaTitle = article.metaTitle ?? article.title;
   const metaDesc = article.metaDescription ?? article.excerpt;
-  const ogImage = article.imageUrl
-    ? `${siteUrl}${article.imageUrl}`
-    : `${siteUrl}/images/logo.png`;
+  const ogImageUrl = resolveAbsoluteImageUrl(article.imageUrl, siteUrl);
+  const imageExt = ogImageUrl.split(".").pop()?.split("?")[0]?.toLowerCase();
+  const imageMime =
+    imageExt === "png"
+      ? "image/png"
+      : imageExt === "webp"
+      ? "image/webp"
+      : "image/jpeg";
 
   return {
     title: metaTitle,
@@ -65,7 +83,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: metaTitle,
       description: metaDesc,
-      url: `/news/${article.slug}`,
+      url: `${siteUrl}/news/${article.slug}`,
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "article",
@@ -73,9 +91,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       modifiedTime: article.updatedAt,
       images: [
         {
-          url: ogImage,
+          url: ogImageUrl,
+          secureUrl: ogImageUrl.startsWith("https://") ? ogImageUrl : undefined,
           width: 1200,
           height: 630,
+          type: imageMime,
           alt: article.imageAlt ?? article.title,
         },
       ],
@@ -84,7 +104,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title: metaTitle,
       description: metaDesc,
-      images: [ogImage],
+      images: [ogImageUrl],
     },
     robots:
       article.status === "draft"
@@ -662,7 +682,7 @@ export default async function ArticlePage({ params }: PageProps) {
     ...(article.imageUrl && {
       image: {
         "@type": "ImageObject",
-        url: `${siteUrl}${article.imageUrl}`,
+        url: resolveAbsoluteImageUrl(article.imageUrl, siteUrl),
         width: 1200,
         height: 630,
         ...(article.imageAlt && { caption: article.imageAlt }),

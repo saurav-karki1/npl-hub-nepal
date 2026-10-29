@@ -939,6 +939,10 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     id: "article-11",
     slug: "janakpur-bolts-vs-kathmandu-gorkhas-live-score",
     content: [],
+    imageUrl:
+      "https://zohmcgjixebuiconrven.supabase.co/storage/v1/object/public/article-images/articles/article-1793250593955-vkev7m/1793251260797-ii3gr5ol.png",
+    imageAlt:
+      "Janakpur Bolts vs Kathmandu Gorkhas Live Score – NPL 2026 Match 5",
     title:
       "Janakpur Bolts vs Kathmandu Gorkhas Live Score Today – NPL 2026 Match 5",
     excerpt:
