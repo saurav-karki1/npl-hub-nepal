@@ -34,8 +34,7 @@ export function mapTeamSlug(name = "") {
 
 /**
  * Fetch ESPN match data via HTML __NEXT_DATA__ extraction.
- * Bypasses cloud datacenter 403 blocks.
- * Tries ball-by-ball-commentary first (contains real comments), then full-scorecard.
+ * Prioritizes ball-by-ball-commentary, then full-scorecard.
  */
 async function fetchEspnData(espnMatchId) {
   const endpoints = [
@@ -68,7 +67,6 @@ async function fetchEspnData(espnMatchId) {
       const d = json?.props?.appPageProps?.data;
       if (!d) continue;
 
-      // ball-by-ball and full-scorecard have slightly different nesting
       const match = d.match || d.data?.match || {};
       const content = d.content || d.data?.content || {};
 
@@ -210,12 +208,22 @@ export async function syncMatch(matchNumber = 1) {
       }));
     }
 
-    // 6. Build result details
+    // 6. Build result statement (detect Innings Break, Chases, Results)
     let resultStatement = statusText;
     let winnerName = undefined;
     let winMargin = undefined;
     let winType = undefined;
     let winnerTeamSlug = undefined;
+
+    const inn1 = innings[0];
+    const inn2 = innings[1];
+    const isInn1Finished = Boolean(
+      inn1 && (Number(inn1.wickets) >= 10 || parseFloat(inn1.overs) >= 20)
+    );
+    const isInn2Started = Boolean(
+      inn2 && (Number(inn2.runs) > 0 || parseFloat(inn2.overs) > 0 || (inn2.inningBatsmen && inn2.inningBatsmen.length > 0))
+    );
+    const isInningsBreak = isLive && isInn1Finished && !isInn2Started;
 
     if (isCompleted) {
       const wonMatch = statusText.match(/^(.*?)\s+won by\s+(.*)$/i);
@@ -226,6 +234,19 @@ export async function syncMatch(matchNumber = 1) {
         resultStatement = `${winnerName} won by ${winMargin}`;
         winnerTeamSlug = mapTeamSlug(winnerName);
       }
+    } else if (isInningsBreak) {
+      const inn1TeamName = inn1?.team?.name || "Kathmandu Gorkhas";
+      const targetRuns = Number(inn1.runs) + 1;
+      const chasingName = inn1TeamName.toLowerCase().includes("kathmandu") ? "Janakpur Bolts" : "Kathmandu Gorkhas";
+      resultStatement = `Innings Break: ${inn1TeamName} ${inn1.runs}/${inn1.wickets} (${inn1.overs} ov) · ${chasingName} need ${targetRuns} runs to win`;
+    } else if (isInn2Started) {
+      const inn2TeamName = inn2?.team?.name || "Janakpur Bolts";
+      const targetRuns = Number(inn1.runs) + 1;
+      const needed = Math.max(0, targetRuns - Number(inn2.runs));
+      const oversVal = parseFloat(inn2.overs) || 0;
+      const ballsBowled = Math.floor(oversVal) * 6 + Math.round((oversVal % 1) * 10);
+      const ballsRemaining = Math.max(0, 120 - ballsBowled);
+      resultStatement = `${inn2TeamName} need ${needed} runs in ${ballsRemaining} balls to win (${inn2.runs}/${inn2.wickets} in ${inn2.overs} ov)`;
     } else {
       const activeScore =
         team2Score.runs > 0 || parseFloat(team2Score.overs) > 0 ? team2Score : team1Score;
@@ -341,7 +362,6 @@ export async function syncMatch(matchNumber = 1) {
         if (!cErr) commCount++;
       }
     } else if (activeInn && Array.isArray(activeInn.inningOvers)) {
-      // Fallback: extract from inningOvers if comments array is empty
       for (const overGroup of activeInn.inningOvers) {
         for (const ball of overGroup.balls || []) {
           if (ball.oversActual == null) continue;
@@ -350,11 +370,6 @@ export async function syncMatch(matchNumber = 1) {
           const ballInt = Math.round((overNum - overInt) * 10);
           const innNum = activeInn.inningNumber || 1;
           const eventId = `espn_${espnMatchId}_inn${innNum}_${String(ball.oversActual)}`;
-
-          const isWicket = Boolean(ball.isWicket);
-          const isSix = Boolean(ball.isSix);
-          const isFour = Boolean(ball.isFour);
-          const runs = Number(ball.totalRuns) || 0;
 
           const batterName =
             ball.batsmanStatText?.long?.replace(/\s*\d+.*$/, "").trim() ||

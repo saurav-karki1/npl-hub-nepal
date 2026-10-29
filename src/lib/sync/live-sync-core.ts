@@ -248,7 +248,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
           name: bw.player?.longName || bw.player?.name || "Bowler",
           overs: String(bw.overs || "0.0"),
           maidens: Number(bw.maidens || 0),
-          runs: Number(bw.conceded || 0),
+          runs: Number(bw.conceded) || 0,
           wickets: Number(bw.wickets || 0),
           economy: bw.overs
             ? (bw.conceded / Math.max(0.1, parseFloat(bw.overs))).toFixed(2)
@@ -257,18 +257,28 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       }
     }
 
-    // 5. Result Statement & Winner Logic
+    // 5. Result Statement & Winner Logic (Innings Break, Chases, Results)
     let winnerName: string | undefined = undefined;
     let winMargin: string | undefined = undefined;
     let winType: "runs" | "wickets" | "super_over" | "no_result" | "abandoned" = "wickets";
     let winnerTeamSlug: string | undefined = undefined;
     let resultStatement = "";
 
+    const inn1 = rawInnings[0];
+    const inn2 = rawInnings[1];
+    const isInn1Finished = Boolean(
+      inn1 && (Number(inn1.wickets) >= 10 || parseFloat(inn1.overs) >= 20)
+    );
+    const isInn2Started = Boolean(
+      inn2 && (Number(inn2.runs) > 0 || parseFloat(inn2.overs) > 0 || (inn2.inningBatsmen && inn2.inningBatsmen.length > 0))
+    );
+    const isInningsBreak = isLiveMatch && isInn1Finished && !isInn2Started;
+
     if (isCompleted) {
       resultStatement = match.statusText || match.status || "Match Completed";
       const wonMatch = resultStatement.match(/^(.*?)\s+won by\s+(.*)$/i);
       if (wonMatch) {
-        winnerName = wonMatch[1].replace(/\(NPL\)/gi, "").trim();
+        winnerName = wonMatch[1].trim();
         winMargin = wonMatch[2].trim();
         winType = winMargin.toLowerCase().includes("run") ? "runs" : "wickets";
         winnerTeamSlug = mapTeamSlug(winnerName);
@@ -280,8 +290,21 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
           winnerTeamSlug = mapTeamSlug(winnerName);
         }
       }
+    } else if (isInningsBreak) {
+      const inn1TeamName = inn1?.team?.name || "Kathmandu Gorkhas";
+      const targetRuns = Number(inn1.runs) + 1;
+      const chasingName = inn1TeamName.toLowerCase().includes("kathmandu") ? "Janakpur Bolts" : "Kathmandu Gorkhas";
+      resultStatement = `Innings Break: ${inn1TeamName} ${inn1.runs}/${inn1.wickets} (${inn1.overs} ov) · ${chasingName} need ${targetRuns} runs to win`;
+    } else if (isInn2Started) {
+      const inn2TeamName = inn2?.team?.name || "Janakpur Bolts";
+      const targetRuns = Number(inn1.runs) + 1;
+      const needed = Math.max(0, targetRuns - Number(inn2.runs));
+      const oversVal = parseFloat(inn2.overs) || 0;
+      const ballsBowled = Math.floor(oversVal) * 6 + Math.round((oversVal % 1) * 10);
+      const ballsRemaining = Math.max(0, 120 - ballsBowled);
+      resultStatement = `${inn2TeamName} need ${needed} runs in ${ballsRemaining} balls to win (${inn2.runs}/${inn2.wickets} in ${inn2.overs} ov)`;
     } else {
-      // Live state: summarize score
+      // Live 1st innings state
       const activeScore = team2Score.runs > 0 || parseFloat(team2Score.overs) > 0 ? team2Score : team1Score;
       resultStatement = statusText
         ? `${statusText} (${activeScore.runs}/${activeScore.wickets} in ${activeScore.overs} ov)`

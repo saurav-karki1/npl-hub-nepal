@@ -17,6 +17,12 @@ const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ||
 
 const sb = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
+// Telemetry state for transparency
+let syncCount = 0;
+let lastSyncAt = null;
+let lastSyncedMatches = [];
+let lastSyncError = null;
+
 // 1. Lightweight HTTP server for Render health checks and uptime pinging
 const server = http.createServer((req, res) => {
   res.writeHead(200, { "Content-Type": "application/json" });
@@ -25,6 +31,10 @@ const server = http.createServer((req, res) => {
       service: "npl-cloud-live-sync",
       status: "online",
       uptimeSeconds: Math.floor(process.uptime()),
+      syncCount,
+      lastSyncAt,
+      lastSyncedMatches,
+      lastSyncError,
       timestamp: new Date().toISOString(),
     })
   );
@@ -41,10 +51,14 @@ async function runCloudLoop() {
   while (true) {
     try {
       // Find matches with status 'live'
-      const { data: liveMatches } = await sb
+      const { data: liveMatches, error: liveErr } = await sb
         .from("matches")
         .select("id,match_number,status")
         .eq("status", "live");
+
+      if (liveErr) {
+        lastSyncError = `Supabase liveMatches error: ${liveErr.message}`;
+      }
 
       let matchesToSync = (liveMatches && liveMatches.length > 0)
         ? liveMatches.map((m) => m.match_number)
@@ -68,8 +82,14 @@ async function runCloudLoop() {
       for (const mNum of matchesToSync) {
         await syncMatch(mNum);
       }
+
+      syncCount++;
+      lastSyncAt = new Date().toISOString();
+      lastSyncedMatches = matchesToSync;
+      lastSyncError = null;
     } catch (err) {
-      console.error("[RENDER WORKER] Sync error:", err?.message || err);
+      lastSyncError = err?.message || String(err);
+      console.error("[RENDER WORKER] Sync error:", lastSyncError);
     }
 
     // Wait 15 seconds before next polling cycle
