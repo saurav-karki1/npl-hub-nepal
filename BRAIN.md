@@ -495,3 +495,11 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     3. **Visitor-Driven Cloud Sync (`src/app/api/matches/[slug]/live-score/route.ts`):** Refactored route to trigger `syncMatchCore()` on demand during live/upcoming fixtures, persisting to Supabase and immediately returning real-time scores, active players, and recent balls.
     4. **Verified Live Match 4:** Successfully synced Pokhara Avengers vs Sudurpaschim Royals with authentic real-time scores and commentary feed.
   - **Build & Verification:** ✅ `npx tsc --noEmit` passed. `npm run build` completed with 0 errors across 228 routes.
+- **2026-10-29 (Match 5 Live Scoreboard & Commentary Embed in Published News Article):**
+  - **Embedded Live Match Centre Component (`src/components/news/ArticleLiveMatch.tsx`):** Created reusable client-side component embedding the existing `MatchScoreboard`, `LiveScoreEmbed`, and `LiveCommentaryFeed` directly inside news articles, with prominent heading **Janakpur Bolts vs Kathmandu Gorkhas — Live Score** and fallback navigation button **Open Full Live Match Centre →** navigating to `/matches/match-5-janakpur-bolts-vs-kathmandu-gorkhas`.
+  - **Zero Duplicate Polling or API Overhead:** Reuses the existing components and their 15s real-time sync mechanism without rebuilding scoreboard architecture.
+  - **Resilient Article Block Integration (`src/app/news/[slug]/page.tsx`):**
+    - Added support for `[[LIVE_MATCH:<slug>]]` token in the article paragraph renderer.
+    - Added automated insertion/replacement for `/news/janakpur-bolts-vs-kathmandu-gorkhas-live-score` right before the match preview section, replacing any draft placeholder links.
+  - **Canonical Static Fallback (`src/lib/data/news-data.ts`):** Added `article-11` (`janakpur-bolts-vs-kathmandu-gorkhas-live-score`) to the canonical fallback dataset.
+  - **Verification:** Verified SSR with `next start` returning HTTP 200 with embedded heading, scoreboard, and button; verified type safety with `npx tsc --noEmit` (0 errors); verified production build with `npm run build` (229 routes compiled cleanly with 0 errors).

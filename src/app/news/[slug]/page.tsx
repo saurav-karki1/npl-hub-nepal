@@ -20,6 +20,7 @@ import {
 import { normalizeArticleBlocks } from "@/lib/types/article-blocks";
 import { renderRichText } from "@/lib/seo/rich-text";
 import { ArticleMatchShowcase } from "@/components/news/ArticleMatchShowcase";
+import { ArticleLiveMatch } from "@/components/news/ArticleLiveMatch";
 import { AdsterraInContentBanner } from "@/components/ads/AdsterraBanner";
 import {
   TodayMatch,
@@ -229,8 +230,48 @@ function ArticleBody({
         {(() => {
           const blocks =
             article.blocks && article.blocks.length > 0
-              ? article.blocks
+              ? [...article.blocks]
               : normalizeArticleBlocks(article.content);
+
+          // For the Match 5 live score article, embed the live match experience before match preview
+          if (article.slug === "janakpur-bolts-vs-kathmandu-gorkhas-live-score") {
+            const hasLiveEmbed = blocks.some(
+              (b) =>
+                (b.type === "paragraph" && b.text.includes("[[LIVE_MATCH:")) ||
+                (b.type === "match" && b.matchSlug === "match-5-janakpur-bolts-vs-kathmandu-gorkhas")
+            );
+
+            if (!hasLiveEmbed) {
+              const liveMatchBlock = {
+                type: "paragraph" as const,
+                text: "[[LIVE_MATCH:match-5-janakpur-bolts-vs-kathmandu-gorkhas]]",
+              };
+
+              const placeholderIdx = blocks.findIndex(
+                (b) =>
+                  (b.type === "link" &&
+                    (b.url.includes("Insert the actual Match 5") ||
+                      b.text.includes("Insert the actual Match 5"))) ||
+                  (b.type === "paragraph" &&
+                    b.text.includes("Insert the actual Match 5"))
+              );
+
+              if (placeholderIdx !== -1) {
+                blocks.splice(placeholderIdx, 1, liveMatchBlock);
+              } else {
+                const previewIdx = blocks.findIndex(
+                  (b) =>
+                    b.type === "heading" &&
+                    b.text.toLowerCase().includes("match preview")
+                );
+                if (previewIdx !== -1) {
+                  blocks.splice(previewIdx, 0, liveMatchBlock);
+                } else {
+                  blocks.splice(Math.min(3, blocks.length), 0, liveMatchBlock);
+                }
+              }
+            }
+          }
 
           const adInsertionIndex = blocks.length >= 4 ? Math.min(3, Math.floor(blocks.length / 2)) : -1;
           return blocks.map((block, i) => {
@@ -427,6 +468,25 @@ function ArticleBody({
               case "paragraph":
               default: {
                 const trimmed = block.text.trim();
+                if (trimmed.startsWith("[[LIVE_MATCH:") && trimmed.endsWith("]]")) {
+                  const liveMatchSlug = trimmed.slice("[[LIVE_MATCH:".length, -2).trim();
+                  const liveMatch = fixtures.find((f) => f.slug === liveMatchSlug);
+                  if (liveMatch) {
+                    return <ArticleLiveMatch key={i} match={liveMatch} />;
+                  }
+                  // Fallback: show navigation button if match not found in fixtures
+                  return (
+                    <div key={i} className="my-6 p-4 border border-[var(--color-rule)] rounded-lg text-center space-y-3">
+                      <p className="text-sm font-bold text-[var(--color-ink)]">Live Match Centre</p>
+                      <a
+                        href={"/matches/" + liveMatchSlug}
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-brand)] text-white text-sm font-bold transition-colors hover:opacity-90"
+                      >
+                        Open Full Live Match Centre →
+                      </a>
+                    </div>
+                  );
+                }
                 if (trimmed === "[[TODAY_MATCH]]") {
                   return <TodayMatch key={i} fixtures={fixtures} />;
                 }

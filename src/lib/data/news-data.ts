@@ -935,6 +935,73 @@ export const NEWS_ARTICLES: NewsArticle[] = [
       "Moeen Ali NPL",
     ],
   },
+  {
+    id: "article-11",
+    slug: "janakpur-bolts-vs-kathmandu-gorkhas-live-score",
+    content: [],
+    title:
+      "Janakpur Bolts vs Kathmandu Gorkhas Live Score Today – NPL 2026 Match 5",
+    excerpt:
+      "Follow the live score, ball-by-ball commentary, and real-time innings updates for NPL 2026 Match 5 between Janakpur Bolts and Kathmandu Gorkhas at TU International Cricket Stadium, Kirtipur.",
+    blocks: [
+      {
+        type: "paragraph",
+        text: "Match 5 of NPL Season 3 brings together two of the tournament's most powerful batting line-ups. Janakpur Bolts — carrying the deepest overseas roster in the competition — face Kathmandu Gorkhas, who boast the explosive opening pair of David Warner and Mohammad Aadil Alam. The 12:30 PM NPT kick-off at Tribhuvan University International Cricket Stadium, Kirtipur, marks the first double-header day of the 2026 season.",
+      },
+      {
+        type: "paragraph",
+        text: "The live scoreboard, in-play statistics, and ball-by-ball commentary below are sourced directly from our live match centre and update automatically during the match.",
+      },
+      {
+        type: "paragraph",
+        text: "[[LIVE_MATCH:match-5-janakpur-bolts-vs-kathmandu-gorkhas]]",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Match 5 Preview — Janakpur Bolts vs Kathmandu Gorkhas",
+      },
+      {
+        type: "paragraph",
+        text: "Janakpur Bolts enter this match having assembled arguably the strongest squad on paper in NPL Season 3. Their overseas contingent of Jimmy Neesham, Moeen Ali, Harmeet Singh, and Corey Anderson provides match-winning options across all phases of the game. The domestic core, led by captain Aarif Sheikh, is experienced at T20 level.",
+      },
+      {
+        type: "paragraph",
+        text: "Kathmandu Gorkhas counter with the most destructive top-order in the competition. David Warner needs no introduction at T20 level, and Mohammad Aadil Alam's record in domestic franchise cricket across the subcontinent is exceptional. If the Gorkhas' opening partnership fires, they have the batting depth to post totals that challenge any bowling attack in the tournament.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Match 5 Details",
+      },
+      {
+        type: "table",
+        headers: ["Detail", "Information"],
+        rows: [
+          ["Fixture", "Match 5 — NPL Season 3"],
+          ["Teams", "Janakpur Bolts vs Kathmandu Gorkhas"],
+          ["Date", "Thursday, 29 October 2026"],
+          ["Nepali Date", "बिहीबार, १२ कार्तिक २०٨३"],
+          ["Time", "12:30 PM NPT (UTC +5:45)"],
+          ["Venue", "TU International Cricket Stadium, Kirtipur"],
+          ["Format", "T20 — 20 Overs per side"],
+          ["Stage", "League Stage"],
+          ["Broadcaster", "Himalaya TV HD / NetTV (OTT)"],
+        ],
+      },
+    ],
+    category: "Matches",
+    publishedAt: "2026-10-29T06:00:00+05:45",
+    updatedAt: "2026-10-29T06:00:00+05:45",
+    featured: false,
+    author: "NPL Hub Nepal Editorial Team",
+    source: "NPL Hub Nepal — Live Match Coverage",
+    relatedTeamIds: ["janakpur-bolts", "kathmandu-gorkhas"],
+    relatedMatchSlug: "match-5-janakpur-bolts-vs-kathmandu-gorkhas",
+    status: "published",
+    readTime: "4 min read",
+    displayDate: "29 Oct 2026",
+  },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────── */
