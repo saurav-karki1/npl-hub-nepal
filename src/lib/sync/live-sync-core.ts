@@ -4,7 +4,7 @@
  * Runs seamlessly on Vercel Serverless (via /api/cron/live-sync)
  * without requiring any local laptop process.
  *
- * Primary Data Source: ESPN Cricinfo full-scorecard HTML (__NEXT_DATA__).
+ * Primary Data Source: ESPN Cricinfo HTML (__NEXT_DATA__).
  * This endpoint returns HTTP 200 reliably from Vercel datacenter IPs,
  * avoiding the HTTP 403 Forbidden error of the old JSON API.
  */
@@ -25,16 +25,22 @@ function parseMatchStartMs(dateStr?: string, timeStr?: string): number | null {
   return isNaN(d.getTime()) ? null : d.getTime();
 }
 
-function mapTeamSlug(name = ""): string {
-  const n = name.toLowerCase();
-  if (n.includes("lumbini")) return "lumbini-lions";
-  if (n.includes("sudurpaschim") || n.includes("sudur paschim") || n.includes("paschim") || n.includes("royals")) return "sudurpaschim-royals";
-  if (n.includes("chitwan") || n.includes("rhinos")) return "chitwan-rhinos";
-  if (n.includes("biratnagar") || n.includes("kings")) return "biratnagar-kings";
-  if (n.includes("janakpur") || n.includes("bolts")) return "janakpur-bolts";
-  if (n.includes("karnali") || n.includes("yaks")) return "karnali-yaks";
-  if (n.includes("kathmandu") || n.includes("gorkhas")) return "kathmandu-gorkhas";
-  if (n.includes("pokhara") || n.includes("avengers")) return "pokhara-avengers";
+export function mapTeamSlug(name = ""): string {
+  const n = String(name).toLowerCase().replace(/\(npl\)/gi, "").trim();
+  if (n.includes("lumbini") || n.includes("lion")) return "lumbini-lions";
+  if (
+    n.includes("sudurpaschim") ||
+    n.includes("sudur paschim") ||
+    n.includes("paschim") ||
+    n.includes("royal")
+  )
+    return "sudurpaschim-royals";
+  if (n.includes("chitwan") || n.includes("rhino")) return "chitwan-rhinos";
+  if (n.includes("biratnagar") || n.includes("king")) return "biratnagar-kings";
+  if (n.includes("janakpur") || n.includes("bolt")) return "janakpur-bolts";
+  if (n.includes("karnali") || n.includes("yak")) return "karnali-yaks";
+  if (n.includes("kathmandu") || n.includes("gorkha")) return "kathmandu-gorkhas";
+  if (n.includes("pokhara") || n.includes("avenger")) return "pokhara-avengers";
   return n.replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
@@ -49,40 +55,47 @@ export interface SyncMatchResult {
 // ─── ESPN HTML Parser ────────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function fetchEspnMatchData(espnMatchId: string): Promise<any> {
-  const url = `https://www.espncricinfo.com/series/a-1558581/b-${espnMatchId}/full-scorecard`;
+  const endpoints = [
+    `https://www.espncricinfo.com/series/a-1558581/b-${espnMatchId}/ball-by-ball-commentary`,
+    `https://www.espncricinfo.com/series/a-1558581/b-${espnMatchId}/full-scorecard`,
+  ];
 
-  try {
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        Referer: "https://www.espncricinfo.com/",
-      },
-      next: { revalidate: 0 },
-    });
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+          Accept:
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+          Referer: "https://www.espncricinfo.com/",
+        },
+        next: { revalidate: 0 },
+      });
 
-    if (!res.ok) return null;
+      if (!res.ok) continue;
 
-    const html = await res.text();
-    const scriptMatch = html.match(
-      /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/
-    );
-    if (!scriptMatch) return null;
+      const html = await res.text();
+      const scriptMatch = html.match(
+        /<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/
+      );
+      if (!scriptMatch || !scriptMatch[1]) continue;
 
-    const json = JSON.parse(scriptMatch[1]);
-    const data = json.props?.appPageProps?.data;
-    if (!data) return null;
+      const json = JSON.parse(scriptMatch[1]);
+      const d = json.props?.appPageProps?.data;
+      if (!d) continue;
 
-    return {
-      match: data.match || {},
-      content: data.content || {},
-    };
-  } catch (err) {
-    console.error(`[ESPN FETCH] Error fetching match ${espnMatchId}:`, err);
-    return null;
+      const match = d.match || d.data?.match || {};
+      const content = d.content || d.data?.content || {};
+
+      return { match, content };
+    } catch {
+      // try next endpoint
+    }
   }
+
+  return null;
 }
 
 export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResult> {
@@ -134,7 +147,19 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
 
     const { match, content } = espnData;
     const matchState = String(match.state || "").toUpperCase();
-    const isCompleted = matchState === "POST" || match.resultStatus === "COMPLETE";
+    const statusText = String(match.statusText || match.status || "");
+    const statusTextLower = statusText.toLowerCase();
+
+    const isCompleted =
+      matchState === "POST" ||
+      match.resultStatus === "COMPLETE" ||
+      statusTextLower.includes("won by") ||
+      statusTextLower.includes("won the match") ||
+      statusTextLower.includes("beat") ||
+      statusTextLower.includes("no result") ||
+      statusTextLower.includes("abandoned") ||
+      statusTextLower.includes("match tied") ||
+      statusTextLower.includes("tied");
 
     // 3. Parse Innings & Scores
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -147,11 +172,11 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
     let hasScoreData = false;
 
     for (const inn of rawInnings) {
-      const innTeamSlug = mapTeamSlug(inn.team?.name || "");
+      const innTeamSlug = mapTeamSlug(inn.team?.name || inn.battingTeam?.name || "");
       const score = {
         runs: Number(inn.runs || 0),
         wickets: Number(inn.wickets || 0),
-        overs: String(inn.overs || "0.0"),
+        overs: String(inn.overs || inn.oversActual || "0.0"),
       };
 
       if (score.runs > 0 || score.wickets > 0 || parseFloat(score.overs) > 0) {
@@ -162,31 +187,10 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
         team1Score = score;
       } else if (innTeamSlug === team2DbSlug) {
         team2Score = score;
-      } else if (team1Score.runs === 0 && team1Score.wickets === 0 && team1Score.overs === "0.0") {
+      } else if (team1Score.runs === 0 && team1Score.overs === "0.0") {
         team1Score = score;
-      } else if (team2Score.runs === 0 && team2Score.wickets === 0 && team2Score.overs === "0.0") {
+      } else {
         team2Score = score;
-      }
-    }
-
-    // Fallback: check match.teams if innings array is empty
-    if (!hasScoreData && match.teams && Array.isArray(match.teams)) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      for (const t of match.teams as any[]) {
-        const tSlug = mapTeamSlug(t.name || t.team?.name || "");
-        if (t.score) {
-          hasScoreData = true;
-          const parts = String(t.score).split("/");
-          const runs = parseInt(parts[0], 10) || 0;
-          const wickets = parts[1] ? parseInt(parts[1], 10) : 0;
-          const ovMatch = String(t.scoreInfo || "").match(/([0-9.]+)\//);
-          const overs = ovMatch ? ovMatch[1] : "0.0";
-          if (tSlug === team1DbSlug) {
-            team1Score = { runs, wickets, overs };
-          } else if (tSlug === team2DbSlug) {
-            team2Score = { runs, wickets, overs };
-          }
-        }
       }
     }
 
@@ -220,11 +224,11 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       const activeBatsmen = (currentInning.inningBatsmen || []).filter((b: any) => {
         return (
           b.battedType === "yes" &&
-          (!b.dismissalText || b.dismissalText?.short === "not out")
+          (!b.dismissalText || b.dismissalText?.short === "not out" || b.dismissalText?.short === "batting")
         );
       });
 
-      for (const b of activeBatsmen) {
+      for (const b of activeBatsmen.length > 0 ? activeBatsmen : (currentInning.inningBatsmen || []).slice(0, 2)) {
         batters.push({
           name: b.player?.longName || b.player?.name || "Batter",
           runs: Number(b.runs || 0),
@@ -232,7 +236,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
           fours: Number(b.fours || 0),
           sixes: Number(b.sixes || 0),
           strikeRate: b.balls ? ((b.runs / b.balls) * 100).toFixed(1) : "0.00",
-          isStriker: false,
+          isStriker: Boolean(b.isStriker),
         });
       }
 
@@ -264,7 +268,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       resultStatement = match.statusText || match.status || "Match Completed";
       const wonMatch = resultStatement.match(/^(.*?)\s+won by\s+(.*)$/i);
       if (wonMatch) {
-        winnerName = wonMatch[1].trim();
+        winnerName = wonMatch[1].replace(/\(NPL\)/gi, "").trim();
         winMargin = wonMatch[2].trim();
         winType = winMargin.toLowerCase().includes("run") ? "runs" : "wickets";
         winnerTeamSlug = mapTeamSlug(winnerName);
@@ -278,9 +282,9 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       }
     } else {
       // Live state: summarize score
-      const activeScore = team1Score.runs > 0 || parseFloat(team1Score.overs) > 0 ? team1Score : team2Score;
-      resultStatement = match.statusText
-        ? `${match.statusText} (${activeScore.runs}/${activeScore.wickets} in ${activeScore.overs} ov)`
+      const activeScore = team2Score.runs > 0 || parseFloat(team2Score.overs) > 0 ? team2Score : team1Score;
+      resultStatement = statusText
+        ? `${statusText} (${activeScore.runs}/${activeScore.wickets} in ${activeScore.overs} ov)`
         : `${activeScore.runs}/${activeScore.wickets} (${activeScore.overs} ov)`;
     }
 
@@ -308,18 +312,77 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       })
       .eq("id", matchIdStr);
 
-    // 7. Sync ball-by-ball commentary from inningOvers
-    if (currentInning && Array.isArray(currentInning.inningOvers)) {
+    // 7. Sync ball-by-ball commentary
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const comments: any[] = content.comments || [];
+    if (comments.length > 0) {
+      for (const c of comments) {
+        if (c.oversActual == null) continue;
+        const overNum = parseFloat(c.oversActual) || 0;
+        const overInt = Math.floor(overNum);
+        const ballInt = Math.round((overNum - overInt) * 10);
+        const innNum = c.inningNumber || 1;
+        const eventId = `espn_${espnMatchId}_inn${innNum}_${String(c.oversActual)}`;
+
+        let bowlerName = "";
+        let batterName = "";
+        if (c.title && c.title.includes(" to ")) {
+          const parts = c.title.split(" to ");
+          bowlerName = parts[0]?.trim() || "";
+          batterName = parts[1]?.trim() || "";
+        }
+
+        const isWicket = Boolean(c.isWicket);
+        const isSix = Boolean(c.isSix);
+        const isFour = Boolean(c.isFour);
+        const runs = Number(c.totalRuns) || 0;
+
+        let commentaryText = c.dismissalText?.commentary || c.dismissalText?.long || "";
+        if (!commentaryText) {
+          if (isWicket) commentaryText = `OUT! ${batterName || "The batter"} is dismissed${bowlerName ? ` by ${bowlerName}` : ""}.`;
+          else if (isSix) commentaryText = `SIX! ${batterName || "The batter"} smashes a maximum${bowlerName ? ` off ${bowlerName}` : ""}!`;
+          else if (isFour) commentaryText = `FOUR! ${batterName || "The batter"} hits a boundary${bowlerName ? ` off ${bowlerName}` : ""}.`;
+          else if (runs === 1) commentaryText = `1 run. ${batterName || "The batter"} rotates the strike${bowlerName ? ` off ${bowlerName}` : ""}.`;
+          else if (runs > 1) commentaryText = `${runs} runs scored${bowlerName ? ` off ${bowlerName}` : ""}.`;
+          else commentaryText = `Dot ball.${bowlerName ? ` Good delivery by ${bowlerName}.` : ""}`;
+        }
+
+        const headline = isWicket ? "WICKET!" : isSix ? "SIX!" : isFour ? "FOUR!" : undefined;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (sb as any)
+          .from("match_commentary")
+          .upsert(
+            {
+              match_id: matchIdStr,
+              external_event_id: eventId,
+              over_number: overNum,
+              ball_number: ballInt,
+              event_type: isWicket ? "wicket" : isFour || isSix ? "boundary" : "ball",
+              commentary_text: commentaryText,
+              headline,
+              runs,
+              is_wicket: isWicket,
+              is_boundary: Boolean(isFour || isSix),
+              is_six: isSix,
+              batter_name: batterName || undefined,
+              bowler_name: bowlerName || undefined,
+              provider: "manual",
+            },
+            { onConflict: "match_id,external_event_id" }
+          );
+      }
+    } else if (currentInning && Array.isArray(currentInning.inningOvers)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const recentOvers = currentInning.inningOvers.slice(-4);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      for (const overGroup of recentOvers as any[]) {
+      for (const overGroup of currentInning.inningOvers as any[]) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         for (const ball of (overGroup.balls || []) as any[]) {
-          const overNum = ball.oversActual ? parseFloat(ball.oversActual) : overGroup.overNumber;
+          if (ball.oversActual == null) continue;
+          const overNum = parseFloat(ball.oversActual) || 0;
           const overInt = Math.floor(overNum);
           const ballInt = Math.round((overNum - overInt) * 10);
-          const eventId = `espn_${espnMatchId}_inn${currentInning.inningNumber || 1}_${ball.oversActual || overNum}`;
+          const innNum = currentInning.inningNumber || 1;
+          const eventId = `espn_${espnMatchId}_inn${innNum}_${String(ball.oversActual)}`;
 
           const batterName =
             ball.batsmanStatText?.long?.replace(/\s*\d+.*$/, "").trim() ||
@@ -337,13 +400,15 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
           const isFour = Boolean(ball.isFour);
           const isSix = Boolean(ball.isSix);
 
-          let commentaryText = "";
-          if (isWicket) commentaryText = `OUT! ${batterName} is dismissed off ${bowlerName}.`;
-          else if (isSix) commentaryText = `SIX! ${batterName} smashes a maximum off ${bowlerName}!`;
-          else if (isFour) commentaryText = `FOUR! ${batterName} strikes a boundary off ${bowlerName}.`;
-          else if (runs === 1) commentaryText = `1 run. ${batterName} rotates the strike off ${bowlerName}.`;
-          else if (runs > 1) commentaryText = `${runs} runs scored off ${bowlerName}.`;
-          else commentaryText = `Dot ball. Good delivery by ${bowlerName}.`;
+          let commentaryText = ball.dismissalText?.long || ball.dismissalText?.short || "";
+          if (!commentaryText) {
+            if (isWicket) commentaryText = `OUT! ${batterName} is dismissed off ${bowlerName}.`;
+            else if (isSix) commentaryText = `SIX! ${batterName} smashes a maximum off ${bowlerName}!`;
+            else if (isFour) commentaryText = `FOUR! ${batterName} strikes a boundary off ${bowlerName}.`;
+            else if (runs === 1) commentaryText = `1 run. ${batterName} rotates the strike off ${bowlerName}.`;
+            else if (runs > 1) commentaryText = `${runs} runs scored off ${bowlerName}.`;
+            else commentaryText = `Dot ball. Good delivery by ${bowlerName}.`;
+          }
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (sb as any)
@@ -363,7 +428,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
                 is_six: isSix,
                 batter_name: batterName,
                 bowler_name: bowlerName,
-                                provider: "manual",
+                provider: "manual",
               },
               { onConflict: "match_id,external_event_id" }
             );
