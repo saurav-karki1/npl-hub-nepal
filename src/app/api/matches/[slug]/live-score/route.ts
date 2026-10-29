@@ -89,13 +89,31 @@ export async function GET(
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: dbComms } = await (sb.from("match_commentary") as any)
-        .select("over_number,ball_number,headline,commentary_text,is_wicket,is_boundary,is_six,runs,batter_name,bowler_name")
-        .eq("match_id", match.id)
-        .order("over_number", { ascending: false })
-        .limit(20);
+        .select("external_event_id,over_number,ball_number,headline,commentary_text,is_wicket,is_boundary,is_six,runs,batter_name,bowler_name,created_at")
+        .eq("match_id", match.id);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const recentBalls: LiveBallEvent[] = (dbComms || []).map((c: any) => ({
+      const commsList = (dbComms || []) as any[];
+      commsList.sort((a, b) => {
+        const seqA = parseInt(String(a.external_event_id).match(/seq_(\d+)/)?.[1] || "0", 10);
+        const seqB = parseInt(String(b.external_event_id).match(/seq_(\d+)/)?.[1] || "0", 10);
+        if (seqA && seqB && seqA !== seqB) return seqB - seqA;
+
+        const innA = String(a.external_event_id).includes("_inn2_") ? 2 : 1;
+        const innB = String(b.external_event_id).includes("_inn2_") ? 2 : 1;
+        if (innA !== innB) return innB - innA;
+
+        if (Number(b.over_number) !== Number(a.over_number)) {
+          return Number(b.over_number) - Number(a.over_number);
+        }
+        if (Number(b.ball_number) !== Number(a.ball_number)) {
+          return Number(b.ball_number) - Number(a.ball_number);
+        }
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recentBalls: LiveBallEvent[] = commsList.slice(0, 20).map((c: any) => ({
         over: c.over_number ? String(c.over_number) : "",
         event: c.headline || (c.is_wicket ? "WICKET" : c.is_six ? "SIX" : c.is_boundary ? "FOUR" : `${c.runs || 0}`),
         dismissal: c.is_wicket ? c.commentary_text : "",

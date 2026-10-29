@@ -27,26 +27,22 @@ let lastSyncError = null;
 const server = http.createServer(async (req, res) => {
   if (req.url === "/diag" || req.url === "/diagnostics") {
     try {
-      const testUrl = "https://www.espncricinfo.com/series/a-1558581/b-1558586/ball-by-ball-commentary";
+      const testUrl = "https://site.api.espn.com/apis/site/v2/sports/cricket/1558581/scoreboard";
       const espnRes = await fetch(testUrl, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
-          Accept:
-            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-          "Accept-Language": "en-US,en;q=0.9",
-          Referer: "https://www.espncricinfo.com/",
-        },
+        headers: { "User-Agent": "Mozilla/5.0" },
       });
-      const text = await espnRes.text();
-      const hasNextData = text.includes('id="__NEXT_DATA__"');
+      const data = await espnRes.json();
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
         JSON.stringify({
           espnStatus: espnRes.status,
-          hasNextData,
-          bodyLength: text.length,
-          bodySnippet: text.slice(0, 300),
+          eventsCount: data.events ? data.events.length : 0,
+          events: (data.events || []).map((e) => ({
+            id: e.id,
+            name: e.name,
+            state: e.status?.type?.state,
+            summary: e.competitions?.[0]?.status?.summary || e.status?.type?.description,
+          })),
         })
       );
     } catch (err) {

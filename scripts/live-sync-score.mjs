@@ -70,7 +70,7 @@ export async function syncMatch(matchNumber = 1) {
 
     const comp = event.competitions?.[0];
     const state = event.status?.type?.state; // "in", "post", "pre"
-    const isCompleted = state === "post";
+    let isCompleted = state === "post";
     const isLive = state === "in";
     const statusSummary = comp?.status?.summary || event.status?.type?.description || "";
 
@@ -113,21 +113,25 @@ export async function syncMatch(matchNumber = 1) {
     }
 
     // 4. Fetch Real-Time Play-by-Play (updates with EVERY ball)
-    const pbpUrl = `https://site.api.espn.com/apis/site/v2/sports/cricket/${ESPN_SERIES_ID}/playbyplay?event=${espnMatchId}&limit=200`;
+    const pbpUrl = `https://site.api.espn.com/apis/site/v2/sports/cricket/${ESPN_SERIES_ID}/playbyplay?event=${espnMatchId}&limit=500`;
     const pbpRes = await fetch(pbpUrl, { headers: { "User-Agent": "Mozilla/5.0" } });
 
     let activeBatters = [];
     let activeBowlers = [];
     let commentaryRows = [];
     let liveChaseStatement = statusSummary;
+    let items = [];
+    let latestItem = null;
+    let latestInn = null;
 
     if (pbpRes.ok) {
       const pbpData = await pbpRes.json();
-      const items = pbpData.commentary?.items || pbpData.commentary || [];
+      items = pbpData.commentary?.items || pbpData.commentary || [];
 
       if (items.length > 0) {
-        const latest = items[items.length - 1];
-        const latestInn = latest.innings;
+        latestItem = items[items.length - 1];
+        const latest = latestItem;
+        latestInn = latestItem?.innings;
 
         // Override live score with playbyplay's ball-by-ball precision
         if (latestInn && latest.team) {
@@ -212,9 +216,10 @@ export async function syncMatch(matchNumber = 1) {
           if (!it.over?.actual && it.over?.actual !== 0) continue;
           const overNum = parseFloat(it.over.actual);
           const overInt = Math.floor(overNum);
-          const ballInt = Math.round((overNum - overInt) * 10);
+          const ballInt = it.over?.ball ? Number(it.over.ball) : Math.round((overNum - overInt) * 10);
           const innNum = it.period || 1;
-          const eventId = `espn_api_${espnMatchId}_inn${innNum}_${it.over.actual}`;
+          const sequence = it.sequence || it.id || `${innNum}_${it.over.actual}_${ballInt}`;
+          const eventId = `espn_${espnMatchId}_seq_${sequence}`;
 
           const runs = Number(it.scoreValue) || 0;
           const isWicket = Boolean(it.dismissal?.dismissal || it.playType?.description === "wicket");
@@ -224,14 +229,21 @@ export async function syncMatch(matchNumber = 1) {
           const batterName = it.batsman?.athlete?.displayName || "";
           const bowlerName = it.bowler?.athlete?.displayName || "";
 
-          let commentaryText = it.dismissal?.text || it.shortText || "";
-          if (!commentaryText) {
-            if (isWicket) commentaryText = `OUT! ${batterName} is dismissed by ${bowlerName}.`;
-            else if (isSix) commentaryText = `SIX! ${batterName} smashes a maximum off ${bowlerName}!`;
-            else if (isFour) commentaryText = `FOUR! ${batterName} finds the boundary off ${bowlerName}.`;
-            else if (runs === 1) commentaryText = `1 run. ${batterName} rotates the strike.`;
-            else if (runs > 1) commentaryText = `${runs} runs scored off ${bowlerName}.`;
-            else commentaryText = `Dot ball. Good delivery by ${bowlerName}.`;
+          let commentaryText = "";
+          if (isWicket && it.dismissal?.text) {
+            commentaryText = `${it.shortText || "OUT"}. ${it.dismissal.text}`;
+          } else if (it.shortText) {
+            commentaryText = it.shortText;
+          } else if (isWicket) {
+            commentaryText = `OUT! ${batterName} is dismissed by ${bowlerName}.`;
+          } else if (isSix) {
+            commentaryText = `SIX! ${batterName} hits a six off ${bowlerName}.`;
+          } else if (isFour) {
+            commentaryText = `FOUR! ${batterName} finds the boundary off ${bowlerName}.`;
+          } else if (runs > 0) {
+            commentaryText = `${runs} run${runs > 1 ? "s" : ""} scored off ${bowlerName}.`;
+          } else {
+            commentaryText = `Dot ball. Good delivery by ${bowlerName}.`;
           }
 
           const headline = isWicket ? "WICKET!" : isSix ? "SIX!" : isFour ? "FOUR!" : undefined;
@@ -256,7 +268,45 @@ export async function syncMatch(matchNumber = 1) {
       }
     }
 
-    // 5. Result Statement & Winner Logic
+    // 5. Completion & Winner Determination
+    isCompleted = state === "post";
+    const summaryLower = (statusSummary || "").toLowerCase();
+
+    if (
+      summaryLower.includes("won by") ||
+      summaryLower.includes("beat") ||
+      summaryLower.includes("tied") ||
+      summaryLower.includes("no result") ||
+      summaryLower.includes("match drawn")
+    ) {
+      isCompleted = true;
+    }
+
+    // Check cricket completion rules in 2nd innings
+    if (!isCompleted && latestInn && latestInn.number === 2 && latestInn.target > 0) {
+      if (latestInn.runs >= latestInn.target) {
+        isCompleted = true;
+      } else if (latestInn.wickets >= 10 || (latestInn.balls >= 120)) {
+        isCompleted = true;
+      }
+    }
+
+    // Check competitor score string target (e.g. "116/2 (17.2/20 ov, target 116)")
+    if (!isCompleted) {
+      for (const c of (comp?.competitors || [])) {
+        const sc = String(c.score || "");
+        const targetMatch = sc.match(/target\s+(\d+)/i);
+        if (targetMatch) {
+          const target = parseInt(targetMatch[1], 10);
+          const runs = parseInt(sc.split("/")[0], 10);
+          if (runs >= target && target > 0) {
+            isCompleted = true;
+            break;
+          }
+        }
+      }
+    }
+
     let winnerName = undefined;
     let winMargin = undefined;
     let winType = undefined;
@@ -264,13 +314,45 @@ export async function syncMatch(matchNumber = 1) {
     let resultStatement = liveChaseStatement;
 
     if (isCompleted) {
-      resultStatement = statusSummary || "Match Completed";
-      const wonMatch = resultStatement.match(/^(.*?)\s+won by\s+(.*)$/i);
-      if (wonMatch) {
-        winnerName = wonMatch[1].replace(/\(NPL\)/gi, "").trim();
-        winMargin = wonMatch[2]?.trim() || "";
-        winType = (winMargin || "").toLowerCase().includes("run") ? "runs" : "wickets";
-        winnerTeamSlug = mapTeamSlug(winnerName);
+      if (statusSummary && (summaryLower.includes("won by") || summaryLower.includes("beat"))) {
+        resultStatement = statusSummary;
+        const wonMatch = statusSummary.match(/^(.+?)\s+(?:won by|beat)\s+(.+)$/i);
+        if (wonMatch) {
+          winnerName = wonMatch[1].replace(/\(NPL\)/gi, "").trim();
+          winnerTeamSlug = mapTeamSlug(winnerName);
+          const marginMatch = wonMatch[2].match(/(\d+)\s+(wicket|run)/i);
+          if (marginMatch) {
+            winMargin = marginMatch[1];
+            winType = marginMatch[2].toLowerCase() === "wicket" ? "wickets" : "runs";
+          }
+        }
+      } else if (latestInn && latestInn.number === 2 && latestInn.target > 0) {
+        const chasingTeamName = latestItem?.team?.name?.replace(/\(NPL\)/gi, "").trim() ||
+          (comp?.competitors || []).find((c) => c.linescores?.some((l) => l.period === 2))?.team?.name?.replace(/\(NPL\)/gi, "").trim();
+        const defendingTeamName = (comp?.competitors || []).find((c) => c.team?.name?.replace(/\(NPL\)/gi, "").trim() !== chasingTeamName)?.team?.name?.replace(/\(NPL\)/gi, "").trim();
+
+        if (latestInn.runs >= latestInn.target) {
+          const wicketsLeft = 10 - (latestInn.wickets || 0);
+          const ballsRem = latestInn.remainingBalls || Math.max(0, 120 - (latestInn.balls || 0));
+          winnerName = chasingTeamName;
+          winnerTeamSlug = mapTeamSlug(winnerName);
+          winMargin = String(wicketsLeft);
+          winType = "wickets";
+          resultStatement = `${winnerName} won by ${wicketsLeft} wicket${wicketsLeft !== 1 ? "s" : ""}${ballsRem > 0 ? ` (with ${ballsRem} balls remaining)` : ""}`;
+        } else if (latestInn.wickets >= 10 || (latestInn.balls >= 120)) {
+          const runDiff = (latestInn.target - 1) - latestInn.runs;
+          if (runDiff > 0) {
+            winnerName = defendingTeamName;
+            winnerTeamSlug = mapTeamSlug(winnerName);
+            winMargin = String(runDiff);
+            winType = "runs";
+            resultStatement = `${winnerName} won by ${runDiff} run${runDiff !== 1 ? "s" : ""}`;
+          } else if (runDiff === 0) {
+            resultStatement = "Match Tied";
+          }
+        }
+      } else {
+        resultStatement = statusSummary || "Match Completed";
       }
     }
 
@@ -312,18 +394,16 @@ export async function syncMatch(matchNumber = 1) {
       );
     }
 
-    // 7. Upsert commentary balls
+    // 7. Upsert commentary balls in fast batch
     if (commentaryRows.length > 0) {
-      const recentToSave = commentaryRows.slice(-50);
-      let commCount = 0;
-      for (const row of recentToSave) {
-        const { error: cErr } = await sb
-          .from("match_commentary")
-          .upsert(row, { onConflict: "match_id,external_event_id" });
-        if (!cErr) commCount++;
-      }
-      if (commCount > 0) {
-        console.log(`[SYNC M${matchNumber}] Commentary: ${commCount} balls upserted.`);
+      const recentToSave = commentaryRows.slice(-100);
+      const { error: cErr } = await sb
+        .from("match_commentary")
+        .upsert(recentToSave, { onConflict: "match_id,external_event_id" });
+      if (!cErr) {
+        console.log(`[SYNC M${matchNumber}] Commentary: ${recentToSave.length} balls batch upserted.`);
+      } else {
+        console.warn(`[SYNC M${matchNumber}] Commentary batch error:`, cErr.message);
       }
     }
 

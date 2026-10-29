@@ -109,11 +109,29 @@ export async function getMatchCommentary(matchId: string): Promise<CommentaryOut
     const { data, error } = await (admin as any)
       .from("match_commentary")
       .select("*")
-      .eq("match_id", matchId)
-      .order("over_number", { ascending: false })
-      .order("created_at", { ascending: false });
+      .eq("match_id", matchId);
 
     if (!error && data && data.length > 0) {
+      // Sort in cricket order: 2nd innings deliveries first, then 1st innings deliveries; highest sequence/over first
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data.sort((a: any, b: any) => {
+        const seqA = parseInt(String(a.external_event_id).match(/seq_(\d+)/)?.[1] || "0", 10);
+        const seqB = parseInt(String(b.external_event_id).match(/seq_(\d+)/)?.[1] || "0", 10);
+        if (seqA && seqB && seqA !== seqB) return seqB - seqA;
+
+        const innA = String(a.external_event_id).includes("_inn2_") ? 2 : 1;
+        const innB = String(b.external_event_id).includes("_inn2_") ? 2 : 1;
+        if (innA !== innB) return innB - innA;
+
+        if (Number(b.over_number) !== Number(a.over_number)) {
+          return Number(b.over_number) - Number(a.over_number);
+        }
+        if (Number(b.ball_number) !== Number(a.ball_number)) {
+          return Number(b.ball_number) - Number(a.ball_number);
+        }
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((row: any) => ({
         id: row.id,

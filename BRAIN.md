@@ -523,3 +523,23 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Commentary endpoint: `https://nplhubnepal.vercel.app/api/matches/match-5-janakpur-bolts-vs-kathmandu-gorkhas/commentary` returning 24+ ball-by-ball items.
     - Match page `https://nplhubnepal.vercel.app/matches/match-5-janakpur-bolts-vs-kathmandu-gorkhas` active and updating.
     - `npm run build` passed with 229 routes and 0 TypeScript errors.
+- **2026-10-29 (ESPN REST API Migration, Automatic Match Completion & Real Cricket Commentary Fix):**
+  - **Root Cause Diagnosed:**
+    1. **403 Forbidden from Cloud IPs:** ESPN's HTML scraping endpoint (`/series/a-.../ball-by-ball-commentary`) blocked Render's datacenter IPs with 403 Access Denied.
+    2. **Pagination Cutoff:** PBP query with `limit=200` cut off before the match finished (229 deliveries bowled in Match 5), freezing scores at 12.4 overs.
+    3. **Delayed ESPN Completion State:** ESPN REST API remains in `state: "in"` for 15+ minutes after the final ball is bowled. Code checking only `state === "post"` failed to mark completed matches.
+    4. **Commentary Inversion & Intermingling:** In `match_commentary`, ordering purely by `over_number DESC` caused Innings 1 balls (which went to 19.3 overs) to always rank above Innings 2 balls (which finished in 17.2 overs).
+    5. **Synthetic Text Replacement:** `LiveCommentaryFeed.tsx` had template fallback logic that discarded real ESPN delivery text (`item.text`) and substituted generic AI/template sentences.
+    6. **Client-Side Frozen State:** `MatchScoreboard.tsx` only updated score when `data.live` was true, ignoring `isCompleted: true` and leaving the in-progress card visible.
+  - **Resolution Implemented:**
+    1. **Migrated to ESPN REST API (`site.api.espn.com`):** Open public JSON endpoints for both scoreboard and playbyplay (`limit=500`). Works from all cloud providers (Render, Vercel) with 0 blocks.
+    2. **Automatic Cricket Match Completion Engine:** Checks mathematical cricket rules (chasing team runs >= target, defending team bowls out/20 overs, or status summary win terms) so matches complete instantly without waiting for ESPN manual state changes.
+    3. **True Cricket Order Sorting:** Commentary ordered by sequence ID (200000+ for 2nd innings, 100000+ for 1st innings) and innings number, ensuring active/latest innings deliveries appear at the top.
+    4. **Real Cricket Delivery Text:** Stored and displayed authentic ESPN playbyplay descriptions (`shortText` + `dismissal.text`) directly in the feed without synthetic text overriding it.
+    5. **Dynamic Client Completion UI:** `MatchScoreboard.tsx` and `LiveCommentaryFeed.tsx` now update their state dynamically when `isCompleted: true` arrives from the live polling endpoint, rendering the Official Result banner and winner details without requiring a page refresh.
+    6. **Recalculated Standings:** Recalculated Season 3 points table in `team_seasons` with official results for Matches 1 through 5.
+  - **Verification:**
+    - Match 5 in Supabase marked `completed`, result: `Janakpur Bolts won by 8 wickets (with 16 balls remaining)`.
+    - Standings table updated: Janakpur Bolts (played 2, won 1, points 2), Kathmandu Gorkhas (played 1, lost 1, points 0).
+    - All 229 deliveries cleanly ingested into `match_commentary` with accurate text, balls, boundaries, and wickets.
+    - `npx tsc --noEmit` and `npm run build` both passed with 0 errors across 229 routes.

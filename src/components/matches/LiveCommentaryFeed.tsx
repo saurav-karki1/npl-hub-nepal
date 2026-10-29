@@ -22,6 +22,8 @@ interface CommentaryItem {
 }
 
 interface LiveScoreData {
+  live?: boolean;
+  isCompleted?: boolean;
   summary?: string;
   resultStatement?: string;
   battingTeam?: string;
@@ -206,7 +208,8 @@ export function LiveCommentaryFeed({
   const [aiVersion, setAiVersion] = useState(0);
 
   const isUpcoming = matchStatus === "upcoming" || matchStatus === "tba";
-  const isCompleted = matchStatus === "completed";
+  const isMatchCompleted = matchStatus === "completed" || Boolean(liveMeta?.isCompleted);
+  const isMatchLive = (isLive || Boolean(liveMeta?.live)) && !isMatchCompleted;
 
   const fetchCommentary = useCallback(async () => {
     if (loading) return;
@@ -247,10 +250,10 @@ export function LiveCommentaryFeed({
   }, [matchSlug]);
 
   useEffect(() => {
-    if (!isLive) return;
+    if (!isMatchLive) return;
     const interval = setInterval(fetchCommentary, 15000);
     return () => clearInterval(interval);
-  }, [isLive, fetchCommentary]);
+  }, [isMatchLive, fetchCommentary]);
 
   // ── AI enrichment: fire-and-forget for key moments ───────────────────────
   // Runs whenever commentary list changes; fetches AI text for wickets/6s/4s
@@ -293,7 +296,7 @@ export function LiveCommentaryFeed({
             target: liveMeta?.target,
             runsNeeded: liveMeta?.runsNeeded,
             ballsLeft: liveMeta?.ballsLeft,
-            matchStatus: isLive ? "live" : "completed",
+            matchStatus: isMatchLive ? "live" : "completed",
           },
         }),
       })
@@ -316,10 +319,10 @@ export function LiveCommentaryFeed({
 
   // Live polling every 15s during active match
   useEffect(() => {
-    if (!isLive) return;
+    if (!isMatchLive) return;
     const interval = setInterval(fetchCommentary, 15000);
     return () => clearInterval(interval);
-  }, [isLive, fetchCommentary]);
+  }, [isMatchLive, fetchCommentary]);
 
   const filteredList = useMemo(() => {
     if (filter === "wickets") {
@@ -370,7 +373,7 @@ export function LiveCommentaryFeed({
   // Replaces the raw ESPN string like "Janakpur Bolts (NPL)66/5 (10.4 ov, Harmeet Singh 7*...)"
   // with something every fan instantly understands on first read.
   const equationBanner = useMemo(() => {
-    if (isCompleted) {
+    if (isMatchCompleted) {
       const result = liveMeta?.resultStatement || "Match completed.";
       return { headline: "Final Result", body: result, icon: "🏆" };
     }
@@ -505,7 +508,7 @@ export function LiveCommentaryFeed({
     }
 
     return null;
-  }, [isCompleted, liveMeta]);
+  }, [isMatchCompleted, liveMeta]);
 
   return (
     <section className="space-y-4">
@@ -516,13 +519,13 @@ export function LiveCommentaryFeed({
             <h2 className="text-lg font-black text-[var(--color-ink)]">
               Ball-by-Ball Commentary
             </h2>
-            {isLive && (
+            {isMatchLive && (
               <span className="flex items-center gap-1.5 text-[11px] font-extrabold text-red-400 bg-red-500/10 border border-red-500/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                 <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
                 Live Feed
               </span>
             )}
-            {isCompleted && (
+            {isMatchCompleted && (
               <span className="text-[11px] font-bold text-slate-300 bg-slate-800 border border-slate-700 px-2.5 py-0.5 rounded-full">
                 Final Match Summary
               </span>
@@ -540,7 +543,7 @@ export function LiveCommentaryFeed({
               Synced {lastFetched} NPT
             </span>
           )}
-          {isLive && (
+          {isMatchLive && (
             <button
               type="button"
               onClick={fetchCommentary}
@@ -587,7 +590,7 @@ export function LiveCommentaryFeed({
               </div>
             </div>
             <span className="text-[11px] font-mono text-emerald-300/80 bg-black/40 border border-emerald-500/20 px-2.5 py-1 rounded-md shrink-0 self-start">
-              {isLive ? "● In Progress" : "Official Outcome"}
+              {isMatchLive ? "● In Progress" : "Official Outcome"}
             </span>
           </div>
         </div>
@@ -677,6 +680,8 @@ export function LiveCommentaryFeed({
             const displayText =
               isKeyMoment && cachedAI
                 ? cachedAI
+                : (item.text && item.text.trim().length > 0)
+                ? item.text
                 : templateCommentary(item, effectiveBatter, effectiveBowler);
             // suppress unused var warning — aiVersion used to force re-render
             void aiVersion;

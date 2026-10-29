@@ -17,12 +17,15 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
   const team2Detail = match.team2Id !== null ? getTeamBySlugSync(match.team2Id) : undefined;
   const { team1, team2 } = resolveMatchTeams(match);
 
-  const isCompleted = match.status === "completed";
-  const isLive = match.status === "live";
-
-  // Dynamic live score state for automatic updates
+  const [matchStatus, setMatchStatus] = useState(match.status);
   const [liveScores, setLiveScores] = useState(match.scores);
+  const [resultStatement, setResultStatement] = useState<string | null>(
+    match.resultDetails?.statement || match.result || null
+  );
   const [liveSummary, setLiveSummary] = useState<string | null>(null);
+
+  const isCompleted = matchStatus === "completed";
+  const isLive = matchStatus === "live";
 
   useEffect(() => {
     if (!isLive) return;
@@ -33,7 +36,15 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
         const res = await fetch(`/api/matches/${match.slug}/live-score`);
         if (res.ok) {
           const data = await res.json();
-          if (data.live && isMounted) {
+          if (isMounted) {
+            if (data.isCompleted) {
+              setMatchStatus("completed");
+              if (data.resultStatement) {
+                setResultStatement(data.resultStatement);
+              }
+            } else if (data.live) {
+              setMatchStatus("live");
+            }
             if (data.scores) {
               setLiveScores(data.scores);
             }
@@ -92,7 +103,7 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
                   Official Result
                 </span>
                 <p className="text-lg sm:text-xl font-black text-[var(--color-ink)]">
-                  {match.resultDetails?.statement || match.result || "Match Completed"}
+                  {resultStatement || match.resultDetails?.statement || match.result || "Match Completed"}
                 </p>
                 {match.resultDetails?.winMargin && (
                   <p className="text-xs text-[var(--color-ink-muted)] mt-1">
