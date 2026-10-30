@@ -52,6 +52,8 @@ export interface AdminNewsRow {
   status: ArticleStatus;
   featured: boolean;
   image_url: string | null;
+  image_alt: string | null;
+  image_caption: string | null;
   author: string;
   author_role: string;
   read_time: string;
@@ -61,6 +63,8 @@ export interface AdminNewsRow {
   published_at: string;
   updated_at: string;
   created_at: string;
+  focus_keyword: string | null;
+  secondary_keywords: string[] | null;
   news_team_relations: AdminNewsTeamRelation[];
 }
 
@@ -82,6 +86,10 @@ export interface CreateNewsInput {
   source_url?: string | null;
   published_at?: string;
   teamIds: string[];
+  focus_keyword?: string | null;
+  secondary_keywords?: string[] | null;
+  image_alt?: string | null;
+  image_caption?: string | null;
 }
 
 export interface UpdateNewsInput {
@@ -102,6 +110,10 @@ export interface UpdateNewsInput {
   source_url?: string | null;
   published_at?: string;
   teamIds?: string[];
+  focus_keyword?: string | null;
+  secondary_keywords?: string[] | null;
+  image_alt?: string | null;
+  image_caption?: string | null;
 }
 
 // ---------------------------------------------------------------------------

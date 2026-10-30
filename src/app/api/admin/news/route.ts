@@ -90,6 +90,8 @@ interface CreateNewsPayload {
   status?: "published" | "draft";
   featured?: boolean;
   image_url?: string | null;
+  image_alt?: string | null;
+  image_caption?: string | null;
   author: string;
   author_role: string;
   read_time: string;
@@ -98,6 +100,8 @@ interface CreateNewsPayload {
   source_url?: string | null;
   published_at?: string;
   teamIds?: string[];
+  focus_keyword?: string | null;
+  secondary_keywords?: string[] | null;
 }
 
 interface UpdateNewsPayload {
@@ -110,6 +114,8 @@ interface UpdateNewsPayload {
   status?: "published" | "draft";
   featured?: boolean;
   image_url?: string | null;
+  image_alt?: string | null;
+  image_caption?: string | null;
   author?: string;
   author_role?: string;
   read_time?: string;
@@ -118,6 +124,8 @@ interface UpdateNewsPayload {
   source_url?: string | null;
   published_at?: string;
   teamIds?: string[];
+  focus_keyword?: string | null;
+  secondary_keywords?: string[] | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -135,8 +143,9 @@ export async function GET(req: NextRequest) {
       .select(
         `
         id, slug, title, excerpt, content, category, status,
-        featured, image_url, author, author_role, read_time,
+        featured, image_url, image_alt, image_caption, author, author_role, read_time,
         tags, source, source_url, published_at, updated_at, created_at,
+        focus_keyword, secondary_keywords,
         news_team_relations ( id, team_id )
       `
       )
@@ -251,8 +260,12 @@ export async function POST(req: NextRequest) {
       created_at: now,
     };
     if (rest.image_url !== undefined) insertPayload.image_url = rest.image_url;
+    if (rest.image_alt !== undefined) insertPayload.image_alt = rest.image_alt;
+    if (rest.image_caption !== undefined) insertPayload.image_caption = rest.image_caption;
     if (rest.source !== undefined) insertPayload.source = rest.source;
     if (rest.source_url !== undefined) insertPayload.source_url = rest.source_url;
+    if (rest.focus_keyword !== undefined) insertPayload.focus_keyword = rest.focus_keyword;
+    if (rest.secondary_keywords !== undefined) insertPayload.secondary_keywords = rest.secondary_keywords;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: insertErr } = await (admin as any)
@@ -281,8 +294,9 @@ export async function POST(req: NextRequest) {
       .select(
         `
         id, slug, title, excerpt, content, category, status,
-        featured, image_url, author, author_role, read_time,
+        featured, image_url, image_alt, image_caption, author, author_role, read_time,
         tags, source, source_url, published_at, updated_at, created_at,
+        focus_keyword, secondary_keywords,
         news_team_relations ( id, team_id )
       `
       )
@@ -371,6 +385,8 @@ export async function PUT(req: NextRequest) {
     if (fields.status !== undefined) updatePayload.status = fields.status;
     if (fields.featured !== undefined) updatePayload.featured = fields.featured;
     if (fields.image_url !== undefined) updatePayload.image_url = fields.image_url;
+    if (fields.image_alt !== undefined) updatePayload.image_alt = fields.image_alt;
+    if (fields.image_caption !== undefined) updatePayload.image_caption = fields.image_caption;
     if (fields.author !== undefined) updatePayload.author = fields.author;
     if (fields.author_role !== undefined) updatePayload.author_role = fields.author_role;
     if (fields.read_time !== undefined) updatePayload.read_time = fields.read_time;
@@ -378,6 +394,8 @@ export async function PUT(req: NextRequest) {
     if (fields.source !== undefined) updatePayload.source = fields.source;
     if (fields.source_url !== undefined) updatePayload.source_url = fields.source_url;
     if (fields.published_at !== undefined) updatePayload.published_at = fields.published_at;
+    if (fields.focus_keyword !== undefined) updatePayload.focus_keyword = fields.focus_keyword;
+    if (fields.secondary_keywords !== undefined) updatePayload.secondary_keywords = fields.secondary_keywords;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: updateErr } = await (admin as any)
@@ -421,8 +439,9 @@ export async function PUT(req: NextRequest) {
       .select(
         `
         id, slug, title, excerpt, content, category, status,
-        featured, image_url, author, author_role, read_time,
+        featured, image_url, image_alt, image_caption, author, author_role, read_time,
         tags, source, source_url, published_at, updated_at, created_at,
+        focus_keyword, secondary_keywords,
         news_team_relations ( id, team_id )
       `
       )

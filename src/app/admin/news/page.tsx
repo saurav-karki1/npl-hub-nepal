@@ -98,6 +98,8 @@ interface ArticleFormState {
   status: ArticleStatus;
   featured: boolean;
   image_url: string;
+  image_alt: string;
+  image_caption: string;
   author: string;
   author_role: string;
   read_time: string;
@@ -106,6 +108,8 @@ interface ArticleFormState {
   source_url: string;
   published_at: string;
   teamIds: string[];
+  focus_keyword: string;
+  secondary_keywords: string[];
 }
 
 function defaultForm(): ArticleFormState {
@@ -128,6 +132,10 @@ function defaultForm(): ArticleFormState {
     source_url: "",
     published_at: new Date().toISOString().slice(0, 16),
     teamIds: [],
+    image_alt: "",
+    image_caption: "",
+    focus_keyword: "",
+    secondary_keywords: [],
   };
 }
 
@@ -159,6 +167,10 @@ function articleToForm(a: AdminNewsRow): ArticleFormState {
     source_url: a.source_url ?? "",
     published_at: a.published_at?.slice(0, 16) ?? new Date().toISOString().slice(0, 16),
     teamIds: a.news_team_relations.map((r) => r.team_id),
+    image_alt: a.image_alt ?? "",
+    image_caption: a.image_caption ?? "",
+    focus_keyword: a.focus_keyword ?? "",
+    secondary_keywords: a.secondary_keywords ?? [],
   };
 }
 
@@ -468,6 +480,34 @@ function ArticleEditor({
             />
           </div>
 
+          {/* Featured Image ALT Text + Caption */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+                Image ALT Text
+              </label>
+              <input
+                type="text"
+                value={form.image_alt}
+                onChange={(e) => onFormChange({ image_alt: e.target.value })}
+                placeholder="Describe the image for accessibility and SEO..."
+                className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+                Image Caption
+              </label>
+              <input
+                type="text"
+                value={form.image_caption}
+                onChange={(e) => onFormChange({ image_caption: e.target.value })}
+                placeholder="Optional caption shown below image..."
+                className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600"
+              />
+            </div>
+          </div>
+
           {/* Tags */}
           <div>
             <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
@@ -539,6 +579,79 @@ function ArticleEditor({
                 );
               })}
             </div>
+          </div>
+
+          {/* SEO Keywords */}
+          <div className="border border-slate-800 rounded-lg p-4 space-y-4">
+            <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">SEO Keywords</div>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+                Focus Keyword
+              </label>
+              <input
+                type="text"
+                value={form.focus_keyword}
+                onChange={(e) => onFormChange({ focus_keyword: e.target.value })}
+                placeholder="Primary keyword this article targets..."
+                className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600"
+              />
+            </div>
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1.5">
+                Secondary Keywords
+                <span className="ml-2 text-slate-500 normal-case font-normal">(press Enter or comma to add)</span>
+              </label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {form.secondary_keywords.map((kw, idx) => (
+                  <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-xs text-slate-300">
+                    {kw}
+                    <button
+                      type="button"
+                      onClick={() => onFormChange({ secondary_keywords: form.secondary_keywords.filter((_, i) => i !== idx) })}
+                      className="text-slate-500 hover:text-red-400 ml-1 leading-none"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <input
+                type="text"
+                placeholder="Type a keyword and press Enter..."
+                className="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 placeholder-slate-600"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === ",") {
+                    e.preventDefault();
+                    const val = e.currentTarget.value.trim().replace(/,$/, "");
+                    if (val && !form.secondary_keywords.includes(val)) {
+                      onFormChange({ secondary_keywords: [...form.secondary_keywords, val] });
+                    }
+                    e.currentTarget.value = "";
+                  }
+                }}
+              />
+            </div>
+            {/* SEO checklist — shown only when focus keyword is set */}
+            {form.focus_keyword && (
+              <div className="space-y-1.5 pt-1">
+                <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wide">SEO Checklist</div>
+                {[
+                  { label: "Focus keyword set", pass: !!form.focus_keyword },
+                  { label: "Focus keyword in title", pass: form.title.toLowerCase().includes(form.focus_keyword.toLowerCase()) },
+                  { label: "Focus keyword in excerpt / meta description", pass: form.excerpt.toLowerCase().includes(form.focus_keyword.toLowerCase()) },
+                  { label: "Slug is relevant", pass: form.slug.includes(form.focus_keyword.toLowerCase().replace(/\s+/g, "-")) },
+                  { label: "Featured image ALT text present", pass: !!form.image_alt },
+                  { label: "Meta description length 50–160 chars", pass: form.excerpt.length >= 50 && form.excerpt.length <= 160 },
+                ].map(({ label, pass }) => (
+                  <div key={label} className={`flex items-center gap-2 text-xs ${pass ? "text-emerald-400" : "text-amber-400"}`}>
+                    <span className={`w-3.5 h-3.5 rounded-full flex items-center justify-center text-[9px] flex-shrink-0 ${pass ? "bg-emerald-500/20" : "bg-amber-500/15"}`}>
+                      {pass ? "✓" : "!"}
+                    </span>
+                    {label}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Article Content with AI Structuring & Inline Images */}
@@ -734,6 +847,10 @@ export default function AdminNewsPage() {
         source_url: form.source_url || null,
         published_at: form.published_at ? new Date(form.published_at).toISOString() : undefined,
         teamIds: form.teamIds,
+        image_alt: form.image_alt || null,
+        image_caption: form.image_caption || null,
+        focus_keyword: form.focus_keyword || null,
+        secondary_keywords: form.secondary_keywords.length > 0 ? form.secondary_keywords : null,
       };
       createNewsAdmin(input, accessToken)
         .then(({ article, error }) => {
@@ -772,6 +889,10 @@ export default function AdminNewsPage() {
         source_url: form.source_url || null,
         published_at: form.published_at ? new Date(form.published_at).toISOString() : undefined,
         teamIds: form.teamIds,
+        image_alt: form.image_alt || null,
+        image_caption: form.image_caption || null,
+        focus_keyword: form.focus_keyword || null,
+        secondary_keywords: form.secondary_keywords.length > 0 ? form.secondary_keywords : null,
       };
       updateNewsAdmin(input, accessToken)
         .then(({ article, error }) => {
