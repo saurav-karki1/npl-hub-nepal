@@ -17,13 +17,13 @@
 
 ## 2. Current Development Status
 
-- **Stage:** Phase 9 Complete â€” SEO Internal & External Linking System (canonical NPL entity directory, Ctrl+K shortcut, rich text renderer).
+- **Stage:** Live Cricket Pipeline Dashboard & Rich Article Table Editor Complete.
 - **Core Stack:** Next.js 16.3.6 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4.
 - **Calendar Engine:** `nepali-date-converter` for Gregorian to Bikram Sambat (BS 2083) conversions.
-- **Database:** Supabase PostgreSQL â€” all repository modules query Supabase first, with deterministic static fallback.
-- **Admin Console:** Protected `/admin` dashboard with full Teams CRUD, Players CRUD, Matches CRUD, News CRUD (with AI article structuring), and Stats CRUD â€” all using secure service-role API routes. No hard delete on any module.
-- **AI Integration:** `GEMINI_API_KEY` (server-side env only) powers the `/api/admin/news/ai-structure` route. Gemini structures raw pasted article text into typed semantic blocks. Zero hallucination policy â€” AI only structures, never invents facts.
-- **Build Status:** ✅ `npm run build` generates **228 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
+- **Database:** Supabase PostgreSQL — all repository modules query Supabase first, with deterministic static fallback.
+- **Admin Console:** Protected `/admin` dashboard with full Teams CRUD, Players CRUD, Matches CRUD, News CRUD (with AI article structuring + Rich Table Editor), Stats CRUD, and real-time ESPN Live Cricket Pipeline Ingestion Dashboard.
+- **AI Integration:** `GEMINI_API_KEY` (server-side env only) powers the `/api/admin/news/ai-structure` route. Gemini structures raw pasted article text into typed semantic blocks and rich structured tables. Zero hallucination policy — AI only structures, never invents facts.
+- **Build Status:** ✅ `npm run build` generates **229 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
 
 ---
 
@@ -543,3 +543,18 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Standings table updated: Janakpur Bolts (played 2, won 1, points 2), Kathmandu Gorkhas (played 1, lost 1, points 0).
     - All 229 deliveries cleanly ingested into `match_commentary` with accurate text, balls, boundaries, and wickets.
     - `npx tsc --noEmit` and `npm run build` both passed with 0 errors across 229 routes.
+
+- **2026-10-30 (Admin Panel Improvements: Live Cricket Dashboard + Rich Article Table Editor):**
+  - **Part 1 — ESPN Live Cricket Data & Ingestion Dashboard:**
+    - Replaced outdated TheSportsDB card with dedicated Live Cricket Data & Ingestion Dashboard.
+    - Verified ESPN Live Cricket API (series 1558581), Render Background Worker (15s continuous daemon), and Supabase Database integration.
+    - Added real-time metric counters: Provider (ESPN), Worker Status (Running / Delayed / Stopped / Error / Unknown with Green / Yellow / Red / Gray indicators), Last Successful Sync, Last API Poll, Total Matches (32), Live Matches (0), Completed Matches (6), and Ball-by-Ball Events (942 in `match_commentary`).
+    - Implemented dual-layer worker health verification: Direct HTTP probe to Render worker port (if `RENDER_WORKER_URL` set) + heartbeat telemetry in Supabase `agent_config` (`id: 'live-sync-worker'`).
+    - Connected admin actions: "Sync Live Data" (with concurrency lock preventing duplicate simultaneous executions), "Recalculate Standings" (using existing calculation logic), and "Refresh Status".
+  - **Part 2 — Professional Rich Tables in Article Editor:**
+    - Extended Gemini AI structurer prompt and schema to automatically detect tabular information (points tables, player stats, leaderboards, comparisons, match schedules, squad lists) and structure it as `table` blocks with strict zero-hallucination policy.
+    - Upgraded `TableBlock` data model to support 4 table styles (`standard`, `highlight`, `comparison`, `compact`), custom column alignments (`left`, `center`, `right`), highlighted rows, and captions with 100% backward compatibility.
+    - Built `AdminTableBlockEditor.tsx` with full manual table creation: add/remove rows and columns, cell text inputs, column alignment toggle, row reordering (`▲`/`▼`), row highlight toggle, style picker, and live preview toggle.
+    - Sourced and implemented reusable public component `RichArticleTable.tsx` with full responsive design, horizontal scrolling with mobile swipe cue, safe inline formatting (bold, italic, links), and automatic official team logo rendering for canonical NPL franchises.
+    - Integrated `RichArticleTable` into public article route `/news/[slug]`.
+    - Executed automated verification suite (`scripts/test-admin-improvements.mjs`) with 23/23 tests passing. Production build verified clean at 229 static/dynamic routes.

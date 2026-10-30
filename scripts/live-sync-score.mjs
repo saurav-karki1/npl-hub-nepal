@@ -458,6 +458,29 @@ async function runLoop() {
       for (const mNum of matchesToSync) {
         await syncMatch(mNum);
       }
+
+      // Record heartbeat
+      try {
+        const now = new Date().toISOString();
+        await sb.from("agent_config").upsert({
+          id: "live-sync-worker",
+          enabled: true,
+          interval_hours: 1,
+          sources: {
+            worker: "live-sync-script",
+            status: "running",
+            lastPollAt: now,
+            lastSyncAt: now,
+            syncCount: matchesToSync.length,
+            lastError: null,
+            uptimeSeconds: Math.floor(process.uptime()),
+          },
+          last_run_at: now,
+          updated_at: now,
+        });
+      } catch {
+        // Heartbeat failure should not stop loop
+      }
     } catch (loopErr) {
       console.error("[LIVE SYNC LOOP] Error:", loopErr.message);
     }

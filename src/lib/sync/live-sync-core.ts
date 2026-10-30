@@ -444,12 +444,40 @@ export async function runCloudLiveSync(): Promise<SyncMatchResult[]> {
 
   const results: SyncMatchResult[] = [];
 
+  const recordHeartbeat = async (resList: SyncMatchResult[]) => {
+    try {
+      const now = new Date().toISOString();
+      const hasError = resList.some((r) => r.status === "error");
+      const errMsgs = resList.filter((r) => r.status === "error").map((r) => r.message).join("; ");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (sb as any).from("agent_config").upsert({
+        id: "live-sync-worker",
+        enabled: true,
+        interval_hours: 1,
+        sources: {
+          worker: "cloud-live-sync",
+          status: hasError ? "error" : "running",
+          lastPollAt: now,
+          lastSyncAt: now,
+          syncCount: resList.length,
+          lastError: hasError ? errMsgs : null,
+          syncedMatches: resList.map((r) => r.matchNumber),
+        },
+        last_run_at: now,
+        updated_at: now,
+      });
+    } catch {
+      // Non-blocking telemetry
+    }
+  };
+
   // If matches are currently live, sync them immediately
   if (liveMatches && liveMatches.length > 0) {
     for (const m of liveMatches) {
       const r = await syncMatchCore(m.match_number);
       results.push(r);
     }
+    await recordHeartbeat(results);
     return results;
   }
 
@@ -463,10 +491,16 @@ export async function runCloudLiveSync(): Promise<SyncMatchResult[]> {
     .limit(1);
 
   if (!upcomingMatches || upcomingMatches.length === 0) {
-    return [{ matchNumber: 0, status: "upcoming", message: "Tournament complete or no upcoming matches." }];
+    const endRes: SyncMatchResult[] = [
+      { matchNumber: 0, status: "upcoming", message: "Tournament complete or no upcoming matches." },
+    ];
+    await recordHeartbeat(endRes);
+    return endRes;
   }
 
   const next = upcomingMatches[0];
   const r = await syncMatchCore(next.match_number);
-  return [r];
+  const out = [r];
+  await recordHeartbeat(out);
+  return out;
 }

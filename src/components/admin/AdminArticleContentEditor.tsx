@@ -7,6 +7,7 @@ import {
   blocksToPlainText,
 } from "@/lib/types/article-blocks";
 import { AdminLinkModal } from "@/components/admin/AdminLinkModal";
+import { AdminTableBlockEditor } from "@/components/admin/AdminTableBlockEditor";
 import {
   extractMarkdownLinks,
   unlinkMarkdown,
@@ -1073,6 +1074,31 @@ export function AdminArticleContentEditor({
                 <span className="font-bold">Quote</span>
                 <span className="text-[10px] text-teal-300/80">Callout blockquote</span>
               </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  addBlockAt(insertIndex, {
+                    type: "table",
+                    style: "standard",
+                    caption: "",
+                    headers: ["Team / Player", "Matches", "Points / Runs"],
+                    alignments: ["left", "center", "center"],
+                    highlightRows: [],
+                    rows: [
+                      ["Janakpur Bolts", "4", "8"],
+                      ["Kathmandu Gorkhas", "4", "6"],
+                    ],
+                  })
+                }
+                className="p-2.5 rounded bg-blue-950/40 hover:bg-blue-900/50 text-blue-200 border border-blue-800/40 flex flex-col items-center gap-1 transition-colors"
+              >
+                <span className="font-bold flex items-center gap-1">
+                  <span>📊</span>
+                  <span>Data Table</span>
+                </span>
+                <span className="text-[10px] text-blue-300/80">Scores, stats &amp; standings</span>
+              </button>
             </div>
           </div>
         ) : (
@@ -1463,6 +1489,13 @@ export function AdminArticleContentEditor({
                           </span>
                         )}
 
+                        {block.type === "table" && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30 flex items-center gap-1">
+                            <span>📊</span>
+                            <span>Data Table ({block.style || "standard"})</span>
+                          </span>
+                        )}
+
                         {/* Inline Formatting Tools in Block Toolbar */}
                         {block.type !== "image" && block.type !== "table" && block.type !== "match" && (
                           <div className="flex items-center gap-1">
@@ -1803,14 +1836,11 @@ export function AdminArticleContentEditor({
                       )}
 
                       {block.type === "table" && (
-                        <div className="p-3 bg-slate-900 border border-slate-700 rounded-md text-xs space-y-1.5">
-                          <p className="font-semibold text-slate-300">
-                            📊 Table Block ({block.rows.length} rows, {block.headers.length} headers)
-                          </p>
-                          {block.caption && (
-                            <p className="italic text-slate-500 text-[11px]">{block.caption}</p>
-                          )}
-                        </div>
+                        <AdminTableBlockEditor
+                          block={block}
+                          blockIndex={idx}
+                          onChange={(updated) => updateBlock(idx, updated)}
+                        />
                       )}
 
                       {block.type === "match" && (

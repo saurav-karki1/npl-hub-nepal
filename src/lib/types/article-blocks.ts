@@ -61,10 +61,17 @@ export interface ImageBlock {
   height?: number;
 }
 
+export type TableStyle = "standard" | "highlight" | "comparison" | "compact";
+export type ColumnAlignment = "left" | "center" | "right";
+
 export interface TableBlock {
   type: "table";
   caption?: string;
+  style?: TableStyle;
   headers: string[];
+  alignments?: ColumnAlignment[];
+  highlightRows?: number[];
+  highlightCols?: number[];
   rows: string[][];
 }
 
@@ -238,20 +245,46 @@ export function sanitizeBlock(raw: unknown): ArticleBlock | null {
     }
     case "table": {
       const caption = obj.caption ? String(obj.caption).trim() : undefined;
+      const validStyles: TableStyle[] = ["standard", "highlight", "comparison", "compact"];
+      const rawStyle = String(obj.style || "").toLowerCase();
+      const style: TableStyle = validStyles.includes(rawStyle as TableStyle)
+        ? (rawStyle as TableStyle)
+        : "standard";
+
       const headers = Array.isArray(obj.headers)
         ? obj.headers.map((h) => String(h ?? "").trim())
         : [];
+
+      const rawAlignments = Array.isArray(obj.alignments) ? obj.alignments : [];
+      const alignments: ColumnAlignment[] = rawAlignments.map((a) => {
+        const str = String(a || "").toLowerCase();
+        return str === "center" || str === "right" ? str : "left";
+      });
+
+      const highlightRows = Array.isArray(obj.highlightRows)
+        ? obj.highlightRows.map((n) => Number(n)).filter((n) => !isNaN(n) && n >= 0)
+        : undefined;
+
+      const highlightCols = Array.isArray(obj.highlightCols)
+        ? obj.highlightCols.map((n) => Number(n)).filter((n) => !isNaN(n) && n >= 0)
+        : undefined;
+
       const rows = Array.isArray(obj.rows)
         ? (obj.rows as unknown[]).map((r) =>
             Array.isArray(r) ? r.map((c) => String(c ?? "").trim()) : []
           )
         : [];
+
       if (headers.length === 0 && rows.length === 0) return null;
       return {
         type: "table",
         headers,
         rows,
+        style,
         ...(caption ? { caption } : {}),
+        ...(alignments.length > 0 ? { alignments } : {}),
+        ...(highlightRows && highlightRows.length > 0 ? { highlightRows } : {}),
+        ...(highlightCols && highlightCols.length > 0 ? { highlightCols } : {}),
       };
     }
     case "match": {
@@ -297,9 +330,21 @@ export function blocksToPlainText(blocks: ArticleBlock[]): string {
         case "image":
           return `![${block.alt}](${block.src})${block.caption ? `\n*${block.caption}*` : ""}`;
         case "table": {
+          const captionLine = block.caption ? `### ${block.caption}\n` : "";
           const headerLine = block.headers.length > 0 ? `| ${block.headers.join(" | ")} |` : "";
+          const dividerLine =
+            block.headers.length > 0
+              ? `| ${block.headers
+                  .map((_, idx) => {
+                    const align = block.alignments?.[idx];
+                    if (align === "center") return ":---:";
+                    if (align === "right") return "---:";
+                    return "---";
+                  })
+                  .join(" | ")} |`
+              : "";
           const rowLines = block.rows.map((r) => `| ${r.join(" | ")} |`).join("\n");
-          return `${headerLine}\n${rowLines}`.trim();
+          return `${captionLine}${headerLine}\n${dividerLine}\n${rowLines}`.trim();
         }
         case "match":
           return `[Match Preview: ${block.matchSlug}]`;

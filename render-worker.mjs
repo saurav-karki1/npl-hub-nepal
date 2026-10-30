@@ -119,6 +119,30 @@ async function runCloudLoop() {
       console.error("[RENDER WORKER] Sync error:", lastSyncError);
     }
 
+    // Write heartbeat telemetry to Supabase agent_config
+    try {
+      const now = new Date().toISOString();
+      await sb.from("agent_config").upsert({
+        id: "live-sync-worker",
+        enabled: true,
+        interval_hours: 1,
+        sources: {
+          worker: "render",
+          status: lastSyncError ? "error" : "running",
+          lastPollAt: now,
+          lastSyncAt: lastSyncAt,
+          syncCount: syncCount,
+          lastError: lastSyncError,
+          uptimeSeconds: Math.floor(process.uptime()),
+          syncedMatches: lastSyncedMatches,
+        },
+        last_run_at: now,
+        updated_at: now,
+      });
+    } catch (hbErr) {
+      console.warn("[RENDER WORKER] Heartbeat error:", hbErr?.message);
+    }
+
     // Wait 15 seconds before next polling cycle
     await new Promise((r) => setTimeout(r, 15000));
   }
