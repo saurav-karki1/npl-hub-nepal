@@ -587,3 +587,15 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Verified image delivery, admin upload compression, and adaptive worker behavior.
 
 
+
+- **2026-10-31:** Rain Postponement - Match 7 and Match 8 marked as Postponed:
+  - Context: Today double-header postponed due to heavy rainfall. Match 7 (Lumbini Lions vs Chitwan Rhinos, 12:30 PM) was erroneously showing live due to ESPN auto-flip; Match 8 (Sudurpaschim Royals vs Biratnagar Kings, 5:00 PM) was upcoming.
+  - Supabase: Both match-07 and match-08 updated to status postponed with result_statement about heavy rainfall.
+  - schedule-data.ts: Static fallback status updated to postponed for both match-07 and match-08.
+  - Card.tsx: Added postponed to StatusType union; amber-styled badge (bg-amber-50 text-amber-700, label POSTPONED).
+  - FullFixturesSection.tsx: Added postponed case to both desktop table and mobile card StatusBadge renderers.
+  - MatchHeader.tsx: Added postponed statusVariant/statusLabel; added amber Rain Delay notice banner.
+  - MatchScoreboard.tsx: Added isPostponed derived state; postponed heading, description, and badge.
+  - live-sync-core.ts: Guard added - returns early (skips ESPN flip) when dbMatch.status is postponed or abandoned.
+  - live-score/route.ts: Uses isActiveSyncStatus variable; syncMatchCore skipped for non-live/non-upcoming statuses.
+  - Commit 8c3d9a7 pushed to master. Vercel auto-deploy triggered. Build: 229 routes, 0 TypeScript errors.
