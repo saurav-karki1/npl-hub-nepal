@@ -17,13 +17,18 @@
 
 ## 2. Current Development Status
 
-- **Stage:** Article Editor SEO Keywords & Image ALT Text Management Complete.
+- **Stage:** Multi-Provider AI Editorial Pipeline & Automated Journalism Suite Complete.
 - **Core Stack:** Next.js 16.3.6 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4.
 - **Calendar Engine:** `nepali-date-converter` for Gregorian to Bikram Sambat (BS 2083) conversions.
 - **Database:** Supabase PostgreSQL — all repository modules query Supabase first, with deterministic static fallback.
-- **Admin Console:** Protected `/admin` dashboard with full Teams CRUD, Players CRUD, Matches CRUD, News CRUD (with AI article structuring + Rich Table Editor), Stats CRUD, and real-time ESPN Live Cricket Pipeline Ingestion Dashboard.
-- **AI Integration:** `GEMINI_API_KEY` (server-side env only) powers the `/api/admin/news/ai-structure` route. Gemini structures raw pasted article text into typed semantic blocks and rich structured tables. Zero hallucination policy — AI only structures, never invents facts.
-- **Build Status:** ✅ `npm run build` generates **229 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
+- **Admin Console:** Protected `/admin` dashboard with full Teams CRUD, Players CRUD, Matches CRUD, News CRUD, Stats CRUD, real-time ESPN Live Cricket Pipeline Ingestion Dashboard, and AI Editorial Control Room (`/admin/agent`).
+- **AI Editorial Pipeline:** Strict $0.00 zero-cost multi-provider pipeline:
+  - **Tavily:** Free tier (1,000 credits/mo) for web research discovery and page text extraction.
+  - **Groq:** Free tier (`openai/gpt-oss-120b` and `openai/gpt-oss-20b`) for fact extraction, evidence verification matrix, and conflict detection.
+  - **Google Gemini:** `gemini-3.5-flash-lite` and `gemini-3.8-flash` with multi-key failover for long-form sports journalism and SEO metadata generation.
+  - **Cloudflare Workers AI / Sharp:** Optional `@cf/black-forest-labs/flux-1-schnell` background generation with local Sharp SVG constellation compositor fallback, outputting 1200x675 branded WebP feature images with team crests to Supabase Storage.
+  - **Quality Gate:** 11 mandatory invariant checks before saving draft articles to `news_articles` (`status: 'draft'`, `ai_generated: true`). Never autopublishes.
+- **Build Status:** ✅ `npm run build` generates **231 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
 
 ---
 
@@ -599,3 +604,22 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - live-sync-core.ts: Guard added - returns early (skips ESPN flip) when dbMatch.status is postponed or abandoned.
   - live-score/route.ts: Uses isActiveSyncStatus variable; syncMatchCore skipped for non-live/non-upcoming statuses.
   - Commit 8c3d9a7 pushed to master. Vercel auto-deploy triggered. Build: 229 routes, 0 TypeScript errors.
+
+
+- **2026-10-31 (Multi-Provider AI Editorial Pipeline Implementation):**
+  - **Objective:** Fully operationalized the autonomous multi-provider AI editorial pipeline delivering one deeply researched, fact-checked, SEO-optimized cricket article draft per assignment under a strict $0.00 zero-cost policy.
+  - **Migration:** Created additive `supabase/migrations/20261031000000_editorial_jobs.sql` introducing `editorial_jobs` table with 11 article types, 6 unified job statuses, 7 pipeline stages, atomic worker locking, lease duration, error logs, and provider telemetry.
+  - **Provider Architecture:**
+    - Tavily (`src/lib/agent/providers/tavily.ts`): Basic search and page text extraction within 1,000 monthly free credits.
+    - Groq (`src/lib/agent/providers/groq.ts`): `openai/gpt-oss-120b` for deep fact synthesis, evidence verification matrix, and conflict detection; `openai/gpt-oss-20b` for fast candidate claim extraction. Zero deprecated Llama 3.3/3.1 dependencies.
+    - Google Gemini (`src/lib/agent/providers/gemini.ts`): `gemini-3.5-flash-lite` and `gemini-3.8-flash` with multi-key failover for long-form cricket journalism and SEO metadata generation.
+    - Cloudflare Workers AI (`src/lib/agent/providers/cloudflare.ts`): Optional `@cf/black-forest-labs/flux-1-schnell` atmospheric background generation within 10,000 Neurons/day free.
+    - Sharp Image Compositor (`src/lib/agent/editorial/image-compositor.ts`): 1200x675 branded WebP feature image generation with franchise crests and typography; seamless local SVG constellation generator fallback. Uploads to Supabase Storage `article-images`.
+  - **SEO & Quality Gate:**
+    - Canonical link injector (`src/lib/agent/editorial/seo-linking.ts`) with max 1 link per entity and max 5 links per article.
+    - Quality Gate (`src/lib/agent/editorial/quality-gate.ts`) enforcing 11 hard invariants before ingestion. Strictly draft status (`ai_generated: true`).
+  - **Admin Control Room & Worker Route:**
+    - Worker route `POST /api/agent/editorial/worker` protected by `x-cron-secret`.
+    - Admin API routes: `GET/POST /api/admin/agent/editorial/jobs`, `GET /api/admin/agent/editorial/jobs/[id]`, `POST .../step`, `POST .../retry`.
+    - Admin Control Room in `src/app/admin/agent/page.tsx` with assignment launcher, 7-stage live progress bar, one-click stage stepping, retry/reset, and Fact Dossier inspector modal.
+  - **Verification:** Automated test suite `scripts/test-editorial-pipeline.mjs` passed 9/9 tests. Production build generated 231 static/dynamic routes with 0 TypeScript errors and 0 lint warnings.
