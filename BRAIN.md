@@ -1,4 +1,4 @@
-﻿# NPL Hub Nepal â€” Project Brain (BRAIN.md)
+# NPL Hub Nepal â€” Project Brain (BRAIN.md)
 
 > **Persistent Project-State Document**  
 > This file is the single compact source of truth for current project status, data architecture, routes, conventions, and roadmaps. Read this file to understand the project state without inspecting the entire repository.
@@ -558,4 +558,32 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Sourced and implemented reusable public component `RichArticleTable.tsx` with full responsive design, horizontal scrolling with mobile swipe cue, safe inline formatting (bold, italic, links), and automatic official team logo rendering for canonical NPL franchises.
     - Integrated `RichArticleTable` into public article route `/news/[slug]`.
     - Executed automated verification suite (`scripts/test-admin-improvements.mjs`) with 23/23 tests passing. Production build verified clean at 229 static/dynamic routes.
+
+- **2026-10-31 (Supabase Excessive Cached Egress and API Requests Reduction):**
+  - **Root Cause Diagnosed:**
+    1. **14.427 GB Cached Egress:** Supabase Storage bucket `article-images` held 28 uncompressed full-resolution PNG files (2.2 MB – 2.7 MB each). `NewsCard.tsx` bypassed Next.js Image Optimization and rendered raw `<img>` tags directly pointing to Supabase Storage CDN URLs. Loading `/news` (15+ articles) transferred ~37 MB per page view via CDN cache hits (`cf-cache-status: HIT`), rapidly accumulating 14.4 GB of Cached Egress across ~380 visits and crawler sweeps.
+    2. **~22,000 API Gateway Requests/Day:** The Render cloud worker (`render-worker.mjs`) ran a hardcoded 15s loop 24/7 without adaptive backoff. Every 15s (even when no match was live or scheduled for hours), it made 4 requests to Supabase (live matches, upcoming match, upcoming details, and `agent_config` heartbeat). Although these 4 requests transferred only ~415 bytes per cycle (~2.24 MB/day, accounting for the 0.29 GB uncached egress), they created ~22,000 daily API Gateway requests.
+  - **Resolution Implemented:**
+    1. **Frontend Image Delivery Optimization:**
+       - Replaced raw `<img>` in `src/components/news/NewsCard.tsx` with Next.js `<Image>` with responsive `sizes` attribute.
+       - Replaced raw `<img>` in `src/app/news/[slug]/page.tsx` for article block images with Next.js `<Image>`.
+       - Next.js on Vercel optimizes remote images from `**.supabase.co` on the edge, caching compressed WebP/AVIF assets on Vercel CDN and eliminating repetitive bandwidth hits to Supabase Storage.
+    2. **Admin Upload Auto-Compression (Sharp):**
+       - Updated `src/app/api/admin/news/upload-image/route.ts` to automatically resize images to `maxWidth: 1200` and convert to high-efficiency `.webp` (quality 80) before upload.
+       - Configured `cacheControl: "31536000, public, immutable"` so browsers and CDNs cache uploaded images for 1 year.
+    3. **Worker Adaptive Polling & Heartbeat Throttling:**
+       - Updated `render-worker.mjs`, `scripts/live-sync-score.mjs`, and `src/lib/sync/live-sync-core.ts`:
+         - During live matches: 15-second polling preserved with 100% real-time fidelity.
+         - Within 30 minutes of upcoming match kickoff: 60-second polling to capture toss and start.
+         - Off-match / standby mode (>30m from kickoff): 5-minute sleep (300s).
+         - In `syncMatch`, ESPN scoreboard is checked first; skips Supabase queries entirely when match is not live.
+         - Throttled `agent_config` heartbeat upsert to once every 10 minutes instead of every 15 seconds (reducing heartbeat writes from 5,760/day to ~144/day).
+       - Updated `src/app/api/admin/cricket/status/route.ts` to accept off-peak heartbeat intervals up to 15m as healthy ("Running" indicator in green).
+    4. **Retroactive Storage Optimization:**
+       - Executed `scripts/optimize-storage-images.mjs`: converted 26 heavy images in `article-images` to WebP, updated 16 article URLs in Supabase `news_articles` and `news-data.ts`.
+       - Total storage size reduced by **52.65 MB (94% reduction)** without deleting original files.
+  - **Verification:**
+    - `npm run build` compiled 229 routes with 0 errors and 0 warnings.
+    - Verified image delivery, admin upload compression, and adaptive worker behavior.
+
 

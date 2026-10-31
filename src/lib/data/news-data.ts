@@ -503,7 +503,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     updatedAt: "2026-10-09T05:15:00+00:00",
     featured: true,
     imageUrl:
-      "https://zohmcgjixebuiconrven.supabase.co/storage/v1/object/public/article-images/articles/article-1791521388205-g2x1w2/1791522050648-mhasx55q.png",
+      "https://zohmcgjixebuiconrven.supabase.co/storage/v1/object/public/article-images/articles/article-1791521388205-g2x1w2/1791522050648-mhasx55q.webp",
     imageAlt: "NPL Season 3 First Match: Date, Time, Venue, Nepali Date",
     author: "NPL Hub Nepal Editorial",
     source: "NPL Hub Nepal Editorial",
@@ -940,7 +940,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     slug: "janakpur-bolts-vs-kathmandu-gorkhas-live-score",
     content: [],
     imageUrl:
-      "https://zohmcgjixebuiconrven.supabase.co/storage/v1/object/public/article-images/articles/article-1793250593955-vkev7m/1793251260797-ii3gr5ol.png",
+      "https://zohmcgjixebuiconrven.supabase.co/storage/v1/object/public/article-images/articles/article-1793250593955-vkev7m/1793251260797-ii3gr5ol.webp",
     imageAlt:
       "Janakpur Bolts vs Kathmandu Gorkhas Live Score – NPL 2026 Match 5",
     title:

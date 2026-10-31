@@ -406,14 +406,14 @@ function ArticleBody({
                 return (
                   <figure key={i} className="my-6 space-y-2">
                     <div className="relative w-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-rule)] bg-[var(--color-surface-sunken)]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
+                      <Image
                         src={block.src}
                         alt={block.alt || article.title}
                         loading="lazy"
                         className="w-full h-auto max-h-[580px] object-contain mx-auto"
-                        width={block.width}
-                        height={block.height}
+                        width={block.width || 800}
+                        height={block.height || 450}
+                        sizes="(max-width: 768px) 100vw, 672px"
                       />
                     </div>
                     {block.caption && (

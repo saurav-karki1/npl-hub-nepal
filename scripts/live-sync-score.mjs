@@ -41,19 +41,7 @@ export async function syncMatch(matchNumber = 1) {
   const matchIdStr = `match-${String(matchNumber).padStart(2, "0")}`;
 
   try {
-    // 1. Fetch match record from Supabase
-    const { data: dbMatch, error: dbErr } = await sb
-      .from("matches")
-      .select("id, slug, match_date, match_time, status, team1_id, team2_id, scores")
-      .eq("id", matchIdStr)
-      .single();
-
-    if (dbErr || !dbMatch) {
-      console.error(`[SYNC M${matchNumber}] Match not found in DB:`, dbErr?.message);
-      return false;
-    }
-
-    // 2. Fetch Scoreboard from ESPN REST API
+    // 1. Fetch Scoreboard from ESPN REST API first (free open REST API, zero DB egress)
     const sbUrl = `https://site.api.espn.com/apis/site/v2/sports/cricket/${ESPN_SERIES_ID}/scoreboard`;
     const sbRes = await fetch(sbUrl, { headers: { "User-Agent": "Mozilla/5.0" } });
     if (!sbRes.ok) {
@@ -77,6 +65,18 @@ export async function syncMatch(matchNumber = 1) {
     if (!isCompleted && !isLive) {
       console.log(`[SYNC M${matchNumber}] Scheduled/Upcoming (state=${state}, summary="${statusSummary}"). Skipping.`);
       return true;
+    }
+
+    // 2. Fetch match record from Supabase ONLY when match is active or completed
+    const { data: dbMatch, error: dbErr } = await sb
+      .from("matches")
+      .select("id, slug, match_date, match_time, status, team1_id, team2_id, scores")
+      .eq("id", matchIdStr)
+      .single();
+
+    if (dbErr || !dbMatch) {
+      console.error(`[SYNC M${matchNumber}] Match not found in DB:`, dbErr?.message);
+      return false;
     }
 
     // 3. Initial Baseline Scores from Scoreboard
@@ -425,10 +425,15 @@ export async function syncMatch(matchNumber = 1) {
   }
 }
 
-// Continuous loop for background worker
+// Continuous loop for background worker with adaptive polling
 async function runLoop() {
-  console.log("[LIVE SYNC] Daemon initialized with ESPN REST API. Polling active matches every 15s...");
+  console.log("[LIVE SYNC] Daemon initialized with adaptive polling & ESPN REST API.");
+  let lastHeartbeatTime = 0;
+  const HEARTBEAT_INTERVAL_MS = 10 * 60 * 1000;
+
   while (true) {
+    let nextSleepMs = 15000;
+
     try {
       const { data: liveMatches } = await sb
         .from("matches")
@@ -440,52 +445,90 @@ async function runLoop() {
           ? liveMatches.map((m) => m.match_number)
           : [];
 
-      // Also check next upcoming match to auto-detect start
-      const { data: upcomingMatches } = await sb
-        .from("matches")
-        .select("id, match_number, status")
-        .eq("status", "upcoming")
-        .order("match_number", { ascending: true })
-        .limit(1);
+      if (matchesToSync.length > 0) {
+        nextSleepMs = 15000;
+        for (const mNum of matchesToSync) {
+          await syncMatch(mNum);
+        }
+      } else {
+        const { data: upcomingMatches } = await sb
+          .from("matches")
+          .select("id, match_number, match_date, match_time, status")
+          .eq("status", "upcoming")
+          .order("match_number", { ascending: true })
+          .limit(1);
 
-      if (upcomingMatches && upcomingMatches.length > 0) {
-        const nextNum = upcomingMatches[0].match_number;
-        if (!matchesToSync.includes(nextNum)) {
-          matchesToSync.push(nextNum);
+        if (upcomingMatches && upcomingMatches.length > 0) {
+          const nextMatch = upcomingMatches[0];
+          const nextNum = nextMatch.match_number;
+
+          let msUntilKickoff = Infinity;
+          try {
+            if (nextMatch.match_date && nextMatch.match_time) {
+              const timeMatch = nextMatch.match_time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+              if (timeMatch) {
+                let hours = parseInt(timeMatch[1], 10);
+                const minutes = parseInt(timeMatch[2], 10);
+                const isPM = timeMatch[3].toUpperCase() === "PM";
+                if (isPM && hours < 12) hours += 12;
+                if (!isPM && hours === 12) hours = 0;
+
+                const nptIso = `${nextMatch.match_date}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00+05:45`;
+                const kickoffTime = new Date(nptIso).getTime();
+                if (!isNaN(kickoffTime)) {
+                  msUntilKickoff = kickoffTime - Date.now();
+                }
+              }
+            }
+          } catch {
+            msUntilKickoff = 0;
+          }
+
+          if (msUntilKickoff <= 30 * 60 * 1000) {
+            nextSleepMs = 60000;
+            matchesToSync.push(nextNum);
+            await syncMatch(nextNum);
+          } else {
+            nextSleepMs = 300000;
+            console.log(`[LIVE SYNC] Next match M#${nextNum} in ${Math.round(msUntilKickoff / 60000)}m. Sleeping 5m.`);
+          }
+        } else {
+          nextSleepMs = 900000;
         }
       }
 
-      for (const mNum of matchesToSync) {
-        await syncMatch(mNum);
-      }
-
-      // Record heartbeat
-      try {
-        const now = new Date().toISOString();
-        await sb.from("agent_config").upsert({
-          id: "live-sync-worker",
-          enabled: true,
-          interval_hours: 1,
-          sources: {
-            worker: "live-sync-script",
-            status: "running",
-            lastPollAt: now,
-            lastSyncAt: now,
-            syncCount: matchesToSync.length,
-            lastError: null,
-            uptimeSeconds: Math.floor(process.uptime()),
-          },
-          last_run_at: now,
-          updated_at: now,
-        });
-      } catch {
-        // Heartbeat failure should not stop loop
+      // Record heartbeat (throttled)
+      const nowMs = Date.now();
+      if (nowMs - lastHeartbeatTime >= HEARTBEAT_INTERVAL_MS || matchesToSync.length > 0) {
+        try {
+          const now = new Date().toISOString();
+          await sb.from("agent_config").upsert({
+            id: "live-sync-worker",
+            enabled: true,
+            interval_hours: 1,
+            sources: {
+              worker: "live-sync-script",
+              status: "running",
+              lastPollAt: now,
+              lastSyncAt: now,
+              syncCount: matchesToSync.length,
+              lastError: null,
+              uptimeSeconds: Math.floor(process.uptime()),
+              pollingIntervalSeconds: Math.round(nextSleepMs / 1000),
+            },
+            last_run_at: now,
+            updated_at: now,
+          });
+          lastHeartbeatTime = nowMs;
+        } catch {
+          // Heartbeat failure should not stop loop
+        }
       }
     } catch (loopErr) {
       console.error("[LIVE SYNC LOOP] Error:", loopErr.message);
     }
 
-    await new Promise((r) => setTimeout(r, 15000));
+    await new Promise((r) => setTimeout(r, nextSleepMs));
   }
 }
 

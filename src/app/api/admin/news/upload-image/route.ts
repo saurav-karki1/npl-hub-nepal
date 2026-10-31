@@ -122,13 +122,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 6. Convert to Buffer and inspect with Sharp (validates actual binary structure)
+    // 6. Convert to Buffer and inspect/optimize with Sharp
     const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const rawBuffer = Buffer.from(arrayBuffer);
 
     let imageMeta: SharpMetadata;
     try {
-      imageMeta = await sharp(buffer).metadata();
+      imageMeta = await sharp(rawBuffer).metadata();
     } catch {
       return NextResponse.json(
         {
@@ -146,6 +146,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Optimize image: resize to max 1200px width and convert to WebP (80% quality)
+    let uploadBuffer = rawBuffer;
+    let targetExtension = extension;
+    let targetMimeType = mimeType;
+    let finalWidth = imageMeta.width;
+    let finalHeight = imageMeta.height;
+    let finalFormat = imageMeta.format;
+
+    if (imageMeta.format !== "gif") {
+      try {
+        let pipeline = sharp(rawBuffer).rotate();
+        if (imageMeta.width > 1200) {
+          pipeline = pipeline.resize(1200, null, { withoutEnlargement: true });
+        }
+        uploadBuffer = await pipeline.webp({ quality: 80, effort: 4 }).toBuffer();
+        const optimizedMeta = await sharp(uploadBuffer).metadata();
+        targetExtension = "webp";
+        targetMimeType = "image/webp";
+        finalWidth = optimizedMeta.width || imageMeta.width;
+        finalHeight = optimizedMeta.height || imageMeta.height;
+        finalFormat = "webp";
+      } catch (optErr) {
+        console.warn("[UPLOAD IMAGE] Sharp optimization fallback:", optErr);
+        uploadBuffer = rawBuffer;
+      }
+    }
+
     // 7. Generate safe unique storage path
     const safeArticleFolder =
       typeof articleIdRaw === "string" && articleIdRaw.trim()
@@ -154,14 +181,15 @@ export async function POST(req: NextRequest) {
 
     const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).slice(2, 10);
-    const storagePath = `articles/${safeArticleFolder}/${timestamp}-${randomSuffix}.${extension}`;
+    const storagePath = `articles/${safeArticleFolder}/${timestamp}-${randomSuffix}.${targetExtension}`;
 
-    // 8. Upload to Supabase Storage via Service Role client
+    // 8. Upload to Supabase Storage via Service Role client with immutable CDN caching
     const admin = getSupabaseAdminClient();
     const { error: uploadError } = await admin.storage
       .from("article-images")
-      .upload(storagePath, buffer, {
-        contentType: mimeType,
+      .upload(storagePath, uploadBuffer, {
+        contentType: targetMimeType,
+        cacheControl: "31536000, public, immutable",
         upsert: true,
       });
 
@@ -180,10 +208,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       url: urlData.publicUrl,
-      width: imageMeta.width,
-      height: imageMeta.height,
-      format: imageMeta.format,
-      size: file.size,
+      width: finalWidth,
+      height: finalHeight,
+      format: finalFormat,
+      size: uploadBuffer.length,
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Upload failed.";

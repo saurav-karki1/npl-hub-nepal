@@ -143,11 +143,11 @@ export async function GET(req: NextRequest) {
 
         if (lastPollAt) {
           const pollAgeMs = Date.now() - new Date(lastPollAt).getTime();
-          const oneMinuteMs = 60 * 1000;
-          const fiveMinutesMs = 5 * 60 * 1000;
+          // Heartbeat interval expectation: 3 mins during live match mode, 15 mins during idle standby mode
+          const maxExpectedIntervalMs = liveMatches > 0 ? 3 * 60 * 1000 : 15 * 60 * 1000;
+          const warningIntervalMs = liveMatches > 0 ? 5 * 60 * 1000 : 25 * 60 * 1000;
 
-          if (pollAgeMs <= oneMinuteMs) {
-            // Heartbeat received within last 60 seconds
+          if (pollAgeMs <= maxExpectedIntervalMs) {
             if (lastError) {
               workerStatus = "error";
               statusLabel = "Error";
@@ -157,16 +157,15 @@ export async function GET(req: NextRequest) {
               workerStatus = "running";
               statusLabel = "Running";
               indicatorColor = "green";
-              message = `Worker running successfully (last heartbeat ${Math.max(1, Math.round(pollAgeMs / 1000))}s ago)`;
+              const modeDesc = liveMatches > 0 ? "live match mode" : "idle standby mode";
+              message = `Worker active (${modeDesc}, last heartbeat ${Math.round(pollAgeMs / 1000)}s ago)`;
             }
-          } else if (pollAgeMs <= fiveMinutesMs) {
-            // Heartbeat delayed (between 1 and 5 minutes)
+          } else if (pollAgeMs <= warningIntervalMs) {
             workerStatus = "delayed";
             statusLabel = "Delayed";
             indicatorColor = "yellow";
-            message = `No recent synchronization (last heartbeat was ${Math.round(pollAgeMs / 1000)}s ago)`;
+            message = `No recent synchronization (last heartbeat was ${Math.round(pollAgeMs / 60000)}m ago)`;
           } else {
-            // Stale heartbeat (> 5 minutes ago)
             workerStatus = "stopped";
             statusLabel = "Stopped";
             indicatorColor = "red";

@@ -71,13 +71,18 @@ server.listen(PORT, () => {
   console.log(`[RENDER WORKER] Health check server listening on port ${PORT}`);
 });
 
-// 2. Background Continuous Sync Loop
+// 2. Background Continuous Sync Loop with Adaptive Polling
 async function runCloudLoop() {
-  console.log("[RENDER WORKER] Started 24/7 live sync background loop...");
+  console.log("[RENDER WORKER] Started adaptive 24/7 live sync background loop...");
+
+  let lastHeartbeatTime = 0;
+  const HEARTBEAT_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 
   while (true) {
+    let nextSleepMs = 15000; // default 15s for live matches
+
     try {
-      // Find matches with status 'live'
+      // 1. Check if any matches are currently marked 'live'
       const { data: liveMatches, error: liveErr } = await sb
         .from("matches")
         .select("id,match_number,status")
@@ -91,23 +96,62 @@ async function runCloudLoop() {
         ? liveMatches.map((m) => m.match_number)
         : [];
 
-      // Also inspect next upcoming match to auto-detect start
-      const { data: upcomingMatches } = await sb
-        .from("matches")
-        .select("id,match_number,status")
-        .eq("status", "upcoming")
-        .order("match_number", { ascending: true })
-        .limit(1);
-
-      if (upcomingMatches && upcomingMatches.length > 0) {
-        const nextNum = upcomingMatches[0].match_number;
-        if (!matchesToSync.includes(nextNum)) {
-          matchesToSync.push(nextNum);
+      if (matchesToSync.length > 0) {
+        // MATCH IS LIVE! Keep maximum real-time precision (15s polling)
+        nextSleepMs = 15000;
+        for (const mNum of matchesToSync) {
+          await syncMatch(mNum);
         }
-      }
+      } else {
+        // NO MATCH IS LIVE: Inspect the next upcoming match to determine proximity
+        const { data: upcomingMatches } = await sb
+          .from("matches")
+          .select("id,match_number,match_date,match_time,status")
+          .eq("status", "upcoming")
+          .order("match_number", { ascending: true })
+          .limit(1);
 
-      for (const mNum of matchesToSync) {
-        await syncMatch(mNum);
+        if (upcomingMatches && upcomingMatches.length > 0) {
+          const nextMatch = upcomingMatches[0];
+          const nextNum = nextMatch.match_number;
+
+          // Estimate time until scheduled kickoff (Nepal Time UTC+5:45)
+          let msUntilKickoff = Infinity;
+          try {
+            if (nextMatch.match_date && nextMatch.match_time) {
+              const timeMatch = nextMatch.match_time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+              if (timeMatch) {
+                let hours = parseInt(timeMatch[1], 10);
+                const minutes = parseInt(timeMatch[2], 10);
+                const isPM = timeMatch[3].toUpperCase() === "PM";
+                if (isPM && hours < 12) hours += 12;
+                if (!isPM && hours === 12) hours = 0;
+
+                const nptIso = `${nextMatch.match_date}T${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:00+05:45`;
+                const kickoffTime = new Date(nptIso).getTime();
+                if (!isNaN(kickoffTime)) {
+                  msUntilKickoff = kickoffTime - Date.now();
+                }
+              }
+            }
+          } catch {
+            msUntilKickoff = 0;
+          }
+
+          if (msUntilKickoff <= 30 * 60 * 1000) {
+            // Kickoff is within 30 minutes (or already passed): poll ESPN every 60s
+            nextSleepMs = 60000;
+            matchesToSync.push(nextNum);
+            await syncMatch(nextNum);
+          } else {
+            // Match is hours/days away: sleep 5 minutes (300,000 ms)
+            nextSleepMs = 300000;
+            console.log(`[RENDER WORKER] Next match M#${nextNum} in ${Math.round(msUntilKickoff / 60000)}m. Sleeping 5m.`);
+          }
+        } else {
+          // No upcoming matches (season finished): sleep 15 minutes
+          nextSleepMs = 900000;
+        }
       }
 
       syncCount++;
@@ -119,32 +163,42 @@ async function runCloudLoop() {
       console.error("[RENDER WORKER] Sync error:", lastSyncError);
     }
 
-    // Write heartbeat telemetry to Supabase agent_config
-    try {
-      const now = new Date().toISOString();
-      await sb.from("agent_config").upsert({
-        id: "live-sync-worker",
-        enabled: true,
-        interval_hours: 1,
-        sources: {
-          worker: "render",
-          status: lastSyncError ? "error" : "running",
-          lastPollAt: now,
-          lastSyncAt: lastSyncAt,
-          syncCount: syncCount,
-          lastError: lastSyncError,
-          uptimeSeconds: Math.floor(process.uptime()),
-          syncedMatches: lastSyncedMatches,
-        },
-        last_run_at: now,
-        updated_at: now,
-      });
-    } catch (hbErr) {
-      console.warn("[RENDER WORKER] Heartbeat error:", hbErr?.message);
+    // Write heartbeat telemetry to Supabase agent_config (throttled to every 10 mins or on error or live match)
+    const nowMs = Date.now();
+    const shouldSendHeartbeat =
+      nowMs - lastHeartbeatTime >= HEARTBEAT_INTERVAL_MS ||
+      lastSyncError !== null ||
+      lastSyncedMatches.length > 0;
+
+    if (shouldSendHeartbeat) {
+      try {
+        const now = new Date().toISOString();
+        await sb.from("agent_config").upsert({
+          id: "live-sync-worker",
+          enabled: true,
+          interval_hours: 1,
+          sources: {
+            worker: "render",
+            status: lastSyncError ? "error" : "running",
+            lastPollAt: now,
+            lastSyncAt: lastSyncAt,
+            syncCount: syncCount,
+            lastError: lastSyncError,
+            uptimeSeconds: Math.floor(process.uptime()),
+            syncedMatches: lastSyncedMatches,
+            pollingIntervalSeconds: Math.round(nextSleepMs / 1000),
+          },
+          last_run_at: now,
+          updated_at: now,
+        });
+        lastHeartbeatTime = nowMs;
+      } catch (hbErr) {
+        console.warn("[RENDER WORKER] Heartbeat error:", hbErr?.message);
+      }
     }
 
-    // Wait 15 seconds before next polling cycle
-    await new Promise((r) => setTimeout(r, 15000));
+    // Adaptive sleep
+    await new Promise((r) => setTimeout(r, nextSleepMs));
   }
 }
 

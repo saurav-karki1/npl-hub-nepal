@@ -50,19 +50,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
   const matchIdStr = `match-${String(matchNumber).padStart(2, "0")}`;
 
   try {
-    // 1. Fetch match metadata from Supabase
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: dbMatch, error: dbErr } = await (sb as any)
-      .from("matches")
-      .select("id, slug, match_date, match_time, status, team1_id, team2_id")
-      .eq("id", matchIdStr)
-      .single();
-
-    if (dbErr || !dbMatch) {
-      return { matchNumber, status: "error", message: `Match not found: ${dbErr?.message}` };
-    }
-
-    // 2. Fetch Scoreboard from ESPN Public REST API
+    // 1. Fetch Scoreboard from ESPN Public REST API first (free open REST API, zero DB egress)
     const sbUrl = `https://site.api.espn.com/apis/site/v2/sports/cricket/${ESPN_SERIES_ID}/scoreboard`;
     const sbRes = await fetch(sbUrl, {
       headers: { "User-Agent": "Mozilla/5.0" },
@@ -72,7 +60,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
     if (!sbRes.ok) {
       return {
         matchNumber,
-        status: dbMatch.status,
+        status: "upcoming",
         message: `ESPN Scoreboard API returned ${sbRes.status}`,
       };
     }
@@ -83,7 +71,7 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
     if (!event) {
       return {
         matchNumber,
-        status: dbMatch.status,
+        status: "upcoming",
         message: `Match #${matchNumber} (event ${espnMatchId}) not active in ESPN feed.`,
       };
     }
@@ -100,6 +88,18 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
         status: "upcoming",
         message: `Fixture is scheduled (${statusSummary || "Upcoming"}).`,
       };
+    }
+
+    // 2. Fetch match metadata from Supabase ONLY when match is active or completed
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: dbMatch, error: dbErr } = await (sb as any)
+      .from("matches")
+      .select("id, slug, match_date, match_time, status, team1_id, team2_id")
+      .eq("id", matchIdStr)
+      .single();
+
+    if (dbErr || !dbMatch) {
+      return { matchNumber, status: "error", message: `Match not found: ${dbErr?.message}` };
     }
 
     // 3. Parse Competitors / Linescores
