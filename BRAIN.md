@@ -623,3 +623,37 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Admin API routes: `GET/POST /api/admin/agent/editorial/jobs`, `GET /api/admin/agent/editorial/jobs/[id]`, `POST .../step`, `POST .../retry`.
     - Admin Control Room in `src/app/admin/agent/page.tsx` with assignment launcher, 7-stage live progress bar, one-click stage stepping, retry/reset, and Fact Dossier inspector modal.
   - **Verification:** Automated test suite `scripts/test-editorial-pipeline.mjs` passed 9/9 tests. Production build generated 231 static/dynamic routes with 0 TypeScript errors and 0 lint warnings.
+
+- **2026-10-31 (Corrective Fixes — Canonical Genre System & Genre-Aware Quality Gate):**
+  - **Genre System (BREAKING CHANGE — all old genre IDs replaced):**
+    - `types.ts`, `gemini.ts`, SQL migration, API route, Admin UI all updated to canonical 11 genres:
+      `breaking_news`, `tournament_news`, `match_preview`, `match_report`, `match_analysis`,
+      `team_news`, `player_news`, `squad_analysis`, `points_table_update`, `official_announcement`, `feature_story`
+    - Deprecated and removed: `squad_announcement`, `injury_update`, `player_spotlight`, `interview_recap`,
+      `tactical_analysis`, `opinion_editorial`, `historical_retrospective`, `governance_broadcast`
+    - SQL migration (`20261031000000_editorial_jobs.sql`) updated with new CHECK constraint — **NOT YET applied to production Supabase**
+    - API route (`/api/admin/agent/editorial/jobs`) now validates articleType against VALID_ARTICLE_TYPES constant
+  - **Genre-Aware Quality Gate:**
+    - Removed arbitrary 250-word minimum (Invariant 4 replaced with genre-specific content checks)
+    - `breaking_news` / `official_announcement`: 1 paragraph min + 1 verified claim required
+    - `match_report` / `match_analysis`: cricket-context keyword detection using unambiguous word-boundary regex
+    - `feature_story`: minimum 5 paragraph blocks for editorial depth
+    - All non-light genres: minimum 3 paragraphs; light genres (breaking_news, official_announcement, points_table_update): 1 paragraph minimum
+  - **Genre-Aware Groq Evidence Sufficiency:**
+    - `buildFactDossierWithGroq` now accepts `articleType` parameter
+    - `official_announcement` / `breaking_news`: 1 verified primary source sufficient
+    - `points_table_update` / `team_news` / `player_news`: 1 verified claim sufficient
+    - `match_report` / `match_analysis` / `match_preview` / `squad_analysis`: 2+ verified claims
+    - `tournament_news` / `feature_story`: 3+ verified claims OR 1 primary
+    - System prompt now includes article type context for Groq
+  - **Engine.ts Updates:** Passes `articleType` to both `buildFactDossierWithGroq` and `validateQualityGate`
+  - **Test Suite Expanded:** 25/25 passing (was 9/9)
+    - Genre system: 11 canonical genres verified, deprecated genres rejected
+    - Genre-aware QG: short `breaking_news` PASSES; `match_report` without cricket context FAILS
+    - Concurrency: unique worker tokens, stage data persistence, interrupted resume, duplicate prevention
+  - **Environment Status:**
+    - `NEXT_PUBLIC_SUPABASE_URL`: SET | `SUPABASE_SERVICE_ROLE_KEY`: SET
+    - `TAVILY_API_KEY`: MISSING | `GROQ_API_KEY`: MISSING | `GEMINI_API_KEY`: MISSING | `CRON_SECRET`: MISSING
+    - `CLOUDFLARE_ACCOUNT_ID`: MISSING | `CLOUDFLARE_API_TOKEN`: MISSING
+  - **Database Status:** `editorial_jobs` table does NOT exist in production yet — migration must be applied manually via Supabase Dashboard SQL Editor
+  - **Verification:** 25/25 tests passing, 0 TypeScript errors, 231 routes built. Commit `49316f3` pushed to master.
