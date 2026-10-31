@@ -38,6 +38,8 @@ export function MatchHeader({ match }: MatchHeaderProps) {
       ? "completed"
       : match.status === "live"
       ? "live"
+      : match.status === "postponed"
+      ? "postponed"
       : match.status === "tba"
       ? "neutral"
       : "upcoming";
@@ -47,6 +49,8 @@ export function MatchHeader({ match }: MatchHeaderProps) {
       ? "Match Result"
       : match.status === "live"
       ? "Live"
+      : match.status === "postponed"
+      ? "Postponed"
       : match.status === "tba"
       ? "Time TBA"
       : "Match Scheduled";
@@ -230,6 +234,18 @@ export function MatchHeader({ match }: MatchHeaderProps) {
               </div>
               <span className="text-[11px] font-mono text-red-300 shrink-0 bg-red-950/60 px-2.5 py-1 rounded-[var(--radius-xs)] border border-red-500/30">
                 ● In Play
+              </span>
+            </div>
+          ) : match.status === "postponed" ? (
+            <div className="bg-amber-950/60 border border-amber-600/50 rounded-[var(--radius-md)] p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5 text-amber-100">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0" aria-hidden="true" />
+                <span>
+                  <strong className="text-amber-300 uppercase tracking-wider">Match Postponed</strong>{" "}— This match has been postponed due to heavy rainfall. Rescheduling details will be announced officially.
+                </span>
+              </div>
+              <span className="text-[11px] text-amber-300 shrink-0 bg-amber-950/60 px-2.5 py-1 rounded-[var(--radius-xs)] border border-amber-500/30">
+                🌧 Rain Delay
               </span>
             </div>
           ) : (

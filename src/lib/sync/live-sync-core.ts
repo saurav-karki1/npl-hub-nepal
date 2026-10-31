@@ -102,6 +102,15 @@ export async function syncMatchCore(matchNumber: number): Promise<SyncMatchResul
       return { matchNumber, status: "error", message: `Match not found: ${dbErr?.message}` };
     }
 
+    // Guard: never auto-flip matches that have been manually marked postponed or abandoned
+    if (dbMatch.status === "postponed" || dbMatch.status === "abandoned") {
+      return {
+        matchNumber,
+        status: "upcoming", // neutral return — don't override
+        message: `Match #${matchNumber} is ${dbMatch.status}. Skipping ESPN auto-flip.`,
+      };
+    }
+
     // 3. Parse Competitors / Linescores
     let team1Score = { runs: 0, wickets: 0, overs: "0.0" };
     let team2Score = { runs: 0, wickets: 0, overs: "0.0" };

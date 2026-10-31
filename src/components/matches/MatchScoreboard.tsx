@@ -26,6 +26,7 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
 
   const isCompleted = matchStatus === "completed";
   const isLive = matchStatus === "live";
+  const isPostponed = matchStatus === "postponed";
 
   useEffect(() => {
     if (!isLive) return;
@@ -75,20 +76,22 @@ export function MatchScoreboard({ match }: MatchScoreboardProps) {
       <div className="flex items-center justify-between border-b border-[var(--color-rule)] pb-2.5">
         <div>
           <h2 id="scoreboard-heading" className="text-lg sm:text-xl font-black text-[var(--color-ink)]">
-            {isCompleted ? "Match Scorecard & Result" : isLive ? "Live Match Scoreboard" : "Pre-Match Scoreboard & Status"}
+            {isCompleted ? "Match Scorecard & Result" : isLive ? "Live Match Scoreboard" : isPostponed ? "Match Postponed" : "Pre-Match Scoreboard & Status"}
           </h2>
           <p className="text-xs text-[var(--color-ink-muted)] mt-0.5">
             {isCompleted
               ? "Official match outcome, innings scores, and match metrics."
               : isLive
               ? "Live match in progress. Scores updated in real-time."
+              : isPostponed
+              ? "This match has been postponed due to heavy rainfall. Rescheduling details to follow."
               : "Pre-match fixture state. Official scores and lineups will activate once the match is underway."}
           </p>
         </div>
 
         <StatusBadge
-          status={isCompleted ? "completed" : isLive ? "live" : "upcoming"}
-          label={isCompleted ? "Final Result" : isLive ? "Live" : "Scheduled"}
+          status={isCompleted ? "completed" : isLive ? "live" : isPostponed ? "postponed" : "upcoming"}
+          label={isCompleted ? "Final Result" : isLive ? "Live" : isPostponed ? "Postponed" : "Scheduled"}
         />
       </div>
 

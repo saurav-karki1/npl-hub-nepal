@@ -69,8 +69,10 @@ export async function GET(
       second: "2-digit",
     });
 
-    // 1. If match is currently live or kickoff time has arrived, trigger sync via HTML parser
-    if (match.status === "live" || match.status === "upcoming") {
+    // 1. If match is currently live or upcoming, trigger live sync.
+    // Postponed/abandoned matches are explicitly excluded to prevent auto-flip.
+    const isActiveSyncStatus = match.status === "live" || match.status === "upcoming";
+    if (isActiveSyncStatus) {
       try {
         await syncMatchCore(match.matchNumber);
       } catch (err) {
