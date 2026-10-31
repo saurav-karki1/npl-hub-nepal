@@ -1,4 +1,4 @@
-# NPL Hub Nepal â€” Project Brain (BRAIN.md)
+﻿# NPL Hub Nepal â€” Project Brain (BRAIN.md)
 
 > **Persistent Project-State Document**  
 > This file is the single compact source of truth for current project status, data architecture, routes, conventions, and roadmaps. Read this file to understand the project state without inspecting the entire repository.
@@ -17,7 +17,7 @@
 
 ## 2. Current Development Status
 
-- **Stage:** Live Cricket Pipeline Dashboard & Rich Article Table Editor Complete.
+- **Stage:** Article Editor SEO Keywords & Image ALT Text Management Complete.
 - **Core Stack:** Next.js 16.3.6 (App Router, Turbopack), React 19, TypeScript, Tailwind CSS v4.
 - **Calendar Engine:** `nepali-date-converter` for Gregorian to Bikram Sambat (BS 2083) conversions.
 - **Database:** Supabase PostgreSQL — all repository modules query Supabase first, with deterministic static fallback.
@@ -558,3 +558,4 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Sourced and implemented reusable public component `RichArticleTable.tsx` with full responsive design, horizontal scrolling with mobile swipe cue, safe inline formatting (bold, italic, links), and automatic official team logo rendering for canonical NPL franchises.
     - Integrated `RichArticleTable` into public article route `/news/[slug]`.
     - Executed automated verification suite (`scripts/test-admin-improvements.mjs`) with 23/23 tests passing. Production build verified clean at 229 static/dynamic routes.
+
