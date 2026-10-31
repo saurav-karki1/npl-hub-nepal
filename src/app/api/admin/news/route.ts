@@ -129,6 +129,35 @@ interface UpdateNewsPayload {
 }
 
 // ---------------------------------------------------------------------------
+// Query Selectors (Full vs Legacy Schema Fallback)
+// ---------------------------------------------------------------------------
+
+const FULL_ARTICLE_SELECT = `
+  id, slug, title, excerpt, content, category, status,
+  featured, image_url, image_alt, image_caption, author, author_role, read_time,
+  tags, source, source_url, published_at, updated_at, created_at,
+  focus_keyword, secondary_keywords,
+  news_team_relations ( id, team_id )
+`;
+
+const LEGACY_ARTICLE_SELECT = `
+  id, slug, title, excerpt, content, category, status,
+  featured, image_url, author, author_role, read_time,
+  tags, source, source_url, published_at, updated_at, created_at,
+  news_team_relations ( id, team_id )
+`;
+
+function mapLegacyArticle(a: any) {
+  return {
+    ...a,
+    image_alt: a.image_alt ?? null,
+    image_caption: a.image_caption ?? null,
+    focus_keyword: a.focus_keyword ?? null,
+    secondary_keywords: a.secondary_keywords ?? null,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // GET /api/admin/news
 // ---------------------------------------------------------------------------
 
@@ -138,21 +167,28 @@ export async function GET(req: NextRequest) {
     const admin = getSupabaseAdminClient();
 
     // Return ALL articles (published + draft) with team relations & content
-    const { data: articles, error } = await admin
+    let articles: any[] = [];
+    const fullQuery = await (admin as any)
       .from("news_articles")
-      .select(
-        `
-        id, slug, title, excerpt, content, category, status,
-        featured, image_url, image_alt, image_caption, author, author_role, read_time,
-        tags, source, source_url, published_at, updated_at, created_at,
-        focus_keyword, secondary_keywords,
-        news_team_relations ( id, team_id )
-      `
-      )
+      .select(FULL_ARTICLE_SELECT)
       .order("published_at", { ascending: false });
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    // Graceful backward compatibility if the migration hasn't been executed on Supabase yet
+    if (fullQuery.error && (fullQuery.error.message?.includes("does not exist") || fullQuery.error.code === "42703")) {
+      const fallback = await (admin as any)
+        .from("news_articles")
+        .select(LEGACY_ARTICLE_SELECT)
+        .order("published_at", { ascending: false });
+
+      if (fallback.error) {
+        return NextResponse.json({ error: fallback.error.message }, { status: 500 });
+      }
+
+      articles = (fallback.data ?? []).map(mapLegacyArticle);
+    } else if (fullQuery.error) {
+      return NextResponse.json({ error: fullQuery.error.message }, { status: 500 });
+    } else {
+      articles = fullQuery.data ?? [];
     }
 
     return NextResponse.json({ articles });
@@ -268,9 +304,19 @@ export async function POST(req: NextRequest) {
     if (rest.secondary_keywords !== undefined) insertPayload.secondary_keywords = rest.secondary_keywords;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: insertErr } = await (admin as any)
+    let { error: insertErr } = await (admin as any)
       .from("news_articles")
       .insert(insertPayload);
+
+    // If schema columns don't exist yet, strip them and retry
+    if (insertErr && (insertErr.message.includes("does not exist") || (insertErr as any).code === "42703")) {
+      delete insertPayload.image_alt;
+      delete insertPayload.image_caption;
+      delete insertPayload.focus_keyword;
+      delete insertPayload.secondary_keywords;
+      const retry = await (admin as any).from("news_articles").insert(insertPayload);
+      insertErr = retry.error;
+    }
 
     if (insertErr) {
       return NextResponse.json({ error: insertErr.message }, { status: 500 });
@@ -289,22 +335,27 @@ export async function POST(req: NextRequest) {
     }
 
     // --- Return the created article ---
-    const { data: created, error: fetchErr } = await admin
+    let created: any = null;
+    const fetchCreated = await (admin as any)
       .from("news_articles")
-      .select(
-        `
-        id, slug, title, excerpt, content, category, status,
-        featured, image_url, image_alt, image_caption, author, author_role, read_time,
-        tags, source, source_url, published_at, updated_at, created_at,
-        focus_keyword, secondary_keywords,
-        news_team_relations ( id, team_id )
-      `
-      )
+      .select(FULL_ARTICLE_SELECT)
       .eq("id", id)
       .single();
 
-    if (fetchErr) {
-      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    if (fetchCreated.error && (fetchCreated.error.message?.includes("does not exist") || fetchCreated.error.code === "42703")) {
+      const fallback = await (admin as any)
+        .from("news_articles")
+        .select(LEGACY_ARTICLE_SELECT)
+        .eq("id", id)
+        .single();
+      if (fallback.error) {
+        return NextResponse.json({ error: fallback.error.message }, { status: 500 });
+      }
+      created = fallback.data ? mapLegacyArticle(fallback.data) : null;
+    } else if (fetchCreated.error) {
+      return NextResponse.json({ error: fetchCreated.error.message }, { status: 500 });
+    } else {
+      created = fetchCreated.data;
     }
 
     try {
@@ -398,10 +449,20 @@ export async function PUT(req: NextRequest) {
     if (fields.secondary_keywords !== undefined) updatePayload.secondary_keywords = fields.secondary_keywords;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: updateErr } = await (admin as any)
+    let { error: updateErr } = await (admin as any)
       .from("news_articles")
       .update(updatePayload)
       .eq("id", id);
+
+    // If schema columns don't exist yet, strip them and retry
+    if (updateErr && (updateErr.message.includes("does not exist") || (updateErr as any).code === "42703")) {
+      delete updatePayload.image_alt;
+      delete updatePayload.image_caption;
+      delete updatePayload.focus_keyword;
+      delete updatePayload.secondary_keywords;
+      const retry = await (admin as any).from("news_articles").update(updatePayload).eq("id", id);
+      updateErr = retry.error;
+    }
 
     if (updateErr) {
       return NextResponse.json({ error: updateErr.message }, { status: 500 });
@@ -434,22 +495,27 @@ export async function PUT(req: NextRequest) {
     }
 
     // --- Return updated article ---
-    const { data: updated, error: fetchErr } = await admin
+    let updated: any = null;
+    const fetchUpdated = await (admin as any)
       .from("news_articles")
-      .select(
-        `
-        id, slug, title, excerpt, content, category, status,
-        featured, image_url, image_alt, image_caption, author, author_role, read_time,
-        tags, source, source_url, published_at, updated_at, created_at,
-        focus_keyword, secondary_keywords,
-        news_team_relations ( id, team_id )
-      `
-      )
+      .select(FULL_ARTICLE_SELECT)
       .eq("id", id)
       .single();
 
-    if (fetchErr) {
-      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+    if (fetchUpdated.error && (fetchUpdated.error.message?.includes("does not exist") || fetchUpdated.error.code === "42703")) {
+      const fallback = await (admin as any)
+        .from("news_articles")
+        .select(LEGACY_ARTICLE_SELECT)
+        .eq("id", id)
+        .single();
+      if (fallback.error) {
+        return NextResponse.json({ error: fallback.error.message }, { status: 500 });
+      }
+      updated = fallback.data ? mapLegacyArticle(fallback.data) : null;
+    } else if (fetchUpdated.error) {
+      return NextResponse.json({ error: fetchUpdated.error.message }, { status: 500 });
+    } else {
+      updated = fetchUpdated.data;
     }
 
     try {
