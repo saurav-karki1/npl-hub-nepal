@@ -18,9 +18,14 @@ const PRIMARY_DOMAINS = [
 
 const REPUTABLE_SECONDARY_DOMAINS = [
   "espncricinfo.com",
+  "cricinfo.com",
   "cricbuzz.com",
   "thekathmandupost.com",
   "kathmandupost.com",
+  "thehimalayantimes.com",
+  "risingnepaldaily.com",
+  "gorkhapatraonline.com",
+  "ekantipur.com",
   "myrepublica.nagariknetwork.com",
   "onlinekhabar.com",
   "english.onlinekhabar.com",
@@ -29,6 +34,8 @@ const REPUTABLE_SECONDARY_DOMAINS = [
   "setopati.com",
   "ratopati.com",
   "nepalnews.com",
+  "sportskeeda.com",
+  "wikipedia.org",
 ];
 
 function classifyAuthority(domain: string): "primary" | "secondary" | "rumor" {

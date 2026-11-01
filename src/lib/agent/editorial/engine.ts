@@ -79,7 +79,14 @@ export async function executeSingleJobStage(
       // STAGE 1: SEARCH (Tavily)
       // -----------------------------------------------------------------------
       case 1: {
-        const searchQuery = `${job.topic} Nepal Premier League cricket 2026 ${job.target_keyword || ""}`.trim();
+        const queryParts = [job.topic];
+        if (!job.topic.toLowerCase().includes("nepal premier league") && !job.topic.toLowerCase().includes("npl")) {
+          queryParts.push("Nepal Premier League cricket");
+        }
+        if (job.target_keyword) {
+          queryParts.push(job.target_keyword);
+        }
+        const searchQuery = queryParts.join(" ").trim();
         const { documents, latencyMs } = await searchTavily(searchQuery, {
           maxResults: 6,
           searchDepth: "basic",
@@ -131,7 +138,16 @@ export async function executeSingleJobStage(
       // -----------------------------------------------------------------------
       case 2: {
         const searchDocs = stageData.search_results || [];
-        const topUrls = searchDocs.slice(0, 4).map((d) => d.url);
+        const articleDocs = searchDocs.filter(
+          (d) =>
+            !d.url.includes("youtube.com") &&
+            !d.url.includes("facebook.com") &&
+            !d.url.includes("twitter.com") &&
+            !d.url.includes("x.com") &&
+            !d.url.includes("instagram.com")
+        );
+        const candidateDocs = articleDocs.length >= 2 ? articleDocs : searchDocs;
+        const topUrls = candidateDocs.slice(0, 4).map((d) => d.url);
 
         const { documents: extractedDocs, latencyMs } = await extractTavily(topUrls);
 

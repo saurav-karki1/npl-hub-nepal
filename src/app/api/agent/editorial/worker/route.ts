@@ -14,7 +14,7 @@ import { claimNextJob } from "@/lib/agent/editorial/jobs-repository";
 import { executeSingleJobStage } from "@/lib/agent/editorial/engine";
 
 function verifyCronSecret(req: NextRequest): boolean {
-  const secret = process.env.CRON_SECRET;
+  const secret = process.env.CRON_SECRET || process.env["x-cron-secret"];
   if (!secret) return false;
   return req.headers.get("x-cron-secret") === secret;
 }
