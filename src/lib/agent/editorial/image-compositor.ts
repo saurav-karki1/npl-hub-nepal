@@ -15,6 +15,7 @@ import fs from "fs";
 import sharp, { type OverlayOptions, type Sharp } from "sharp";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 import type { ImageResult } from "./types";
+import { GEIST_REGULAR_BASE64 } from "./fonts/geist-font";
 
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 675;
@@ -124,11 +125,10 @@ function generateConstellationSvg(category: string): string {
 /**
  * Generates the SVG overlay for title, badges, and brand branding.
  *
- * FONT RENDERING: Sharp/librsvg on Windows servers does not automatically
- * load Windows system fonts via fontconfig. To guarantee readable text in
- * the rendered WebP we embed the Arial Bold font as a Base64 @font-face
- * directly inside the SVG <style> block. This forces librsvg/freetype to
- * use the embedded font data regardless of the OS font configuration.
+ * FONT RENDERING: Sharp / librsvg on Windows & Linux serverless runtimes
+ * cannot rely on system font availability. We embed Geist Regular as a
+ * zero-overhead Base64 @font-face string directly inside the SVG <style>
+ * block, guaranteeing crisp, deterministic typography in all environments.
  */
 function generateTypographyOverlaySvg(
   title: string,
@@ -139,32 +139,20 @@ function generateTypographyOverlaySvg(
   const escapedCategory = escapeXml(category.toUpperCase());
   const pillText = `NPL SEASON 3 • ${escapedCategory}`;
 
-  // Load and embed Arial Bold as Base64 so librsvg can render the text
-  // regardless of the host OS fontconfig configuration.
-  let fontFaceDeclaration = "";
-  try {
-    const fontPath = path.join(process.cwd(), "public", "fonts", "arialbd.ttf");
-    if (fs.existsSync(fontPath)) {
-      const fontBase64 = fs.readFileSync(fontPath).toString("base64");
-      fontFaceDeclaration = `
-        @font-face {
-          font-family: 'NPLHeadline';
-          src: url('data:font/truetype;base64,${fontBase64}') format('truetype');
-          font-weight: bold;
-        }`;
+  const fontFaceDeclaration = `
+    @font-face {
+      font-family: 'GeistSans';
+      src: url('data:font/truetype;base64,${GEIST_REGULAR_BASE64}') format('truetype');
+      font-weight: normal;
     }
-  } catch {
-    // Font embedding failed — SVG will fall back to generic sans-serif
-  }
+  `;
 
-  const fontFamily = fontFaceDeclaration
-    ? "'NPLHeadline', Arial, sans-serif"
-    : "Arial, 'Liberation Sans', sans-serif";
+  const fontFamily = "'GeistSans', sans-serif";
 
   const titleLinesSvg = lines
     .map((line, idx) => {
       const y = 322 + idx * 60;
-      return `<text x="70" y="${y}" font-family="${fontFamily}" font-size="46" font-weight="bold" fill="#ffffff" letter-spacing="-0.01em">${escapeXml(line)}</text>`;
+      return `<text x="70" y="${y}" font-family="${fontFamily}" font-size="46" font-weight="700" fill="#ffffff" letter-spacing="-0.01em">${escapeXml(line)}</text>`;
     })
     .join("\n");
 
@@ -186,15 +174,15 @@ function generateTypographyOverlaySvg(
 
     <!-- Category Pill -->
     <rect x="70" y="210" width="290" height="36" rx="6" fill="rgba(245,158,11,0.14)" stroke="#f59e0b" stroke-width="1.5" />
-    <text x="215" y="234" font-family="${fontFamily}" font-size="12" font-weight="bold" fill="#f59e0b" letter-spacing="0.08em" text-anchor="middle">${pillText}</text>
+    <text x="215" y="234" font-family="${fontFamily}" font-size="12" font-weight="700" fill="#f59e0b" letter-spacing="0.08em" text-anchor="middle">${pillText}</text>
 
     <!-- Main Headline -->
     ${titleLinesSvg}
 
     <!-- Bottom Brand Bar -->
     <rect x="70" y="580" width="1060" height="1" fill="rgba(255,255,255,0.12)" />
-    <text x="70"  y="616" font-family="${fontFamily}" font-size="14" font-weight="bold" fill="#94a3b8" letter-spacing="0.05em">NPL HUB NEPAL • INDEPENDENT EDITORIAL DESK</text>
-    <text x="1130" y="616" font-family="${fontFamily}" font-size="14" font-weight="bold" fill="#38bdf8" text-anchor="end">nplhubnepal.com</text>
+    <text x="70"  y="616" font-family="${fontFamily}" font-size="14" font-weight="600" fill="#94a3b8" letter-spacing="0.05em">NPL HUB NEPAL • INDEPENDENT EDITORIAL DESK</text>
+    <text x="1130" y="616" font-family="${fontFamily}" font-size="14" font-weight="600" fill="#38bdf8" text-anchor="end">nplhubnepal.com</text>
   </svg>
   `;
 }

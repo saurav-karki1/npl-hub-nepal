@@ -17,6 +17,7 @@ import {
 import {
   QuotaExceededError,
   type EditorialArticleType,
+  type ArticleLength,
   type FactDossier,
   type GeneratedArticleDraft,
   type SeoMetadataDraft,
@@ -68,6 +69,44 @@ const CATEGORY_MAP: Record<EditorialArticleType, NewsCategory> = {
   feature_story: "Tournament",
 };
 
+export const LENGTH_SPECS: Record<
+  ArticleLength,
+  { label: string; wordRange: string; minParagraphs: number; targetWords: number; guidelines: string }
+> = {
+  short: {
+    label: "Short / Quick Update",
+    wordRange: "300 - 500 words",
+    minParagraphs: 3,
+    targetWords: 400,
+    guidelines:
+      "Write a concise, high-impact news story of approximately 350-500 words. Keep it focused on the immediate confirmed facts, key quotes, and essential takeaways across 3-4 structured paragraphs.",
+  },
+  standard: {
+    label: "Standard Story",
+    wordRange: "500 - 800 words",
+    minParagraphs: 5,
+    targetWords: 650,
+    guidelines:
+      "Write a complete, professional sports story of 500-800 words. Provide thorough context, narrative progression across key match phases or story developments, individual player performances, and tournament implications across 5-7 detailed paragraphs and 2-3 subheadings.",
+  },
+  comprehensive: {
+    label: "Comprehensive Analysis",
+    wordRange: "800 - 1,200 words",
+    minParagraphs: 8,
+    targetWords: 1000,
+    guidelines:
+      "Write an in-depth, analytical breakdown of 800-1,200 words. Break the match/story down into detailed sub-sections: opening phase/powerplay, middle overs control, death over execution, tactical decisions, key head-to-head duels, statistical breakdowns, and playoff/table implications across 8-10 substantial paragraphs and 3-4 subheadings.",
+  },
+  longform: {
+    label: "In-Depth Long-form Feature",
+    wordRange: "1,200 - 1,800+ words",
+    minParagraphs: 12,
+    targetWords: 1400,
+    guidelines:
+      "Write an extensive editorial masterclass of 1,200-1,800+ words. Provide deep storytelling with historical context, tactical deep-dives, psychological turning points, player quotes, statistical comparisons with previous seasons, and comprehensive analysis of what this means for Nepal cricket across 12-16 detailed paragraphs and 4-6 subheadings.",
+  },
+};
+
 /**
  * Execute raw Gemini generateContent with fallback through configured models.
  */
@@ -87,6 +126,7 @@ async function callGeminiModels<T>(
           generationConfig: {
             temperature: 0.3,
             responseMimeType: "application/json",
+            maxOutputTokens: 8192,
           },
         };
 
@@ -157,7 +197,8 @@ async function callGeminiModels<T>(
 export async function generateArticleWithGemini(
   topic: string,
   articleType: EditorialArticleType,
-  dossier: FactDossier
+  dossier: FactDossier,
+  targetLength: ArticleLength = "standard"
 ): Promise<{ draft: GeneratedArticleDraft; tokensUsed: number; latencyMs: number; modelUsed: string }> {
   const verifiedClaims = dossier.claims.filter((c) => c.verification_status === "verified");
   const claimsSummary = verifiedClaims.map((c, i) => `${i + 1}. ${c.statement}`).join("\n");
@@ -167,6 +208,8 @@ export async function generateArticleWithGemini(
   const conflictsSummary = dossier.conflicts.length
     ? `IMPORTANT CONFLICTS TO DISCLOSE OR ADDRESS:\n${dossier.conflicts.join("\n")}`
     : "No major factual conflicts detected.";
+
+  const lengthSpec = LENGTH_SPECS[targetLength] || LENGTH_SPECS.standard;
 
   const systemPrompt = `You are a cricket news writer for NPL Hub Nepal.
 Write a clear, accurate, and engaging sports news article that anyone can read and understand — including fans who are new to cricket.
@@ -184,7 +227,7 @@ ${ARTICLE_TYPE_INSTRUCTIONS[articleType]}
 4. TONE: Exciting but simple. Like a sports report read on the radio, not an academic paper.
 5. STRUCTURE: Provide an array of semantic blocks:
    - "paragraph": Plain, clear prose.
-   - "heading": level 2 or 3 for subheadings.
+   - "heading": level 2 or 3 for subheadings (every article needs at least 2 subheadings).
    - "list": style "unordered" or "ordered" for key stats or bullet points.
    - "quote": text and author.
    - "table": (optional) for scorecards if data is available.
@@ -195,7 +238,12 @@ ${ARTICLE_TYPE_INSTRUCTIONS[articleType]}
    - Bad example: "Bolts Defend Total to Edge Avengers in Gripping Contest"
    - Keep the title between 50-80 characters.
    - Include "NPL" or "Nepal Premier League" in the title.
-7. LENGTH: Enough detail to tell the full story. At least 3 good paragraphs. Do not pad with empty sentences.
+7. TARGET ARTICLE LENGTH & DEPTH (CRITICAL REQUIREMENT):
+   - SELECTED DEPTH: ${lengthSpec.label.toUpperCase()} (${lengthSpec.wordRange}).
+   - WORD COUNT TARGET: You MUST write approximately ${lengthSpec.targetWords} words.
+   - PARAGRAPH REQUIREMENT: Generate AT LEAST ${lengthSpec.minParagraphs} substantial paragraphs of prose.
+   - GUIDELINES: ${lengthSpec.guidelines}
+   - DO NOT generate a quick 200-word summary. Expand on the tactical details, player contributions, game momentum, crowd energy, and tournament standings so the final article achieves the requested ${lengthSpec.wordRange} target.
 8. RETURN JSON ONLY with structure:
 {
   "title": string (SEO-friendly, clear, 50-80 characters),

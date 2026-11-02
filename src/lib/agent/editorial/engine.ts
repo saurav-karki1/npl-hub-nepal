@@ -377,8 +377,9 @@ export async function executeSingleJobStage(
           throw new Error("Fact dossier missing for Stage 4 generation.");
         }
 
+        const targetLength = stageData.target_length || job.target_length || "standard";
         const { draft, tokensUsed, latencyMs, modelUsed } =
-          await generateArticleWithGemini(job.topic, job.article_type, dossier);
+          await generateArticleWithGemini(job.topic, job.article_type, dossier, targetLength);
 
         newTelemetryCalls.push({
           provider: "gemini",

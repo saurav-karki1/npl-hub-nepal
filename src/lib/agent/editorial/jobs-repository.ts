@@ -20,12 +20,14 @@ import type {
   PipelineStage,
   StageData,
   JobTelemetry,
+  ArticleLength,
 } from "./types";
 
 export interface CreateJobInput {
   topic: string;
   articleType: EditorialArticleType;
   targetKeyword?: string;
+  targetLength?: ArticleLength;
   createdBy?: string;
 }
 
@@ -43,7 +45,7 @@ export async function createEditorialJob(
     target_keyword: input.targetKeyword?.trim() || null,
     current_stage: 1,
     status: "pending",
-    stage_data: {},
+    stage_data: input.targetLength ? { target_length: input.targetLength } : {},
     telemetry: {
       total_tokens: 0,
       total_duration_ms: 0,

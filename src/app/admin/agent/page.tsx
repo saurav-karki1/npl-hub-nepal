@@ -18,6 +18,7 @@ import type { AgentConfig, AgentRun, NewsSource } from "@/lib/agent/types";
 import type {
   EditorialJob,
   EditorialArticleType,
+  ArticleLength,
   FactDossier,
   FactClaim,
 } from "@/lib/agent/editorial/types";
@@ -34,6 +35,13 @@ const ARTICLE_TYPES: Array<{ id: EditorialArticleType; label: string; desc: stri
   { id: "points_table_update", label: "Points Table Updates", desc: "Standings, NRR, playoff qualification scenarios" },
   { id: "official_announcement", label: "Official Announcements", desc: "CAN and franchise verified announcements" },
   { id: "feature_story", label: "Feature Stories", desc: "In-depth editorial narrative, broader NPL themes" },
+];
+
+const ARTICLE_LENGTHS: Array<{ id: ArticleLength; label: string; desc: string }> = [
+  { id: "standard", label: "Standard Story (500 – 800 words)", desc: "Balanced match reports & team news" },
+  { id: "short", label: "Short / News Flash (300 – 500 words)", desc: "Quick updates & official announcements" },
+  { id: "comprehensive", label: "Comprehensive (800 – 1,200 words)", desc: "Deep tactical breakdown, previews & data" },
+  { id: "longform", label: "In-Depth Feature (1,200 – 1,800+ words)", desc: "Extensive narrative & investigative stories" },
 ];
 
 const STAGE_NAMES = [
@@ -69,6 +77,7 @@ export default function AdminAgentPage() {
   // New assignment form fields
   const [topicInput, setTopicInput] = useState<string>("");
   const [articleTypeInput, setArticleTypeInput] = useState<EditorialArticleType>("breaking_news");
+  const [articleLengthInput, setArticleLengthInput] = useState<ArticleLength>("standard");
   const [targetKeywordInput, setTargetKeywordInput] = useState<string>("");
 
   // Status banner message
@@ -148,6 +157,7 @@ export default function AdminAgentPage() {
           topic: topicInput.trim(),
           articleType: articleTypeInput,
           targetKeyword: targetKeywordInput.trim() || undefined,
+          targetLength: articleLengthInput,
         }),
       });
 
@@ -592,7 +602,7 @@ export default function AdminAgentPage() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <div className="md:col-span-2 space-y-1.5">
+                <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-300">
                     Target SEO Keyword (Optional)
                   </label>
@@ -603,6 +613,23 @@ export default function AdminAgentPage() {
                     placeholder="e.g. Janakpur Bolts NPL squad 2026"
                     className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-[#c89f2a]"
                   />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-300">
+                    Article Depth & Word Target
+                  </label>
+                  <select
+                    value={articleLengthInput}
+                    onChange={(e) => setArticleLengthInput(e.target.value as ArticleLength)}
+                    className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-lg text-xs text-slate-200 focus:outline-none focus:border-[#c89f2a]"
+                  >
+                    {ARTICLE_LENGTHS.map((len) => (
+                      <option key={len.id} value={len.id}>
+                        {len.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
@@ -674,6 +701,24 @@ export default function AdminAgentPage() {
                             <span className="px-2 py-0.5 bg-slate-800 text-[#c89f2a] font-bold text-[10px] rounded uppercase font-mono">
                               {typeObj?.label || job.article_type}
                             </span>
+                            {(() => {
+                              const targetLen = job.stage_data?.target_length || job.target_length || "standard";
+                              const wordCount = job.stage_data?.draft?.word_count;
+                              const lenBadgeText =
+                                targetLen === "short"
+                                  ? "300-500w"
+                                  : targetLen === "comprehensive"
+                                  ? "800-1200w"
+                                  : targetLen === "longform"
+                                  ? "1200-1800w"
+                                  : "500-800w";
+
+                              return (
+                                <span className="px-2 py-0.5 bg-cyan-950/60 text-cyan-300 font-semibold text-[10px] rounded font-mono border border-cyan-800/40">
+                                  {wordCount ? `${wordCount} words` : lenBadgeText}
+                                </span>
+                              );
+                            })()}
                             <span className="text-xs text-slate-400 font-mono">
                               {new Date(job.created_at).toLocaleTimeString([], {
                                 hour: "2-digit",

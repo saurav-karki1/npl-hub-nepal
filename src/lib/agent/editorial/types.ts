@@ -25,6 +25,12 @@ export type EditorialArticleType =
   | "official_announcement"
   | "feature_story";
 
+export type ArticleLength =
+  | "short"           // 300 - 500 words (breaking news, short announcement, points update)
+  | "standard"        // 500 - 800 words (standard match report, team news)
+  | "comprehensive"   // 800 - 1,200 words (deep match analysis, preview, tactical breakdown)
+  | "longform";       // 1,200 - 1,800+ words (investigative feature, tournament retrospective)
+
 export type EditorialJobStatus =
   | "pending"
   | "running"
@@ -114,6 +120,7 @@ export interface JobTelemetry {
 }
 
 export interface StageData {
+  target_length?: ArticleLength;
   search_results?: SourceDocument[];
   extracted_docs?: SourceDocument[];
   dossier?: FactDossier;
@@ -128,6 +135,7 @@ export interface EditorialJob {
   topic: string;
   article_type: EditorialArticleType;
   target_keyword?: string | null;
+  target_length?: ArticleLength;
   current_stage: PipelineStage;
   status: EditorialJobStatus;
   worker_token?: string | null;

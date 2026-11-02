@@ -13,7 +13,11 @@ import {
   createEditorialJob,
   listEditorialJobs,
 } from "@/lib/agent/editorial/jobs-repository";
-import type { EditorialArticleType, EditorialJobStatus } from "@/lib/agent/editorial/types";
+import type {
+  EditorialArticleType,
+  EditorialJobStatus,
+  ArticleLength,
+} from "@/lib/agent/editorial/types";
 
 export async function GET(req: NextRequest) {
   try {
@@ -45,7 +49,7 @@ export async function POST(req: NextRequest) {
     const adminUser = await verifyAdminSession(req);
 
     const body = await req.json();
-    const { topic, articleType, targetKeyword } = body;
+    const { topic, articleType, targetKeyword, targetLength } = body;
 
     if (!topic || typeof topic !== "string" || topic.trim().length < 5) {
       return NextResponse.json(
@@ -84,10 +88,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const VALID_LENGTHS: ArticleLength[] = ["short", "standard", "comprehensive", "longform"];
+    const verifiedLength = VALID_LENGTHS.includes(targetLength as ArticleLength)
+      ? (targetLength as ArticleLength)
+      : undefined;
+
     const job = await createEditorialJob({
       topic: topic.trim(),
       articleType: articleType as EditorialArticleType,
       targetKeyword: targetKeyword ? String(targetKeyword).trim() : undefined,
+      targetLength: verifiedLength,
       createdBy: adminUser.email || "admin",
     });
 
