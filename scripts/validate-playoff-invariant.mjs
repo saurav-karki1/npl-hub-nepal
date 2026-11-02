@@ -28,7 +28,7 @@ if (!fixturesMatch) {
 }
 
 // Regex to extract each match object block
-const matchBlocks = fixturesMatch[1].match(/\{\s*id:\s*"match-[\s\S]*?isProvisional:\s*(?:true|false),\s*\}/g);
+const matchBlocks = fixturesMatch[1].match(/\{\s*id:\s*"match-[\s\S]*?isProvisional:\s*(?:true|false)[\s\S]*?\n\s*\}/g);
 
 if (!matchBlocks || matchBlocks.length !== 32) {
   console.error(`ERROR: Expected 32 match fixture blocks, found ${matchBlocks ? matchBlocks.length : 0}`);

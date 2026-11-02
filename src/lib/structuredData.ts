@@ -56,21 +56,25 @@ const EVENT_STATUS_MAP: Record<MatchStatus, string> = {
 
 /**
  * Converts a date string (YYYY-MM-DD) and optional time string (e.g. "4:30 PM NPT")
- * into a full ISO 8601 datetime with Nepal's +05:45 offset.
+ * into a full ISO 8601 datetime with Nepal's +05:45 offset (e.g. "2026-10-26T16:30:00+05:45").
  *
- * Falls back to date-only + offset if time cannot be parsed.
+ * Per Google Search Central Event guidelines:
+ * - When time is "Time TBA" or not provided, returns the date-only string (YYYY-MM-DD).
+ *   Google explicitly advises against defaulting to midnight (00:00:00).
+ * - When time is provided, formats with exact Nepal Standard Time (+05:45) offset.
  */
 export function toNepalISO(dateStr: string, timeStr?: string): string {
   // date must be YYYY-MM-DD
   if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
 
   if (!timeStr || timeStr === "Time TBA") {
-    return `${dateStr}T00:00:00+05:45`;
+    // For day-long events or unconfirmed hours, return date-only ISO string
+    return dateStr;
   }
 
-  // Parse "4:30 PM NPT" or "12:30 PM NPT"
+  // Parse "4:30 PM NPT" or "12:30 PM NPT" or "5:00 PM"
   const m = timeStr.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-  if (!m) return `${dateStr}T00:00:00+05:45`;
+  if (!m) return dateStr;
 
   let hours = parseInt(m[1], 10);
   const minutes = parseInt(m[2], 10);
@@ -83,6 +87,61 @@ export function toNepalISO(dateStr: string, timeStr?: string): string {
   const mm = String(minutes).padStart(2, "0");
 
   return `${dateStr}T${hh}:${mm}:00+05:45`;
+}
+
+/**
+ * Resolves a reliable, data-driven endDate in ISO 8601 format for a match.
+ *
+ * Rules (per Google Event Structured Data guidelines & factual accuracy):
+ * 1. If an explicit `match.endDate` is provided in the record, use it.
+ * 2. If an explicit `match.endTime` is provided (e.g. "4:00 PM NPT"), parse with Nepal +05:45 offset.
+ * 3. If `match.time` contains an explicit scheduled finish time range (e.g. "12:30 PM - 4:00 PM NPT"),
+ *    parse the second time component into Nepal +05:45 offset.
+ * 4. For matches where time is "Time TBA" or unconfirmed (e.g. Playoff Matches 29-32):
+ *    Google Search Central guidelines state: "If the event lasts all day (or if the exact ending hour is unknown),
+ *    use just the date format (YYYY-MM-DD) for both startDate and endDate."
+ *    Returns the date-only string (YYYY-MM-DD).
+ * 5. If a match has a specific start time (e.g. "12:30 PM NPT" or "5:00 PM NPT") but NO confirmed scheduled finish time:
+ *    Never invent match end times, use arbitrary fixed durations (e.g. +3.5 hours), or copy the start time into endDate.
+ *    In this case, endDate is omitted per Google Search Central Event guidelines.
+ */
+export function resolveMatchEndDate(
+  match: ScheduleMatch & { endTime?: string; endDate?: string }
+): string | undefined {
+  const dateStr = match.date;
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return undefined;
+
+  // 1. Explicit endDate in match record (e.g. "2026-10-26T20:30:00+05:45" or "2026-10-26")
+  if (match.endDate) {
+    return match.endDate;
+  }
+
+  // 2. Explicit endTime in match record (e.g. "4:00 PM NPT")
+  if (match.endTime && match.endTime !== "Time TBA") {
+    const iso = toNepalISO(dateStr, match.endTime);
+    if (iso !== dateStr) return iso;
+  }
+
+  // 3. Time range in time property (e.g. "12:30 PM - 4:00 PM NPT" or "12:30 PM to 4:00 PM NPT")
+  if (match.time) {
+    const rangeMatch = match.time.match(/(?:-|–|to)\s*(\d{1,2}:\d{2}\s*(?:AM|PM))/i);
+    if (rangeMatch) {
+      const finishTimeStr = rangeMatch[1];
+      const iso = toNepalISO(dateStr, finishTimeStr);
+      if (iso !== dateStr) return iso;
+    }
+  }
+
+  // 4. Time TBA / Unconfirmed hour (Matches 29-32)
+  // Google guidelines: "For single-day events where specific hours are unknown, use date-only format (YYYY-MM-DD) for both startDate and endDate."
+  if (!match.time || match.time === "Time TBA") {
+    return dateStr;
+  }
+
+  // 5. Start time is known, but finish time is genuinely unconfirmed / not fixed
+  // Never invent match end times, use arbitrary fixed durations, or copy the match start time into endDate.
+  // In this case, endDate is omitted per Google Event guidelines.
+  return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -140,7 +199,7 @@ function buildSportsTeamNode(
 // ---------------------------------------------------------------------------
 
 export interface MatchJsonLdOptions {
-  match: ScheduleMatch;
+  match: ScheduleMatch & { endTime?: string; endDate?: string };
   team1: MatchTeamInfo;
   team2: MatchTeamInfo;
   siteUrl?: string;
@@ -151,13 +210,15 @@ export interface MatchJsonLdOptions {
  *
  * Fields included:
  *   @context, @type, name, description, url,
- *   startDate (ISO 8601 +05:45), eventStatus, eventAttendanceMode,
- *   location, homeTeam, awayTeam, competitor, performer, image, organizer
+ *   startDate (ISO 8601 with +05:45 offset or YYYY-MM-DD if time TBA),
+ *   endDate (ISO 8601 when reliable scheduled finish time is available, or YYYY-MM-DD if time TBA),
+ *   eventStatus, eventAttendanceMode, location, homeTeam, awayTeam, competitor, performer, image, organizer
  *
  * Fields intentionally omitted:
  *   - offers: We do not sell tickets and have no confirmed free-entry data.
  *             If official ticketing information becomes available, add it here.
- *   - endDate: T20 match duration is not fixed; omitting avoids inaccurate data.
+ *   - endDate: When a match has a specific start time but no scheduled finish time has been confirmed,
+ *             arbitrary durations are strictly avoided and endDate is omitted per Google Search Central guidelines.
  */
 export function buildMatchJsonLd({
   match,
@@ -169,6 +230,7 @@ export function buildMatchJsonLd({
   const description = `Nepal Premier League Season 3 Match #${match.matchNumber}: ${team1.name} vs ${team2.name} at ${match.venue}. ${match.formattedDate} — ${match.time}.`;
 
   const startDate = toNepalISO(match.date, match.time);
+  const endDate = resolveMatchEndDate(match);
   const eventStatus = EVENT_STATUS_MAP[match.status] ?? "https://schema.org/EventScheduled";
 
   const team1Node = buildSportsTeamNode(team1, siteUrl);
@@ -182,7 +244,7 @@ export function buildMatchJsonLd({
   if (logo2) images.push(logo2);
   if (images.length === 0) images.push(DEFAULT_OG_IMAGE);
 
-  return {
+  const schema: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
     name,
@@ -199,6 +261,12 @@ export function buildMatchJsonLd({
     image: images,
     organizer: ORGANIZER,
   };
+
+  if (endDate) {
+    schema.endDate = endDate;
+  }
+
+  return schema;
 }
 
 // ---------------------------------------------------------------------------
