@@ -225,12 +225,27 @@ ${ARTICLE_TYPE_INSTRUCTIONS[articleType]}
    - Do NOT use: "spearheaded", "immaculate", "probing", "clinical execution", "stifle", "labored", "testament to", "showcase", "pivotal", "exemplary", or similar formal/flowery words.
    - Use: "led", "clean", "testing", "great", "tight", "showed", "key", "important" — everyday words.
 4. TONE: Exciting but simple. Like a sports report read on the radio, not an academic paper.
-5. STRUCTURE: Provide an array of semantic blocks:
+5. STRUCTURE & AUTOMATIC TABLES: Provide an array of semantic blocks:
    - "paragraph": Plain, clear prose.
    - "heading": level 2 or 3 for subheadings (every article needs at least 2 subheadings).
    - "list": style "unordered" or "ordered" for key stats or bullet points.
    - "quote": text and author.
-   - "table": (optional) for scorecards if data is available.
+   - "table": AUTOMATIC DATA TABLES. When structured data is available in the verified dossier, include a clean table:
+     * Match Report / Analysis: Scorecard summary table e.g. headers ["Team", "Innings Score", "Overs", "Top Performer"].
+     * Match Preview: Head-to-head or predicted matchup table e.g. headers ["Category", "Team 1", "Team 2"].
+     * Points Table: Standings table e.g. headers ["Team", "Played", "Won", "Lost", "Points", "NRR"].
+     * Squad Analysis: Key roster table e.g. headers ["Player", "Role", "Nationality", "Key Trait"].
+     Table block structure:
+     {
+       "type": "table",
+       "caption": "Descriptive Caption (e.g. Match 9 Scorecard Summary)",
+       "style": "standard",
+       "headers": ["Team", "Score", "Overs", "Top Performer"],
+       "rows": [
+         ["Janakpur Bolts", "147/7", "20.0 ov", "J Neesham 1/16"],
+         ["Pokhara Avengers", "138/9", "19.6 ov", "M Saifuddin 2/28"]
+       ]
+     }
 6. TITLE (IMPORTANT for SEO):
    - Write the title so it matches what fans would search for on Google.
    - Put the most important information first: team names, result, competition name.
@@ -251,7 +266,8 @@ ${ARTICLE_TYPE_INSTRUCTIONS[articleType]}
   "blocks": [
     { "type": "paragraph", "text": string },
     { "type": "heading", "level": 2, "text": string },
-    ...
+    { "type": "table", "caption": string, "style": "standard", "headers": string[], "rows": string[][] },
+    { "type": "list", "style": "unordered", "items": string[] }
   ],
   "suggested_tags": string[] (3-6 tags, e.g. ["NPL 2026", "Janakpur Bolts", "Match Report"]),
   "team_ids": string[] (canonical team slugs e.g. ["janakpur-bolts", "pokhara-avengers"])

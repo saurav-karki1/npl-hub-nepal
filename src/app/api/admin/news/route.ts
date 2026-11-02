@@ -538,3 +538,76 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: isAuth ? 401 : 500 });
   }
 }
+
+// ---------------------------------------------------------------------------
+// DELETE — Delete article & associated team relations
+// ---------------------------------------------------------------------------
+
+export async function DELETE(req: NextRequest) {
+  try {
+    await verifyAuthSession(req);
+
+    const { searchParams } = new URL(req.url);
+    let id = searchParams.get("id");
+
+    if (!id) {
+      try {
+        const body = await req.json();
+        id = body.id;
+      } catch {
+        // Body was empty or not json
+      }
+    }
+
+    if (!id || typeof id !== "string") {
+      return NextResponse.json({ error: "Article ID is required for deletion." }, { status: 400 });
+    }
+
+    const admin = getSupabaseAdminClient();
+
+    // 1. Delete associated team relations first
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (admin as any)
+      .from("news_team_relations")
+      .delete()
+      .eq("article_id", id);
+
+    // 2. Fetch slug before deletion for revalidation
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: existing } = await (admin as any)
+      .from("news_articles")
+      .select("slug")
+      .eq("id", id)
+      .single();
+
+    // 3. Delete the article record
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: deleteErr } = await (admin as any)
+      .from("news_articles")
+      .delete()
+      .eq("id", id);
+
+    if (deleteErr) {
+      return NextResponse.json({ error: deleteErr.message }, { status: 500 });
+    }
+
+    try {
+      revalidatePath("/news");
+      revalidatePath("/");
+      if (existing?.slug) {
+        revalidatePath(`/news/${existing.slug}`);
+      }
+    } catch {
+      // Ignore cache revalidation errors
+    }
+
+    return NextResponse.json({ success: true, deletedId: id });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Deletion failed";
+    const isAuth =
+      message.includes("session") ||
+      message.includes("Authorization") ||
+      message.includes("Invalid");
+    return NextResponse.json({ error: message }, { status: isAuth ? 401 : 500 });
+  }
+}

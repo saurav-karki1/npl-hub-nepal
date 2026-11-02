@@ -333,6 +333,35 @@ export default function AdminAgentPage() {
     }
   };
 
+  // Permanently delete an editorial assignment
+  const handleDeleteJob = async (jobId: string, topic: string) => {
+    if (!token) return;
+    const confirmed = window.confirm(
+      `Are you sure you want to delete assignment:\n\n"${topic}"?\n\nThis will remove the assignment from the queue.`
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`/api/admin/agent/editorial/jobs/${jobId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete assignment.");
+      }
+
+      setMessage({ text: "Assignment deleted successfully.", type: "success" });
+      refreshEditorialJobs();
+    } catch (err: unknown) {
+      setMessage({
+        text: err instanceof Error ? err.message : "Failed to delete assignment.",
+        type: "error",
+      });
+    }
+  };
+
   // Scanner toggles
   const handleToggleEnabled = async () => {
     if (!config || !token || saving) return;
@@ -829,6 +858,17 @@ export default function AdminAgentPage() {
                               Reset & Retry
                             </button>
                           )}
+
+                          <button
+                            onClick={() => handleDeleteJob(job.id, job.topic)}
+                            className="px-2.5 py-1.5 text-xs font-semibold text-rose-400 bg-rose-950/30 hover:bg-rose-900/40 border border-rose-800/40 rounded transition flex items-center gap-1"
+                            title="Delete this assignment from queue"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            <span>Delete</span>
+                          </button>
                         </div>
 
                         <div className="flex items-center gap-2">

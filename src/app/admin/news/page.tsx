@@ -947,6 +947,38 @@ export default function AdminNewsPage() {
   );
 
   // ---------------------------------------------------------------------------
+  // Permanent Delete article
+  // ---------------------------------------------------------------------------
+
+  const handleDeleteArticle = useCallback(
+    async (article: AdminNewsRow) => {
+      if (!accessToken) return;
+      const confirmed = window.confirm(
+        `Are you sure you want to permanently delete "${article.title}"?\n\nThis will remove the article from the platform and cannot be undone.`
+      );
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch(`/api/admin/news?id=${encodeURIComponent(article.id)}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to delete article.");
+        }
+        setArticles((prev) => prev.filter((a) => a.id !== article.id));
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : "Error deleting article";
+        alert(msg);
+      }
+    },
+    [accessToken]
+  );
+
+  // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
@@ -1170,6 +1202,13 @@ export default function AdminNewsPage() {
                           >
                             Edit
                           </button>
+                          <button
+                            onClick={() => handleDeleteArticle(article)}
+                            className="text-[11px] font-semibold px-2.5 py-1 rounded border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/60 transition-colors"
+                            title="Permanently delete article"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -1215,6 +1254,12 @@ export default function AdminNewsPage() {
                     >
                       Edit
                     </button>
+                    <button
+                      onClick={() => handleDeleteArticle(article)}
+                      className="text-[11px] font-semibold px-2.5 py-1 rounded border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/60 transition-colors"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
@@ -1223,11 +1268,9 @@ export default function AdminNewsPage() {
         )}
       </div>
 
-      {/* No hard delete notice */}
+      {/* Article management tip */}
       <div className="bg-[#0c121e] border border-slate-700/50 rounded-lg px-4 py-3 text-[11px] text-slate-500">
-        <strong className="text-slate-400">Note:</strong> Articles are never hard-deleted. Use{" "}
-        <strong className="text-slate-400">Unpublish</strong> to hide an article from the public site
-        (it becomes a draft). This preserves editorial history and prevents broken links.
+        <strong className="text-slate-400">Editorial Tip:</strong> Use <strong className="text-slate-400">Unpublish</strong> to temporarily hide articles as drafts, or use <strong className="text-rose-400">Delete</strong> to permanently remove unwanted testing drafts and clean up your news feed.
       </div>
 
       {/* Editor drawer */}
