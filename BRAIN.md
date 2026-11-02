@@ -676,10 +676,12 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Reputable Domain Registry:** Expanded Tavily provider to recognize national broadsheets (`thehimalayantimes.com`, `risingnepaldaily.com`, `gorkhapatraonline.com`, `ekantipur.com`, `cricinfo.com`).
   - **Total Cost:** Strictly $0.00 across all providers. All 25/25 tests pass.
 
-- **2026-11-02 (Engine Fix + Auto-Run Pipeline):**
-  - **engine.ts Bug Fixed:** Removed dangling duplicate Stage 2 code block (lines 297-310) left over from a previous partial edit. `SourceDocument` type now correctly imported.
+- **2026-11-02 (Engine Fix, Auto-Run Pipeline, Feature Image Font & Readability Improvements):**
+  - **engine.ts Bug Fixed:** Removed dangling duplicate Stage 2 code block left over from a previous partial edit. `SourceDocument` type now correctly imported.
   - **Groq TPM Fix:** `groq.ts` source truncation reduced to 1,500 chars × top 4 docs (from 3,000 chars × 6 docs) to stay within 8,000 TPM free tier limit.
   - **Stale Error Log Fix:** `jobs-repository.ts` `retryEditorialJob` now clears `error_log: []` on reset. Admin UI only shows error box when `status === "failed"`.
   - **Platform Scorecard Injection:** `engine.ts` `lookupPlatformMatchSource()` now queries `matches` table for completed fixtures and injects official scorecard as `authority_type: "primary"` source at Stage 1.
-  - **Auto-Run All Stages (NEW):** Admin Control Room (`/admin/agent`) now has a **"▶ Run All Stages"** button that automatically advances a job through all 7 stages sequentially without any manual clicking. The "Step Stage N →" button remains for fine-grained manual control.
-  - **TypeScript:** 0 errors. Tests: 25/25 passing. Commit `a7bdd25` pushed to master.
+  - **Auto-Run All Stages:** Admin Control Room (`/admin/agent`) now has a **"▶ Run All Stages"** button that automatically advances a job through all 7 stages sequentially without any manual clicking.
+  - **Feature Image Font Rendering:** Embedded Arial Bold (`public/fonts/arialbd.ttf`) as base64 `@font-face` in SVG `<style>`. Resolves missing system fonts / `□□□□` empty glyph box rendering in Sharp / librsvg on Windows.
+  - **Readability & SEO Improvements:** Updated Gemini journalism instructions in `src/lib/agent/providers/gemini.ts` to enforce simple, accessible English (14-year-old reading level, forbidden flowery words like "spearheaded", "immaculate", "probing") and search-intent-first headlines (50-80 chars containing team names and "NPL").
+  - **Verification:** 25/25 tests passing, 0 TypeScript errors. Tested image rendering directly.

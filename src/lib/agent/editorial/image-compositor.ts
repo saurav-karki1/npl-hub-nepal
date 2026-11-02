@@ -123,54 +123,78 @@ function generateConstellationSvg(category: string): string {
 
 /**
  * Generates the SVG overlay for title, badges, and brand branding.
+ *
+ * FONT RENDERING: Sharp/librsvg on Windows servers does not automatically
+ * load Windows system fonts via fontconfig. To guarantee readable text in
+ * the rendered WebP we embed the Arial Bold font as a Base64 @font-face
+ * directly inside the SVG <style> block. This forces librsvg/freetype to
+ * use the embedded font data regardless of the OS font configuration.
  */
 function generateTypographyOverlaySvg(
   title: string,
   category: string,
   hasTeams: boolean
 ): string {
-  const lines = wrapText(title, hasTeams ? 32 : 40);
+  const lines = wrapText(title, hasTeams ? 30 : 38);
   const escapedCategory = escapeXml(category.toUpperCase());
   const pillText = `NPL SEASON 3 • ${escapedCategory}`;
 
+  // Load and embed Arial Bold as Base64 so librsvg can render the text
+  // regardless of the host OS fontconfig configuration.
+  let fontFaceDeclaration = "";
+  try {
+    const fontPath = path.join(process.cwd(), "public", "fonts", "arialbd.ttf");
+    if (fs.existsSync(fontPath)) {
+      const fontBase64 = fs.readFileSync(fontPath).toString("base64");
+      fontFaceDeclaration = `
+        @font-face {
+          font-family: 'NPLHeadline';
+          src: url('data:font/truetype;base64,${fontBase64}') format('truetype');
+          font-weight: bold;
+        }`;
+    }
+  } catch {
+    // Font embedding failed — SVG will fall back to generic sans-serif
+  }
+
+  const fontFamily = fontFaceDeclaration
+    ? "'NPLHeadline', Arial, sans-serif"
+    : "Arial, 'Liberation Sans', sans-serif";
+
   const titleLinesSvg = lines
     .map((line, idx) => {
-      const y = 320 + idx * 56;
-      return `<text x="70" y="${y}" font-family="system-ui, -apple-system, sans-serif" font-size="46" font-weight="800" fill="#ffffff" letter-spacing="-0.02em">${escapeXml(
-        line
-      )}</text>`;
+      const y = 322 + idx * 60;
+      return `<text x="70" y="${y}" font-family="${fontFamily}" font-size="46" font-weight="bold" fill="#ffffff" letter-spacing="-0.01em">${escapeXml(line)}</text>`;
     })
     .join("\n");
 
   return `
   <svg width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" viewBox="0 0 ${CANVAS_WIDTH} ${CANVAS_HEIGHT}" xmlns="http://www.w3.org/2000/svg">
-    <!-- Dark Vignette / Scrim across bottom and left for text legibility -->
     <defs>
+      <style>${fontFaceDeclaration}
+        text { font-family: ${fontFamily}; }
+      </style>
       <linearGradient id="scrimGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#040914" stop-opacity="0.3" />
-        <stop offset="40%" stop-color="#040914" stop-opacity="0.75" />
-        <stop offset="100%" stop-color="#040914" stop-opacity="0.95" />
+        <stop offset="0%"   stop-color="#040914" stop-opacity="0.25" />
+        <stop offset="38%"  stop-color="#040914" stop-opacity="0.72" />
+        <stop offset="100%" stop-color="#040914" stop-opacity="0.96" />
       </linearGradient>
     </defs>
+
+    <!-- Dark scrim for text legibility -->
     <rect width="${CANVAS_WIDTH}" height="${CANVAS_HEIGHT}" fill="url(#scrimGrad)" />
 
     <!-- Category Pill -->
-    <g transform="translate(70, 210)">
-      <rect width="260" height="36" rx="6" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" stroke-width="1.5" />
-      <text x="130" y="23" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="700" fill="#f59e0b" letter-spacing="0.08em" text-anchor="middle">${pillText}</text>
-    </g>
+    <rect x="70" y="210" width="290" height="36" rx="6" fill="rgba(245,158,11,0.14)" stroke="#f59e0b" stroke-width="1.5" />
+    <text x="215" y="234" font-family="${fontFamily}" font-size="12" font-weight="bold" fill="#f59e0b" letter-spacing="0.08em" text-anchor="middle">${pillText}</text>
 
     <!-- Main Headline -->
     ${titleLinesSvg}
 
-    <!-- Bottom Metadata Bar -->
-    <line x1="70" y1="580" x2="1130" y2="580" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1" />
-    <text x="70" y="618" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#94a3b8" letter-spacing="0.04em">
-      NPL HUB NEPAL • INDEPENDENT EDITORIAL DESK
-    </text>
-    <text x="1130" y="618" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="600" fill="#38bdf8" text-anchor="end">
-      nplhubnepal.com
-    </text>
+    <!-- Bottom Brand Bar -->
+    <rect x="70" y="580" width="1060" height="1" fill="rgba(255,255,255,0.12)" />
+    <text x="70"  y="616" font-family="${fontFamily}" font-size="14" font-weight="bold" fill="#94a3b8" letter-spacing="0.05em">NPL HUB NEPAL • INDEPENDENT EDITORIAL DESK</text>
+    <text x="1130" y="616" font-family="${fontFamily}" font-size="14" font-weight="bold" fill="#38bdf8" text-anchor="end">nplhubnepal.com</text>
   </svg>
   `;
 }
