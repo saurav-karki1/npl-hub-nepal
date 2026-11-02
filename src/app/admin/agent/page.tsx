@@ -173,12 +173,12 @@ export default function AdminAgentPage() {
     }
   };
 
-  // Step stage manually
+  // Step a single stage manually
   const handleStepStage = async (jobId: string) => {
     if (!token || steppingJobId) return;
     setSteppingJobId(jobId);
     setMessage({
-      text: "Executing next stage... Please wait (10-30s).",
+      text: "Executing next stage... Please wait (10-60s).",
       type: "info",
     });
 
@@ -204,6 +204,98 @@ export default function AdminAgentPage() {
         text: err instanceof Error ? err.message : "Failed to execute stage.",
         type: "error",
       });
+    } finally {
+      setSteppingJobId(null);
+    }
+  };
+
+  // Auto-run all stages sequentially — no manual clicking required
+  const handleRunAllStages = async (jobId: string) => {
+    if (!token || steppingJobId) return;
+    setSteppingJobId(jobId);
+    setMessage({ text: "Auto-running all stages… This may take several minutes.", type: "info" });
+
+    const MAX_STAGES = 7;
+    let lastSummary = "";
+
+    try {
+      for (let attempt = 0; attempt < MAX_STAGES; attempt++) {
+        // Fetch current job state
+        const statusRes = await fetch(`/api/admin/agent/editorial/jobs`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (statusRes.ok) {
+          const statusJson = await statusRes.json();
+          const currentJob: EditorialJob | undefined = (statusJson.jobs ?? []).find(
+            (j: EditorialJob) => j.id === jobId
+          );
+          if (currentJob) {
+            if (currentJob.status === "completed") {
+              setMessage({ text: `✅ All 7 stages completed! Article draft is ready for review.`, type: "success" });
+              refreshEditorialJobs();
+              return;
+            }
+            if (currentJob.status.startsWith("paused") || currentJob.status === "failed") {
+              setMessage({
+                text: `⚠️ Pipeline paused at Stage ${currentJob.current_stage}: ${currentJob.pause_reason || currentJob.status}`,
+                type: "error",
+              });
+              refreshEditorialJobs();
+              return;
+            }
+          }
+        }
+
+        // Execute the next stage
+        setMessage({
+          text: `Running Stage ${attempt + 1} of ${MAX_STAGES}… Please wait.`,
+          type: "info",
+        });
+
+        const res = await fetch(`/api/admin/agent/editorial/jobs/${jobId}/step`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await res.json();
+        lastSummary = data.stepResult?.summary || "";
+
+        if (!res.ok) {
+          throw new Error(data.error || "Stage execution failed.");
+        }
+
+        // Check the returned job state
+        const returnedJob: EditorialJob | undefined = data.job;
+        if (returnedJob?.status === "completed") {
+          setMessage({ text: `✅ All stages complete! Draft article is ready.`, type: "success" });
+          refreshEditorialJobs();
+          return;
+        }
+        if (returnedJob?.status?.startsWith("paused") || returnedJob?.status === "failed") {
+          setMessage({
+            text: `⚠️ Paused at Stage ${returnedJob.current_stage}: ${returnedJob.pause_reason || lastSummary}`,
+            type: "error",
+          });
+          refreshEditorialJobs();
+          return;
+        }
+
+        // Refresh UI between stages
+        refreshEditorialJobs();
+
+        // Brief pause between stages to avoid rate-limit collisions
+        await new Promise((r) => setTimeout(r, 2500));
+      }
+
+      // If we exit the loop without completing
+      setMessage({ text: lastSummary || "Auto-run loop finished — check job status.", type: "info" });
+      refreshEditorialJobs();
+    } catch (err: unknown) {
+      setMessage({
+        text: err instanceof Error ? err.message : "Auto-run encountered an error.",
+        type: "error",
+      });
+      refreshEditorialJobs();
     } finally {
       setSteppingJobId(null);
     }
@@ -664,7 +756,7 @@ export default function AdminAgentPage() {
                           <strong>Pause Notice:</strong> {job.pause_reason}
                         </div>
                       )}
-                      {job.error_log && job.error_log.length > 0 && (
+                      {job.status === "failed" && job.error_log && job.error_log.length > 0 && (
                         <div className="p-2.5 bg-rose-950/30 border border-rose-800/40 rounded text-xs text-rose-300">
                           <strong>Error:</strong> {job.error_log[job.error_log.length - 1]}
                         </div>
@@ -696,25 +788,37 @@ export default function AdminAgentPage() {
 
                         <div className="flex items-center gap-2">
                           {job.status !== "completed" && (
-                            <button
-                              onClick={() => handleStepStage(job.id)}
-                              disabled={isSteppingThis}
-                              className="px-3.5 py-1.5 text-xs font-bold text-white bg-cyan-700 hover:bg-cyan-600 disabled:opacity-50 rounded transition flex items-center gap-1.5"
-                            >
-                              {isSteppingThis ? (
-                                <>
-                                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                                  </svg>
-                                  Stepping Stage...
-                                </>
-                              ) : (
-                                <>
-                                  <span>Step Stage {job.current_stage} &rarr;</span>
-                                </>
-                              )}
-                            </button>
+                            <>
+                              {/* Auto-run all remaining stages with one click */}
+                              <button
+                                onClick={() => handleRunAllStages(job.id)}
+                                disabled={!!steppingJobId}
+                                className="px-3.5 py-1.5 text-xs font-bold text-slate-950 bg-[#c89f2a] hover:bg-[#b58f24] disabled:opacity-50 rounded transition flex items-center gap-1.5"
+                                title="Automatically runs all remaining stages without manual clicking"
+                              >
+                                {isSteppingThis ? (
+                                  <>
+                                    <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                                    </svg>
+                                    Running Stage {job.current_stage}…
+                                  </>
+                                ) : (
+                                  <span>▶ Run All Stages</span>
+                                )}
+                              </button>
+
+                              {/* Manual single-step button (fine-grained control) */}
+                              <button
+                                onClick={() => handleStepStage(job.id)}
+                                disabled={!!steppingJobId}
+                                className="px-3.5 py-1.5 text-xs font-bold text-white bg-cyan-700 hover:bg-cyan-600 disabled:opacity-50 rounded transition flex items-center gap-1.5"
+                                title="Execute only the next single stage"
+                              >
+                                <span>Step {job.current_stage} →</span>
+                              </button>
+                            </>
                           )}
 
                           {job.status === "completed" && job.article_id && (

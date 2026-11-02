@@ -107,10 +107,11 @@ export async function buildFactDossierWithGroq(
   documents: SourceDocument[],
   articleType: EditorialArticleType = "tournament_news"
 ): Promise<{ dossier: FactDossier; tokensUsed: number; latencyMs: number; modelUsed: string }> {
-  // Format documents for context
-  const sourcesText = documents
+  // Format documents for context — keep top 4 sources and truncate to 1,500 chars to avoid exceeding Groq's 8,000 TPM limit
+  const topDocs = documents.slice(0, 4);
+  const sourcesText = topDocs
     .map((doc, idx) => {
-      const body = doc.raw_content ? doc.raw_content.slice(0, 3000) : doc.snippet || "";
+      const body = doc.raw_content ? doc.raw_content.slice(0, 1500) : doc.snippet || "";
       return `--- SOURCE ${idx + 1} (${doc.authority_type.toUpperCase()}): ${doc.title} (${doc.url}) ---\n${body}\n`;
     })
     .join("\n");
@@ -175,19 +176,26 @@ Output STRICT JSON ONLY matching this format:
       GROQ_MODELS.SYNTHESIS_PRIMARY,
       { temperature: 0.1, responseFormatJson: true }
     );
-  } catch (err) {
-    if (err instanceof QuotaExceededError) {
+  } catch (err: unknown) {
+    // If primary 120b model encounters TPM rate-limit (429) or transient error, failover to fast 20b model
+    console.warn(
+      `[Groq Dossier] Primary model ${GROQ_MODELS.SYNTHESIS_PRIMARY} failed (${(err as Error).message}), attempting failover to ${GROQ_MODELS.FAST_EXTRACTION}...`
+    );
+    try {
+      result = await callGroqChat(
+        [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        GROQ_MODELS.FAST_EXTRACTION,
+        { temperature: 0.1, responseFormatJson: true }
+      );
+    } catch (fallbackErr: unknown) {
+      if (fallbackErr instanceof QuotaExceededError) {
+        throw fallbackErr;
+      }
       throw err;
     }
-    // Fallback to fast extraction model if primary fails with transient error
-    result = await callGroqChat(
-      [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt },
-      ],
-      GROQ_MODELS.FAST_EXTRACTION,
-      { temperature: 0.1, responseFormatJson: true }
-    );
   }
 
   let cleaned = result.content.trim();

@@ -389,6 +389,7 @@ export async function retryEditorialJob(
       current_stage: targetStage,
       status: "pending",
       pause_reason: null,
+      error_log: [],
       worker_token: null,
       lock_acquired_at: null,
       updated_at: now,

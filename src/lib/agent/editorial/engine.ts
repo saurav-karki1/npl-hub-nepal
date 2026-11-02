@@ -37,6 +37,7 @@ import {
   type EditorialJob,
   type PipelineStage,
   type ProviderCallTelemetry,
+  type SourceDocument,
 } from "./types";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
 
@@ -57,6 +58,110 @@ export interface StageExecutionResult {
   status: string;
   summary: string;
   error?: string;
+}
+
+/**
+ * Look up official platform match scorecard from Supabase `matches` table
+ * to serve as an authoritative primary source for match-related news articles.
+ */
+async function lookupPlatformMatchSource(topic: string): Promise<SourceDocument | null> {
+  try {
+    const admin = getSupabaseAdminClient();
+    const lowerTopic = topic.toLowerCase();
+
+    // Map common keywords to canonical team slugs
+    const teamKeywords: Record<string, string> = {
+      janakpur: "janakpur-bolts",
+      pokhara: "pokhara-avengers",
+      biratnagar: "biratnagar-kings",
+      chitwan: "chitwan-rhinos",
+      kathmandu: "kathmandu-gorkhas",
+      karnali: "karnali-yaks",
+      lumbini: "lumbini-lions",
+      sudurpaschim: "sudurpaschim-royals",
+    };
+
+    const detectedTeams = Object.entries(teamKeywords)
+      .filter(([kw]) => lowerTopic.includes(kw))
+      .map(([, id]) => id);
+
+    if (detectedTeams.length === 0) return null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query = (admin as any).from("matches").select("*");
+
+    if (detectedTeams.length >= 2) {
+      const [t1, t2] = detectedTeams;
+      query = query.or(
+        `and(team1_id.eq.${t1},team2_id.eq.${t2}),and(team1_id.eq.${t2},team2_id.eq.${t1})`
+      );
+    } else {
+      query = query.or(`team1_id.eq.${detectedTeams[0]},team2_id.eq.${detectedTeams[0]}`);
+    }
+
+    const { data: matches, error } = await query
+      .order("match_number", { ascending: false })
+      .limit(1);
+
+    if (error || !matches || matches.length === 0) return null;
+
+    const match = matches[0];
+    const team1Name = match.team1_id
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c: string) => c.toUpperCase());
+    const team2Name = match.team2_id
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c: string) => c.toUpperCase());
+
+    const t1Score = match.scores?.team1
+      ? `${match.scores.team1.runs}/${match.scores.team1.wickets} (${match.scores.team1.overs} ov)`
+      : "Score Pending";
+    const t2Score = match.scores?.team2
+      ? `${match.scores.team2.runs}/${match.scores.team2.wickets} (${match.scores.team2.overs} ov)`
+      : "Score Pending";
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const topBatters = (match.scores?.batters || [])
+      .slice(0, 4)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((b: any) => `${b.name} ${b.runs} (${b.balls})`)
+      .join(", ");
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const topBowlers = (match.scores?.bowlers || [])
+      .slice(0, 4)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .map((b: any) => `${b.name} ${b.wickets}/${b.runs} (${b.overs} ov)`)
+      .join(", ");
+
+    const rawContent = `OFFICIAL NEPAL PREMIER LEAGUE MATCH RESULT & SCORECARD (PRIMARY RECORD)
+Match Number: Match ${match.match_number}
+Tournament: Nepal Premier League 2026 (Season 3)
+Stage: ${match.stage}
+Date: ${match.formatted_date || match.match_date} (${match.day_of_week || ""})
+Venue: ${match.venue || "TU International Cricket Ground, Kirtipur"}
+Match Status: ${match.status.toUpperCase()}
+Official Result: ${match.result_statement || match.result || "Match concluded"}
+Winner: ${match.winner_name || "Official Result Confirmed"} by ${match.win_margin || ""} ${match.win_type || ""}
+1st Innings (${team1Name}): ${t1Score}
+2nd Innings (${team2Name}): ${t2Score}
+${topBatters ? `Key Batting: ${topBatters}` : ""}
+${topBowlers ? `Key Bowling: ${topBowlers}` : ""}
+Data Authority: Verified Official NPL Match Scorecard (Cricket Association of Nepal / NPL Hub Primary Record).`;
+
+    return {
+      url: `https://nplhubnepal.com/matches/${match.slug}`,
+      title: `Official Match Scorecard: ${team1Name} vs ${team2Name} (Match ${match.match_number})`,
+      snippet: `Official NPL Scorecard for Match ${match.match_number}: ${match.result_statement || match.result}. ${team1Name} (${t1Score}) vs ${team2Name} (${t2Score}).`,
+      raw_content: rawContent,
+      domain: "nplhubnepal.com",
+      published_date: match.match_date,
+      authority_type: "primary",
+    };
+  } catch (err) {
+    console.warn("[lookupPlatformMatchSource] Could not lookup platform match:", err);
+    return null;
+  }
 }
 
 /**
@@ -92,6 +197,10 @@ export async function executeSingleJobStage(
           searchDepth: "basic",
         });
 
+        // Check if an official platform scorecard exists for this fixture
+        const platformMatchDoc = await lookupPlatformMatchSource(job.topic);
+        const allDocuments = platformMatchDoc ? [platformMatchDoc, ...documents] : documents;
+
         newTelemetryCalls.push({
           provider: "tavily",
           operation: "search",
@@ -101,12 +210,12 @@ export async function executeSingleJobStage(
           timestamp: new Date().toISOString(),
         });
 
-        if (!documents.length) {
+        if (!allDocuments.length) {
           await pauseEditorialJob(
             job.id,
             workerToken,
             "paused_insufficient_evidence",
-            "No web sources found for topic."
+            "No web sources or scorecards found for topic."
           );
           return {
             jobId: job.id,
@@ -120,7 +229,7 @@ export async function executeSingleJobStage(
           job.id,
           workerToken,
           2,
-          { search_results: documents },
+          { search_results: allDocuments },
           { calls: newTelemetryCalls }
         );
 
@@ -129,7 +238,7 @@ export async function executeSingleJobStage(
           previousStage: 1,
           nextStage: 2,
           status: "running",
-          summary: `Stage 1 Search completed: found ${documents.length} sources.`,
+          summary: `Stage 1 Search completed: found ${allDocuments.length} sources${platformMatchDoc ? " (including official platform scorecard)" : ""}.`,
         };
       }
 
@@ -138,7 +247,10 @@ export async function executeSingleJobStage(
       // -----------------------------------------------------------------------
       case 2: {
         const searchDocs = stageData.search_results || [];
-        const articleDocs = searchDocs.filter(
+        const platformDoc = searchDocs.find((d) => d.authority_type === "primary" && d.raw_content);
+        const webDocs = searchDocs.filter((d) => d !== platformDoc);
+
+        const articleDocs = webDocs.filter(
           (d) =>
             !d.url.includes("youtube.com") &&
             !d.url.includes("facebook.com") &&
@@ -146,8 +258,8 @@ export async function executeSingleJobStage(
             !d.url.includes("x.com") &&
             !d.url.includes("instagram.com")
         );
-        const candidateDocs = articleDocs.length >= 2 ? articleDocs : searchDocs;
-        const topUrls = candidateDocs.slice(0, 4).map((d) => d.url);
+        const candidateDocs = articleDocs.length >= 2 ? articleDocs : webDocs;
+        const topUrls = candidateDocs.slice(0, 3).map((d) => d.url);
 
         const { documents: extractedDocs, latencyMs } = await extractTavily(topUrls);
 
@@ -160,8 +272,9 @@ export async function executeSingleJobStage(
           timestamp: new Date().toISOString(),
         });
 
-        // Merge raw content into search documents
+        // Merge raw content into search documents (platform primary doc already has raw_content)
         const mergedDocs = searchDocs.map((sd) => {
+          if (sd.raw_content) return sd;
           const match = extractedDocs.find((ed) => ed.url === sd.url);
           return match ? { ...sd, raw_content: match.raw_content } : sd;
         });
@@ -179,7 +292,7 @@ export async function executeSingleJobStage(
           previousStage: 2,
           nextStage: 3,
           status: "running",
-          summary: `Stage 2 Extract completed: extracted ${extractedDocs.length} full-page sources.`,
+          summary: `Stage 2 Extract completed: extracted ${extractedDocs.length} full-page sources${platformDoc ? " + official platform scorecard" : ""}.`,
         };
       }
 
