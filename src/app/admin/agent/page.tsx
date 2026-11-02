@@ -362,6 +362,81 @@ export default function AdminAgentPage() {
     }
   };
 
+  // Override evidence pause and force write + complete draft
+  const handleOverrideJob = async (jobId: string) => {
+    if (!token || steppingJobId) return;
+    const confirmed = window.confirm(
+      "Force drafting with available evidence?\n\nThis will bypass the strict evidence check and immediately write the article draft using all gathered facts."
+    );
+    if (!confirmed) return;
+
+    setSteppingJobId(jobId);
+    setMessage({
+      text: "⚡ Overriding evidence pause: Generating full article draft with Gemini…",
+      type: "info",
+    });
+
+    try {
+      const res = await fetch(`/api/admin/agent/editorial/jobs/${jobId}/override`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to override evidence check.");
+      }
+
+      setMessage({
+        text: "Draft generated! Running remaining critique, fact-check & image composition stages…",
+        type: "info",
+      });
+      await refreshEditorialJobs();
+
+      // Now automatically run remaining stages (5: critique, 6: fact-check, 7: publish draft)
+      const MAX_STAGES = 5;
+      for (let attempt = 0; attempt < MAX_STAGES; attempt++) {
+        const stepRes = await fetch(`/api/admin/agent/editorial/jobs/${jobId}/step`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const stepData = await stepRes.json();
+        if (!stepRes.ok) {
+          throw new Error(stepData.error || "Stage execution failed.");
+        }
+        if (stepData.job?.status === "completed") {
+          setMessage({
+            text: "✅ Full article generated and saved as draft in News Management!",
+            type: "success",
+          });
+          await refreshEditorialJobs();
+          return;
+        }
+        if (stepData.job?.status?.startsWith("paused") || stepData.job?.status === "failed") {
+          setMessage({
+            text: `⚠️ Pipeline stopped at Stage ${stepData.job.current_stage}: ${stepData.job.pause_reason || "Check job status"}`,
+            type: "error",
+          });
+          await refreshEditorialJobs();
+          return;
+        }
+        await refreshEditorialJobs();
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+
+      setMessage({ text: "Draft pipeline finished — check job status.", type: "info" });
+      await refreshEditorialJobs();
+    } catch (err: unknown) {
+      setMessage({
+        text: err instanceof Error ? err.message : "Override failed.",
+        type: "error",
+      });
+      await refreshEditorialJobs();
+    } finally {
+      setSteppingJobId(null);
+    }
+  };
+
   // Scanner toggles
   const handleToggleEnabled = async () => {
     if (!config || !token || saving) return;
@@ -826,8 +901,20 @@ export default function AdminAgentPage() {
 
                       {/* Pause or Error Note if applicable */}
                       {job.pause_reason && (
-                        <div className="p-2.5 bg-amber-950/30 border border-amber-800/40 rounded text-xs text-amber-300">
-                          <strong>Pause Notice:</strong> {job.pause_reason}
+                        <div className="p-3 bg-amber-950/40 border border-amber-800/50 rounded flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-amber-300">
+                          <div className="flex-1">
+                            <strong className="text-amber-200">Pause Notice:</strong> {job.pause_reason}
+                          </div>
+                          {job.status === "paused_insufficient_evidence" && (
+                            <button
+                              onClick={() => handleOverrideJob(job.id)}
+                              disabled={!!steppingJobId}
+                              className="px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 active:scale-95 disabled:opacity-50 rounded whitespace-nowrap transition flex items-center gap-1.5 self-start sm:self-auto shadow-sm"
+                              title="Bypass strict evidence check and generate the full article draft anyway"
+                            >
+                              <span>⚡ Force Write Draft & Complete →</span>
+                            </button>
+                          )}
                         </div>
                       )}
                       {job.status === "failed" && job.error_log && job.error_log.length > 0 && (
@@ -854,8 +941,20 @@ export default function AdminAgentPage() {
                             <button
                               onClick={() => handleRetryJob(job.id)}
                               className="px-3 py-1.5 text-xs font-semibold text-amber-300 bg-amber-950/50 hover:bg-amber-900/50 border border-amber-800/60 rounded transition"
+                              title="Reset job to Stage 1 to re-run with latest sources"
                             >
                               Reset & Retry
+                            </button>
+                          )}
+
+                          {job.status === "paused_insufficient_evidence" && (
+                            <button
+                              onClick={() => handleOverrideJob(job.id)}
+                              disabled={!!steppingJobId}
+                              className="px-3 py-1.5 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 active:scale-95 disabled:opacity-50 rounded transition flex items-center gap-1.5 shadow-sm"
+                              title="Bypass strict evidence check and write article draft"
+                            >
+                              <span>⚡ Force Write Draft →</span>
                             </button>
                           )}
 

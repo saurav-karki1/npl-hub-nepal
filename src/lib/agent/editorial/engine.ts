@@ -40,6 +40,7 @@ import {
   type SourceDocument,
 } from "./types";
 import { getSupabaseAdminClient } from "@/lib/supabase/server";
+import { getSeasonStats } from "@/lib/data/stats-registry";
 
 function toSlug(text: string): string {
   return text
@@ -165,6 +166,103 @@ Data Authority: Verified Official NPL Match Scorecard (Cricket Association of Ne
 }
 
 /**
+ * Look up verified tournament statistics (top run scorers, top wicket takers, standings)
+ * from platform records to serve as an authoritative primary source.
+ */
+function lookupPlatformStatsSource(topic: string): SourceDocument | null {
+  const lower = topic.toLowerCase();
+  const statsKeywords = [
+    "run scorer",
+    "run-scorer",
+    "run scorers",
+    "top run",
+    "top runs",
+    "most run",
+    "most runs",
+    "leading run",
+    "wicket taker",
+    "wicket-taker",
+    "wicket takers",
+    "top wicket",
+    "top wickets",
+    "most wicket",
+    "most wickets",
+    "leading wicket",
+    "orange cap",
+    "purple cap",
+    "leaderboard",
+    "stats",
+    "standings",
+    "points table",
+    "top batter",
+    "top bowler",
+  ];
+
+  const matchesStatsTopic = statsKeywords.some((kw) => lower.includes(kw));
+  if (!matchesStatsTopic) return null;
+
+  try {
+    const dataset = getSeasonStats("season-3");
+    if (!dataset) return null;
+
+    const topBatters = (dataset.leaderboards?.batting?.mostRuns?.items || [])
+      .slice(0, 7)
+      .map(
+        (b) =>
+          `${b.rank}. ${b.playerName} (${b.teamName}) — ${b.value} runs (${b.secondaryDetail || ""})`
+      )
+      .join("\n");
+
+    const topBowlers = (dataset.leaderboards?.bowling?.mostWickets?.items || [])
+      .slice(0, 7)
+      .map(
+        (w) =>
+          `${w.rank}. ${w.playerName} (${w.teamName}) — ${w.value} wickets (${w.secondaryDetail || ""})`
+      )
+      .join("\n");
+
+    const standings = (dataset.standings || [])
+      .slice(0, 8)
+      .map(
+        (s) =>
+          `${s.position}. ${s.teamName}: Played ${s.played}, Won ${s.won}, Lost ${s.lost}, Pts ${s.points}, NRR ${s.formattedNRR}`
+      )
+      .join("\n");
+
+    const rawContent = `OFFICIAL NEPAL PREMIER LEAGUE 2026 TOURNAMENT STATISTICS & LEADERBOARDS (PRIMARY RECORD)
+Tournament: Nepal Premier League 2026 (Season 3)
+Edition: 3rd Edition
+Status: In-Progress
+Venue: Tribhuvan University International Cricket Stadium, Kirtipur
+
+TOP RUN SCORERS (LEADERBOARD):
+${topBatters || "Statistics compiling"}
+
+TOP WICKET TAKERS (LEADERBOARD):
+${topBowlers || "Statistics compiling"}
+
+CURRENT TOURNAMENT STANDINGS:
+${standings || "Standings compiling"}
+
+Data Authority: Verified Official NPL Match Scorecards & Statistics (Cricket Association of Nepal / NPL Hub Primary Record).`;
+
+    return {
+      url: "https://nplhubnepal.com/stats",
+      title: "Official NPL Season 3 Leaderboards & Player Statistics",
+      snippet:
+        "Official Nepal Premier League 2026 tournament statistics: Leading run scorers, wicket takers, and current team standings at TU Cricket Stadium.",
+      raw_content: rawContent,
+      domain: "nplhubnepal.com",
+      published_date: new Date().toISOString().split("T")[0],
+      authority_type: "primary",
+    };
+  } catch (err) {
+    console.warn("[lookupPlatformStatsSource] Could not lookup platform stats:", err);
+    return null;
+  }
+}
+
+/**
  * Executes exactly ONE stage for a claimed editorial job.
  */
 export async function executeSingleJobStage(
@@ -197,9 +295,11 @@ export async function executeSingleJobStage(
           searchDepth: "basic",
         });
 
-        // Check if an official platform scorecard exists for this fixture
+        // Check if an official platform scorecard or tournament stats exist
         const platformMatchDoc = await lookupPlatformMatchSource(job.topic);
-        const allDocuments = platformMatchDoc ? [platformMatchDoc, ...documents] : documents;
+        const platformStatsDoc = lookupPlatformStatsSource(job.topic);
+        const platformDocs = [platformMatchDoc, platformStatsDoc].filter(Boolean) as SourceDocument[];
+        const allDocuments = [...platformDocs, ...documents];
 
         newTelemetryCalls.push({
           provider: "tavily",
@@ -247,8 +347,8 @@ export async function executeSingleJobStage(
       // -----------------------------------------------------------------------
       case 2: {
         const searchDocs = stageData.search_results || [];
-        const platformDoc = searchDocs.find((d) => d.authority_type === "primary" && d.raw_content);
-        const webDocs = searchDocs.filter((d) => d !== platformDoc);
+        const platformDocs = searchDocs.filter((d) => d.authority_type === "primary" && d.raw_content);
+        const webDocs = searchDocs.filter((d) => !platformDocs.includes(d));
 
         const articleDocs = webDocs.filter(
           (d) =>
@@ -272,7 +372,7 @@ export async function executeSingleJobStage(
           timestamp: new Date().toISOString(),
         });
 
-        // Merge raw content into search documents (platform primary doc already has raw_content)
+        // Merge raw content into search documents (platform primary docs already have raw_content)
         const mergedDocs = searchDocs.map((sd) => {
           if (sd.raw_content) return sd;
           const match = extractedDocs.find((ed) => ed.url === sd.url);
@@ -292,7 +392,7 @@ export async function executeSingleJobStage(
           previousStage: 2,
           nextStage: 3,
           status: "running",
-          summary: `Stage 2 Extract completed: extracted ${extractedDocs.length} full-page sources${platformDoc ? " + official platform scorecard" : ""}.`,
+          summary: `Stage 2 Extract completed: extracted ${extractedDocs.length} full-page sources${platformDocs.length > 0 ? ` + ${platformDocs.length} official platform record(s)` : ""}.`,
         };
       }
 
