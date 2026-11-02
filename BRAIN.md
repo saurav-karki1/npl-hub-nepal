@@ -675,3 +675,11 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Guardrail Demonstration:** Attempted unverified claims earlier were properly paused by Groq fact-checker with `paused_insufficient_evidence` (zero-hallucination verified).
   - **Reputable Domain Registry:** Expanded Tavily provider to recognize national broadsheets (`thehimalayantimes.com`, `risingnepaldaily.com`, `gorkhapatraonline.com`, `ekantipur.com`, `cricinfo.com`).
   - **Total Cost:** Strictly $0.00 across all providers. All 25/25 tests pass.
+
+- **2026-11-02 (Engine Fix + Auto-Run Pipeline):**
+  - **engine.ts Bug Fixed:** Removed dangling duplicate Stage 2 code block (lines 297-310) left over from a previous partial edit. `SourceDocument` type now correctly imported.
+  - **Groq TPM Fix:** `groq.ts` source truncation reduced to 1,500 chars × top 4 docs (from 3,000 chars × 6 docs) to stay within 8,000 TPM free tier limit.
+  - **Stale Error Log Fix:** `jobs-repository.ts` `retryEditorialJob` now clears `error_log: []` on reset. Admin UI only shows error box when `status === "failed"`.
+  - **Platform Scorecard Injection:** `engine.ts` `lookupPlatformMatchSource()` now queries `matches` table for completed fixtures and injects official scorecard as `authority_type: "primary"` source at Stage 1.
+  - **Auto-Run All Stages (NEW):** Admin Control Room (`/admin/agent`) now has a **"▶ Run All Stages"** button that automatically advances a job through all 7 stages sequentially without any manual clicking. The "Step Stage N →" button remains for fine-grained manual control.
+  - **TypeScript:** 0 errors. Tests: 25/25 passing. Commit `a7bdd25` pushed to master.
