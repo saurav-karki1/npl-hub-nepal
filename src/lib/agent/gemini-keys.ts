@@ -5,7 +5,7 @@
  *
  * ENVIRONMENT VARIABLES:
  * - Primary: GEMINI_API_KEY
- * - Failover: GEMINI_API_KEY_2, GEMINI_API_KEY_3, ... GEMINI_API_KEY_N
+ * - Failover: GEMINI_API_KEY_2, GEMINI_API_KEY_3, GEMINI_API_KEY_4, GEMINI_API_KEY_5, GEMINI_API_KEY_6 ... GEMINI_API_KEY_20
  *
  * SAFETY & SECURITY:
  * - Server-side ONLY. Never expose keys to client bundles, API responses, or logs.
@@ -34,35 +34,53 @@ export interface GeminiExecuteResult<T> {
 
 /**
  * Collect all configured Gemini API keys from environment variables.
- * Scans GEMINI_API_KEY, then GEMINI_API_KEY_2 through GEMINI_API_KEY_10.
+ * Scans GEMINI_API_KEY, then GEMINI_API_KEY_2 through GEMINI_API_KEY_20.
+ * Explicitly supports GEMINI_API_KEY_4, GEMINI_API_KEY_5, GEMINI_API_KEY_6.
  * Server-only.
  */
 export function getConfiguredGeminiKeys(): GeminiKeySlot[] {
   const keys: GeminiKeySlot[] = [];
+  const seenKeys = new Set<string>();
+
+  const addKey = (index: number, slotName: string, val: string | undefined) => {
+    if (!val) return;
+    const trimmed = val.trim();
+    if (!trimmed || seenKeys.has(trimmed)) return;
+    seenKeys.add(trimmed);
+    keys.push({
+      index,
+      slotName,
+      key: trimmed,
+    });
+  };
 
   // Key 1: Primary GEMINI_API_KEY or GEMINI_API_KEY_1
-  const primaryKey = process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_1;
-  if (primaryKey && primaryKey.trim()) {
-    keys.push({
-      index: 1,
-      slotName: "key 1",
-      key: primaryKey.trim(),
-    });
+  addKey(1, "key 1", process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_1);
+
+  // Numbered keys: GEMINI_API_KEY_2 through GEMINI_API_KEY_20
+  // Specifically supports GEMINI_API_KEY_4, GEMINI_API_KEY_5, GEMINI_API_KEY_6
+  for (let i = 2; i <= 20; i++) {
+    addKey(i, `key ${i}`, process.env[`GEMINI_API_KEY_${i}`]);
   }
 
-  // Numbered keys: GEMINI_API_KEY_2 through GEMINI_API_KEY_10
-  for (let i = 2; i <= 10; i++) {
-    const val = process.env[`GEMINI_API_KEY_${i}`];
-    if (val && val.trim()) {
-      keys.push({
-        index: i,
-        slotName: `key ${i}`,
-        key: val.trim(),
-      });
+  // Also dynamically scan process.env for any GEMINI_API_KEY_\d+ that might be set
+  for (const [envKey, envVal] of Object.entries(process.env)) {
+    const match = envKey.match(/^GEMINI_API_KEY_(\d+)$/);
+    if (match) {
+      const idx = parseInt(match[1], 10);
+      addKey(idx, `key ${idx}`, envVal);
     }
   }
 
   return keys;
+}
+
+/**
+ * Get any single valid Gemini API key (from primary or failovers 2..20).
+ */
+export function getFirstConfiguredGeminiKey(): string | undefined {
+  const keys = getConfiguredGeminiKeys();
+  return keys[0]?.key;
 }
 
 /**

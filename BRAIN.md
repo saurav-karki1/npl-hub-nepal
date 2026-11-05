@@ -697,3 +697,12 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Implemented `resolveMatchEndDate()`: Accurately formats `endDate` in ISO 8601 with Nepal's `+05:45` offset when reliable finish times exist (`match.endDate`, `match.endTime`, or broadcast time ranges). For date-scoped TBA matches (Playoffs 29-32), outputs matching date-only `endDate`.
     - Factual Accuracy & Anti-Fabrication: When a match has an announced start time but no scheduled finish time, strictly avoids inventing arbitrary fixed durations (+3.5h) or copying start times, safely omitting `endDate` per Google Search Central Event guidelines.
   - **Verification & Build:** Created `scripts/test-structured-data.mjs` (10/10 PASS) and `scripts/verify-rich-results-jsonld.mjs`. All 32 match schemas verified. Next.js production build (`npm run build`) succeeded across 233 routes with 0 errors.
+
+- **2026-11-05 (Gemini Multi-Key Failover Expansion 4..6 & Quota Resume Integration):**
+  - **Multi-Key Failover Expansion (`src/lib/agent/gemini-keys.ts`):** Expanded `getConfiguredGeminiKeys` to explicitly support `GEMINI_API_KEY_4`, `GEMINI_API_KEY_5`, and `GEMINI_API_KEY_6` (up to `GEMINI_API_KEY_20` with dynamic environment scanning and deduplication). Added `getFirstConfiguredGeminiKey()` helper.
+  - **Quota Pause Resume Architecture (`src/app/admin/agent/page.tsx` & `src/app/api/admin/agent/editorial/jobs/[id]/step/route.ts`):**
+    - Fixed `handleRunAllStages`: previously aborted on `attempt === 0` if `currentJob.status.startsWith("paused")`. Updated to only evaluate intermediate pauses on `attempt > 0`, allowing editors to click `Run All Stages` to immediately resume paused pipelines.
+    - Added one-click **`▶ Resume Pipeline Now →`** cyan action button inside the Pause Notice banner when `job.status === "paused_quota_limit"`.
+    - Updated `/api/admin/agent/editorial/jobs/[id]/step` worker lock acquisition to clear `pause_reason: null` on manual step/resume.
+  - **Documentation (`.env.example`):** Documented `GEMINI_API_KEY_4`, `GEMINI_API_KEY_5`, and `GEMINI_API_KEY_6` for multi-key automated rate-limit failovers.
+  - **Verification:** 13/13 passing in `test-gemini-failover.mjs`, 25/25 passing in `test-editorial-pipeline.mjs`, 0 TypeScript errors (`npx tsc --noEmit`).

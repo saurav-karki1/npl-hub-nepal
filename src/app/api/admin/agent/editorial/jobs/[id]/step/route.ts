@@ -49,6 +49,7 @@ export async function POST(
       .from("editorial_jobs")
       .update({
         status: "running",
+        pause_reason: null,
         worker_token: workerToken,
         lock_acquired_at: now,
         updated_at: now,

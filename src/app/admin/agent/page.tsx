@@ -245,7 +245,7 @@ export default function AdminAgentPage() {
               refreshEditorialJobs();
               return;
             }
-            if (currentJob.status.startsWith("paused") || currentJob.status === "failed") {
+            if (attempt > 0 && (currentJob.status.startsWith("paused") || currentJob.status === "failed")) {
               setMessage({
                 text: `⚠️ Pipeline paused at Stage ${currentJob.current_stage}: ${currentJob.pause_reason || currentJob.status}`,
                 type: "error",
@@ -913,6 +913,16 @@ export default function AdminAgentPage() {
                               title="Bypass strict evidence check and generate the full article draft anyway"
                             >
                               <span>⚡ Force Write Draft & Complete →</span>
+                            </button>
+                          )}
+                          {job.status === "paused_quota_limit" && (
+                            <button
+                              onClick={() => handleRunAllStages(job.id)}
+                              disabled={!!steppingJobId}
+                              className="px-3 py-1.5 text-xs font-bold text-slate-950 bg-cyan-400 hover:bg-cyan-300 active:scale-95 disabled:opacity-50 rounded whitespace-nowrap transition flex items-center gap-1.5 self-start sm:self-auto shadow-sm"
+                              title="Resume execution using configured failover Gemini API keys"
+                            >
+                              <span>▶ Resume Pipeline Now →</span>
                             </button>
                           )}
                         </div>
