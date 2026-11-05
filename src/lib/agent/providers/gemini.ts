@@ -7,6 +7,8 @@
  * - `gemini-3.8-flash` (Creative / reasoning fallback)
  *
  * Utilizes multi-key failover and rotation (GEMINI_API_KEY, GEMINI_API_KEY_2..N).
+ * Equipped with automatic zero-cost Groq (openai/gpt-oss-120b) failover if Gemini
+ * experiences server-side high demand spikes (503) or quota limitations (429).
  * Strictly adheres to the $0.00 zero-cost policy and fact dossier grounding.
  */
 
@@ -24,6 +26,7 @@ import {
 } from "../editorial/types";
 import type { ArticleBlock } from "@/lib/types/article-blocks";
 import type { NewsCategory } from "@/lib/data/news-data";
+import { callGroqChat, GROQ_MODELS } from "./groq";
 
 export const GEMINI_EDITORIAL_MODELS = [
   "gemini-3.5-flash-lite",
@@ -115,6 +118,8 @@ async function callGeminiModels<T>(
   systemInstruction?: string
 ): Promise<{ data: T; tokensUsed: number; latencyMs: number; modelUsed: string }> {
   const startTime = Date.now();
+  let lastQuotaError = "";
+  let lastError = "";
 
   for (const modelId of GEMINI_EDITORIAL_MODELS) {
     const result = await executeWithKeyFailover<T>(
@@ -166,7 +171,7 @@ async function callGeminiModels<T>(
         const parsed = JSON.parse(cleaned);
         return { status: 200, data: parsed, tokensUsed: totalTokens };
       },
-      { backoffMs: 400 }
+      { backoffMs: 800 }
     );
 
     if (result.success && result.data) {
@@ -179,16 +184,24 @@ async function callGeminiModels<T>(
     }
 
     if (result.isQuotaExhausted) {
-      throw new QuotaExceededError("gemini", result.error || "Gemini quota exhausted across all keys.");
-    }
-
-    // If 404 Model Not Found, continue to the next model in the chain
-    if (result.isModelNotFound) {
+      lastQuotaError = result.error || "Gemini quota exhausted across all keys.";
+      // Try next model candidate before abandoning Gemini
       continue;
     }
+
+    // If 404 Model Not Found or 5xx server spike, continue to the next model in the chain
+    if (result.isModelNotFound || (result.statusCode && result.statusCode >= 500)) {
+      continue;
+    }
+
+    lastError = result.error || "Gemini model execution failed.";
   }
 
-  throw new Error("All Gemini models failed to generate content.");
+  if (lastQuotaError) {
+    throw new QuotaExceededError("gemini", lastQuotaError);
+  }
+
+  throw new Error(lastError || "All Gemini models failed to generate content.");
 }
 
 /**
@@ -238,12 +251,12 @@ ${ARTICLE_TYPE_INSTRUCTIONS[articleType]}
      Table block structure:
      {
        "type": "table",
-       "caption": "Descriptive Caption (e.g. Match 9 Scorecard Summary)",
+       "caption": "Descriptive Caption (e.g. Match Scorecard Summary)",
        "style": "standard",
        "headers": ["Team", "Score", "Overs", "Top Performer"],
        "rows": [
-         ["Janakpur Bolts", "147/7", "20.0 ov", "J Neesham 1/16"],
-         ["Pokhara Avengers", "138/9", "19.6 ov", "M Saifuddin 2/28"]
+         ["Team 1", "Score 1", "Overs", "Top Performer 1"],
+         ["Team 2", "Score 2", "Overs", "Top Performer 2"]
        ]
      }
 6. TITLE (IMPORTANT for SEO):
@@ -271,7 +284,7 @@ ${ARTICLE_TYPE_INSTRUCTIONS[articleType]}
   ],
   "suggested_tags": string[] (3-6 tags, e.g. ["NPL 2026", "Janakpur Bolts", "Match Report"]),
   "team_ids": string[] (canonical team slugs e.g. ["janakpur-bolts", "pokhara-avengers"])
-}`;
+}Strictly valid JSON only. No markdown formatting outside of JSON.`;
 
   const userPrompt = `TOPIC: ${topic}
 PRIMARY ENTITY: ${dossier.primary_entity}
@@ -296,8 +309,52 @@ Generate the complete article draft JSON now.`;
     team_ids: string[];
   }
 
-  const { data, tokensUsed, latencyMs, modelUsed } =
-    await callGeminiModels<GeminiDraftResponse>(userPrompt, systemPrompt);
+  let data: GeminiDraftResponse;
+  let tokensUsed = 0;
+  let latencyMs = 0;
+  let modelUsed = "";
+
+  try {
+    const geminiRes = await callGeminiModels<GeminiDraftResponse>(userPrompt, systemPrompt);
+    data = geminiRes.data;
+    tokensUsed = geminiRes.tokensUsed;
+    latencyMs = geminiRes.latencyMs;
+    modelUsed = geminiRes.modelUsed;
+  } catch (geminiErr: unknown) {
+    // If Gemini is rate-limited, quota-paused, or undergoing a 503 high-demand spike,
+    // seamlessly fall back to Groq (openai/gpt-oss-120b) to complete the journalism drafting!
+    console.warn(
+      `[Editorial Engine] Gemini unavailable (${geminiErr instanceof Error ? geminiErr.message : "error"}). Seamlessly falling back to Groq synthesis (${GROQ_MODELS.SYNTHESIS_PRIMARY})...`
+    );
+
+    try {
+      const groqRes = await callGroqChat(
+        [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        GROQ_MODELS.SYNTHESIS_PRIMARY,
+        { temperature: 0.3, responseFormatJson: true }
+      );
+
+      let rawContent = groqRes.content.trim();
+      if (rawContent.startsWith("```")) {
+        rawContent = rawContent.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+      }
+
+      data = JSON.parse(rawContent);
+      tokensUsed = groqRes.tokensOutput;
+      latencyMs = groqRes.latencyMs;
+      modelUsed = `${GROQ_MODELS.SYNTHESIS_PRIMARY} (Groq Failover)`;
+    } catch (groqErr: unknown) {
+      if (geminiErr instanceof QuotaExceededError) {
+        throw geminiErr;
+      }
+      const gMsg = groqErr instanceof Error ? groqErr.message : "Groq failed";
+      const mMsg = geminiErr instanceof Error ? geminiErr.message : "Gemini failed";
+      throw new Error(`Both Gemini and Groq drafting providers failed: ${mMsg} | ${gMsg}`);
+    }
+  }
 
   // Compute word count and read time
   const fullText = (data.blocks || [])
@@ -356,8 +413,58 @@ TARGET KEYWORD HINT: ${targetKeyword || "None provided"}
 
 Generate the SEO metadata JSON.`;
 
-  const { data, tokensUsed, latencyMs, modelUsed } =
-    await callGeminiModels<SeoMetadataDraft>(userPrompt, systemPrompt);
+  interface GeminiSeoResponse {
+    meta_title: string;
+    meta_description: string;
+    focus_keyword: string;
+    secondary_keywords: string[];
+  }
+
+  let data: GeminiSeoResponse;
+  let tokensUsed = 0;
+  let latencyMs = 0;
+  let modelUsed = "";
+
+  try {
+    const geminiRes = await callGeminiModels<GeminiSeoResponse>(userPrompt, systemPrompt);
+    data = geminiRes.data;
+    tokensUsed = geminiRes.tokensUsed;
+    latencyMs = geminiRes.latencyMs;
+    modelUsed = geminiRes.modelUsed;
+  } catch (geminiErr: unknown) {
+    // If Gemini is rate-limited or unavailable, fall back to Groq for SEO metadata!
+    console.warn(
+      `[Editorial Engine] Gemini SEO unavailable (${geminiErr instanceof Error ? geminiErr.message : "error"}). Failing over to Groq SEO (${GROQ_MODELS.SYNTHESIS_PRIMARY})...`
+    );
+
+    try {
+      const groqRes = await callGroqChat(
+        [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        GROQ_MODELS.SYNTHESIS_PRIMARY,
+        { temperature: 0.2, responseFormatJson: true }
+      );
+
+      let rawContent = groqRes.content.trim();
+      if (rawContent.startsWith("```")) {
+        rawContent = rawContent.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+      }
+
+      data = JSON.parse(rawContent);
+      tokensUsed = groqRes.tokensOutput;
+      latencyMs = groqRes.latencyMs;
+      modelUsed = `${GROQ_MODELS.SYNTHESIS_PRIMARY} (Groq Failover)`;
+    } catch (groqErr: unknown) {
+      if (geminiErr instanceof QuotaExceededError) {
+        throw geminiErr;
+      }
+      const gMsg = groqErr instanceof Error ? groqErr.message : "Groq SEO failed";
+      const mMsg = geminiErr instanceof Error ? geminiErr.message : "Gemini SEO failed";
+      throw new Error(`Both Gemini and Groq SEO providers failed: ${mMsg} | ${gMsg}`);
+    }
+  }
 
   return {
     seo: {

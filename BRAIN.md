@@ -705,4 +705,9 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Added one-click **`▶ Resume Pipeline Now →`** cyan action button inside the Pause Notice banner when `job.status === "paused_quota_limit"`.
     - Updated `/api/admin/agent/editorial/jobs/[id]/step` worker lock acquisition to clear `pause_reason: null` on manual step/resume.
   - **Documentation (`.env.example`):** Documented `GEMINI_API_KEY_4`, `GEMINI_API_KEY_5`, and `GEMINI_API_KEY_6` for multi-key automated rate-limit failovers.
+  - **503 Server Spike Disambiguation & Groq Automated Failover (`src/lib/agent/providers/gemini.ts` & `src/lib/agent/gemini-keys.ts`):**
+    - Root cause analysis: Google API returning transient 503 ("This model is currently experiencing high demand. Spikes in demand are usually temporary.") was erroneously mislabeled as quota exhaustion across keys.
+    - Differentiated HTTP 429 quota limits from HTTP 500-504 server demand spikes. Server spikes no longer set `isQuotaExhausted: true`.
+    - Fixed model fallback loop in `callGeminiModels`: attempts subsequent candidates (`gemini-3.8-flash`) instead of prematurely aborting on the first model.
+    - Added automatic Groq (`openai/gpt-oss-120b`) drafting and SEO failover in `generateArticleWithGemini` and `generateSeoMetadataWithGemini`. If Google Gemini is unavailable (503) or rate-limited (429), the pipeline automatically completes article generation using Groq at $0.00 zero cost without pausing.
   - **Verification:** 13/13 passing in `test-gemini-failover.mjs`, 25/25 passing in `test-editorial-pipeline.mjs`, 0 TypeScript errors (`npx tsc --noEmit`).

@@ -136,9 +136,10 @@ export async function executeWithKeyFailover<T>(
     };
   }
 
-  const backoffMs = options.backoffMs ?? 500;
+  const backoffMs = options.backoffMs ?? 800;
   let lastError = "All Gemini requests failed.";
   let allRateLimited = true;
+  let allServerUnavailable = true;
 
   // Bounded attempt loop: at most 1 attempt per configured key
   for (let attempt = 0; attempt < keys.length; attempt++) {
@@ -189,7 +190,14 @@ export async function executeWithKeyFailover<T>(
 
       // Check if eligible for failover (429 or 5xx)
       if (isTransientOrRateLimitError(response.status, response.errorText)) {
-        lastError = `Gemini rate limit or server error (${response.status}) on ${slot.slotName}`;
+        // Differentiate 429 quota exhaustion from 5xx server spikes (e.g. 503 high demand)
+        if (response.status >= 500 && response.status <= 504) {
+          allRateLimited = false; // It's server-side load, NOT key quota!
+          lastError = `Google Gemini servers temporarily experiencing high demand (${response.status}) on ${slot.slotName}`;
+        } else {
+          allServerUnavailable = false;
+          lastError = `Gemini rate limit or quota exceeded (${response.status}) on ${slot.slotName}`;
+        }
 
         // If there are more keys to try, wait briefly and failover
         if (attempt < keys.length - 1) {
@@ -200,10 +208,12 @@ export async function executeWithKeyFailover<T>(
         }
       } else {
         allRateLimited = false;
+        allServerUnavailable = false;
         lastError = `Gemini HTTP ${response.status} on ${slot.slotName}: ${response.errorText ?? "Unknown error"}`;
       }
     } catch (err: unknown) {
       allRateLimited = false;
+      allServerUnavailable = false;
       const msg = err instanceof Error ? err.message : "Network error";
       lastError = `Network error on ${slot.slotName}: ${msg}`;
 
@@ -221,6 +231,8 @@ export async function executeWithKeyFailover<T>(
     success: false,
     error: allRateLimited
       ? `All ${keys.length} configured Gemini API key(s) exhausted (rate-limited / quota).`
+      : allServerUnavailable
+      ? `Google Gemini servers are temporarily experiencing high demand (503 Service Unavailable) across configured keys.`
       : lastError,
     isQuotaExhausted: allRateLimited,
   };
