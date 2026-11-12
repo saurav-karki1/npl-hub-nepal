@@ -89,9 +89,9 @@ export function computeStandings(
   fixtures: ScheduleMatch[] = SCHEDULE_FIXTURES,
   teams: TeamDetail[] = NPL_TEAM_DETAILS
 ): StandingsData {
-  // Only completed league stage matches count towards the group points table
+  // Completed or abandoned league stage matches count towards the group points table
   const completedLeagueMatches = fixtures.filter(
-    (m) => m.stage === "League" && m.status === "completed"
+    (m) => m.stage === "League" && (m.status === "completed" || m.status === "abandoned")
   );
 
   const totalLeagueMatches = fixtures.filter((m) => m.stage === "League").length;
@@ -172,6 +172,7 @@ export function computeStandings(
     // Check for abandoned / no result
     const resultText = (match.result || "").toLowerCase();
     const isNoResult =
+      match.status === "abandoned" ||
       resultText.includes("no result") ||
       resultText.includes("abandoned") ||
       resultText.includes("washout");

@@ -326,6 +326,10 @@ export async function getSeasonStats(seasonId: SeasonId = "season-2"): Promise<S
             if (pos === 1 || pos === 2) qualification = "Qualifier 1";
             else if (pos === 3 || pos === 4) qualification = "Eliminator";
             else qualification = "Eliminated";
+          } else if (seasonId === "season-3") {
+            if (pos === 1 || pos === 2) qualification = "Qualifier 1";
+            else if (pos === 3 || pos === 4) qualification = "Eliminator";
+            else if (pos === 8) qualification = "Eliminated";
           }
           return {
             position: pos,

@@ -33,7 +33,7 @@ export function FullFixturesSection({
       if (statusFilter === "upcoming" && match.status !== "upcoming" && match.status !== "tba") {
         return false;
       }
-      if (statusFilter === "completed" && match.status !== "completed") {
+      if (statusFilter === "completed" && match.status !== "completed" && match.status !== "abandoned") {
         return false;
       }
       if (statusFilter === "playoffs" && match.stage === "League") {
@@ -73,7 +73,7 @@ export function FullFixturesSection({
       all: allMatches.length,
       upcoming: allMatches.filter((m) => m.status === "upcoming" || m.status === "tba").length,
       playoffs: allMatches.filter((m) => m.stage !== "League").length,
-      completed: allMatches.filter((m) => m.status === "completed").length,
+      completed: allMatches.filter((m) => m.status === "completed" || m.status === "abandoned").length,
     };
   }, [allMatches]);
 
@@ -338,6 +338,8 @@ export function FullFixturesSection({
                               ? "live"
                               : match.status === "postponed"
                               ? "postponed"
+                              : match.status === "abandoned"
+                              ? "abandoned"
                               : match.status === "tba"
                               ? "neutral"
                               : "upcoming"
@@ -349,6 +351,8 @@ export function FullFixturesSection({
                               ? "Live Now"
                               : match.status === "postponed"
                               ? "Postponed"
+                              : match.status === "abandoned"
+                              ? "Abandoned"
                               : match.status === "tba"
                               ? "Time TBA"
                               : "Scheduled"
@@ -401,6 +405,8 @@ export function FullFixturesSection({
                             ? "live"
                             : match.status === "postponed"
                             ? "postponed"
+                            : match.status === "abandoned"
+                            ? "abandoned"
                             : match.status === "tba"
                             ? "neutral"
                             : "upcoming"
@@ -412,6 +418,8 @@ export function FullFixturesSection({
                             ? "Live Now"
                             : match.status === "postponed"
                             ? "Postponed"
+                            : match.status === "abandoned"
+                            ? "Abandoned"
                             : match.status === "tba"
                             ? "Time TBA"
                             : "Scheduled"

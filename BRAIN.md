@@ -28,7 +28,7 @@
   - **Google Gemini:** `gemini-3.5-flash-lite` and `gemini-3.8-flash` with multi-key failover for long-form sports journalism and SEO metadata generation.
   - **Cloudflare Workers AI / Sharp:** Optional `@cf/black-forest-labs/flux-1-schnell` background generation with local Sharp SVG constellation compositor fallback, outputting 1200x675 branded WebP feature images with team crests to Supabase Storage.
   - **Quality Gate:** 11 mandatory invariant checks before saving draft articles to `news_articles` (`status: 'draft'`, `ai_generated: true`). Never autopublishes.
-- **Build Status:** ✅ `npm run build` generates **231 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
+- **Build Status:** ✅ `npm run build` generates **237 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
 
 ---
 
@@ -711,3 +711,36 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
     - Fixed model fallback loop in `callGeminiModels`: attempts subsequent candidates (`gemini-3.8-flash`) instead of prematurely aborting on the first model.
     - Added automatic Groq (`openai/gpt-oss-120b`) drafting and SEO failover in `generateArticleWithGemini` and `generateSeoMetadataWithGemini`. If Google Gemini is unavailable (503) or rate-limited (429), the pipeline automatically completes article generation using Groq at $0.00 zero cost without pausing.
   - **Verification:** 13/13 passing in `test-gemini-failover.mjs`, 25/25 passing in `test-editorial-pipeline.mjs`, 0 TypeScript errors (`npx tsc --noEmit`).
+
+- **2026-11-12 (Full NPL Season 3 Live Tournament Data Update — Matches 1–23):**
+  - **Match Results & Schedule Verification (`src/lib/data/schedule-data.ts` & Supabase `matches`):**
+    - Sourced verified match scorecards, results, and Player of the Match awards for all 23 league matches played to date (Matches 1–23, with Match 7 abandoned due to rain).
+    - Ingested authentic scores, toss results, winner statements, margins, and POTM for Matches 12–23 into `schedule-data.ts` and Supabase `matches`.
+    - Corrected Match 13 score in Supabase (Lumbini Lions 98/2 chasing 97/9 vs Pokhara Avengers), resolving a tie false-positive.
+    - Updated Match 8 (Biratnagar Kings vs Sudurpaschim Royals, DLS) Player of the Match to Andre Russell in Supabase.
+  - **Official Points Table Recalculation (`scripts/recalculate-standings.mjs`, `standings.ts`, Supabase `team_seasons`):**
+    - Corrected standings algorithm to process abandoned matches as No Result (1 point each to Lumbini Lions and Chitwan Rhinos) without invalid NRR distortion.
+    - Official Standings as of 12 November 2026:
+      1. Lumbini Lions: P=6, W=4, L=1, NR=1, Pts=9, NRR=+1.421 (Playoff Qualified `Q`)
+      2. Kathmandu Gorkhas: P=5, W=4, L=1, NR=0, Pts=8, NRR=+1.168
+      3. Sudurpaschim Royals: P=6, W=4, L=2, NR=0, Pts=8, NRR=+0.082
+      4. Biratnagar Kings: P=6, W=3, L=3, NR=0, Pts=6, NRR=-0.524
+      5. Chitwan Rhinos: P=5, W=2, L=2, NR=1, Pts=5, NRR=+0.009
+      6. Janakpur Bolts: P=6, W=2, L=4, NR=0, Pts=4, NRR=-0.303
+      7. Karnali Yaks: P=6, W=2, L=4, NR=0, Pts=4, NRR=-0.955
+      8. Pokhara Avengers: P=6, W=1, L=5, NR=0, Pts=2, NRR=-0.651 (Eliminated `P`)
+  - **Comprehensive Multi-Season Statistics Hub (`src/lib/data/stats-season3-data.ts` & `src/lib/repository/stats.ts`):**
+    - Synced 131 verified player rows in `player_season_stats` and 21 Player of the Match honors into `tournament_awards`.
+    - Populated official Season 3 leaderboards:
+      - Top Run Scorers: Lokesh Bam (227 runs), Yuvraaj Samra (205), Ravi Bopara (171), Pawan Sarraf (152), Ariful Islam (147), Andre Russell (144).
+      - Highest Individual Scores: Yuvraaj Samra (102 vs Karnali), Lokesh Bam (87 vs Karnali), Yuvraaj Samra (84 vs Biratnagar), Saif Hassan (71 vs Biratnagar), Dawid Malan (70 vs Biratnagar).
+      - Most Wickets: Harmeet Singh (11 wkts), Rijan Dhakal (10), Sher Malla (9), Mark Watt (9), Kamal Airee (9), Rahul Yadav (9), Sompal Kami (9).
+      - Best Bowling Figures: Sandeep Lamichhane (6/27 vs Pokhara, historic 1st NPL hat-trick), Mark Watt (4/12), Harmeet Singh (4/17), Rijan Dhakal (4/24), Kamal Airee (4/26).
+  - **Editorial & Live Coverage (`src/lib/data/news-data.ts`):**
+    - Published two new verified articles:
+      - `article-12`: *"Lumbini Lions Secure Playoff Berth as NPL Season 3 Enters Final League Phase"* (`/news/npl-season-3-standings-lumbini-lions-qualify-playoffs`).
+      - `article-13`: *"Sandeep Lamichhane Takes Historic First Hat-Trick of NPL as Biratnagar Edge Pokhara"* (`/news/sandeep-lamichhane-historic-npl-hat-trick-match-22`).
+    - Synced all 13 canonical news articles to Supabase database.
+  - **Build & Integrity Verification:**
+    - TypeScript compilation (`npx tsc --noEmit`): 0 errors.
+    - Production build (`npm run build`): Successfully generated all 237 static/SSG and dynamic routes.

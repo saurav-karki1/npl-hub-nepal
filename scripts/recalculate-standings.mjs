@@ -29,8 +29,10 @@ export async function recalculateStandings(seasonId = "season-3") {
     return;
   }
 
-  const completed = dbMatches.filter((m) => m.stage === "League" && m.status === "completed");
-  console.log(`Found ${completed.length} completed league matches.`);
+  const completedOrAbandoned = dbMatches.filter(
+    (m) => m.stage === "League" && (m.status === "completed" || m.status === "abandoned")
+  );
+  console.log(`Found ${completedOrAbandoned.length} completed/abandoned league matches.`);
 
   const teamIds = [
     "biratnagar-kings",
@@ -60,13 +62,21 @@ export async function recalculateStandings(seasonId = "season-3") {
     };
   }
 
-  for (const m of completed) {
+  for (const m of completedOrAbandoned) {
     const t1 = m.team1_id;
     const t2 = m.team2_id;
     if (!t1 || !t2 || !table[t1] || !table[t2]) continue;
 
     table[t1].played += 1;
     table[t2].played += 1;
+
+    if (m.status === "abandoned") {
+      table[t1].no_result += 1;
+      table[t2].no_result += 1;
+      table[t1].points += 1;
+      table[t2].points += 1;
+      continue;
+    }
 
     const r1 = m.scores?.team1?.runs || 0;
     const r2 = m.scores?.team2?.runs || 0;

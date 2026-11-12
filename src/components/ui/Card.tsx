@@ -122,7 +122,7 @@ export function CardLabel({ children, className }: CardLabelProps) {
 
 /* ── StatusBadge ── */
 
-type StatusType = "live" | "upcoming" | "completed" | "cancelled" | "neutral" | "postponed";
+type StatusType = "live" | "upcoming" | "completed" | "cancelled" | "neutral" | "postponed" | "abandoned";
 
 interface StatusBadgeProps {
   status: StatusType;
@@ -156,6 +156,11 @@ const statusConfig: Record<StatusType, { bg: string; text: string; dot?: boolean
     bg: "bg-amber-50",
     text: "text-amber-700",
     defaultLabel: "POSTPONED",
+  },
+  abandoned: {
+    bg: "bg-red-50",
+    text: "text-red-700",
+    defaultLabel: "ABANDONED",
   },
   neutral: {
     bg: "bg-[var(--color-surface)]",

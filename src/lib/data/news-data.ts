@@ -1006,6 +1006,156 @@ export const NEWS_ARTICLES: NewsArticle[] = [
     readTime: "4 min read",
     displayDate: "29 Oct 2026",
   },
+  {
+    id: "article-12",
+    slug: "npl-season-3-standings-lumbini-lions-qualify-playoffs",
+    title: "Lumbini Lions Secure Playoff Berth as NPL Season 3 Enters Final League Phase",
+    excerpt:
+      "With 4 wins and 9 points from 6 matches, Lumbini Lions become the first team to officially qualify for the NPL Season 3 playoffs, while Pokhara Avengers are mathematically eliminated with only five league fixtures remaining.",
+    content: [
+      "Lumbini Lions have become the first franchise to guarantee a place in the Siddhartha Bank Nepal Premier League Season 3 playoffs following their four-wicket victory over Karnali Yaks in Match 23 at the TU International Cricket Stadium.",
+      "Captained by Rohit Paudel, the Lions have amassed 9 points from six league fixtures (4 wins, 1 defeat, 1 no result), holding the competition's highest Net Run Rate of +1.421. D'Arcy Short's steady 46 off 34 balls anchored their chase of 106 against Karnali, completing a remarkable campaign turnaround after opening their tournament two weeks ago.",
+      "Kathmandu Gorkhas (8 points, +1.168 NRR) and Sudurpaschim Royals (8 points, +0.082 NRR) sit in second and third positions respectively, each firmly positioned to clinch playoff qualification in their upcoming matches.",
+      "Biratnagar Kings occupy fourth place with 6 points after their nail-biting win over Pokhara Avengers, where captain Sandeep Lamichhane etched his name into NPL history with the tournament's first-ever hat-trick.",
+      "At the other end of the table, Pokhara Avengers (1 win, 5 losses, 2 points) have been mathematically eliminated from top-four contention, having played six games with only one remaining league fixture.",
+      "Five matches remain in the league stage before the Page Playoff rounds commence on 18 November 2026. The race for the crucial top-two Qualifier 1 berths between Lumbini Lions, Kathmandu Gorkhas, and Sudurpaschim Royals promises an electrifying conclusion to the group stage.",
+    ],
+    blocks: [
+      {
+        type: "paragraph",
+        text: "Lumbini Lions have become the first franchise to guarantee a place in the Siddhartha Bank Nepal Premier League Season 3 playoffs following their four-wicket victory over Karnali Yaks in Match 23 at the TU International Cricket Stadium, Kirtipur.",
+      },
+      {
+        type: "paragraph",
+        text: "[[POINTS_TABLE]]",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Lumbini Lions' Dominant Run to Qualification",
+      },
+      {
+        type: "paragraph",
+        text: "Captained by national skipper Rohit Paudel, the Lions have registered four victories and shared points in one rain-abandoned match, amassing 9 points with a tournament-leading Net Run Rate of +1.421. Key contributions from overseas star D'Arcy Short, pace spearhead Ruben Trumpelmann, and emerging spinner Sher Malla have made Lumbini the most consistent unit of Season 3.",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "The Top Four and Playoff Picture",
+      },
+      {
+        type: "paragraph",
+        text: "Kathmandu Gorkhas sit second on 8 points (+1.168 NRR) from five matches with a game in hand over their closest rivals. Sudurpaschim Royals also have 8 points (+0.082 NRR) from six fixtures, while Biratnagar Kings hold fourth spot on 6 points (-0.524 NRR). Chitwan Rhinos remain in the hunt on 5 points with two fixtures remaining.",
+      },
+      {
+        type: "paragraph",
+        text: "Pokhara Avengers, despite a sensational century from Canadian import Yuvraaj Samra in Match 19, have suffered five defeats in six outings and are officially eliminated from playoff contention.",
+      },
+      {
+        type: "table",
+        headers: ["Position", "Team", "Played", "Won", "Lost", "NR", "Points", "NRR", "Status"],
+        rows: [
+          ["1", "Lumbini Lions", "6", "4", "1", "1", "9", "+1.421", "Qualified (Q)"],
+          ["2", "Kathmandu Gorkhas", "5", "4", "1", "0", "8", "+1.168", "In Contention"],
+          ["3", "Sudurpaschim Royals", "6", "4", "2", "0", "8", "+0.082", "In Contention"],
+          ["4", "Biratnagar Kings", "6", "3", "3", "0", "6", "-0.524", "In Contention"],
+          ["5", "Chitwan Rhinos", "5", "2", "2", "1", "5", "+0.009", "In Contention"],
+          ["6", "Janakpur Bolts", "6", "2", "4", "0", "4", "-0.303", "Outside Top 4"],
+          ["7", "Karnali Yaks", "6", "2", "4", "0", "4", "-0.955", "Outside Top 4"],
+          ["8", "Pokhara Avengers", "6", "1", "5", "0", "2", "-0.651", "Eliminated (P)"],
+        ],
+      },
+    ],
+    category: "Points Table",
+    publishedAt: "2026-11-12T18:00:00+05:45",
+    updatedAt: "2026-11-12T18:00:00+05:45",
+    featured: true,
+    author: "NPL Hub Nepal Editorial Team",
+    source: "Official CAN Scorecards & Match Reports · TU Cricket Ground",
+    relatedTeamIds: ["lumbini-lions", "kathmandu-gorkhas", "sudurpaschim-royals", "pokhara-avengers"],
+    relatedMatchSlug: "match-23-karnali-yaks-vs-lumbini-lions",
+    status: "published",
+    readTime: "4 min read",
+    displayDate: "12 Nov 2026",
+    tags: [
+      "NPL 2026 Standings",
+      "Points Table",
+      "Lumbini Lions",
+      "Playoff Qualification",
+      "TU Stadium",
+    ],
+  },
+  {
+    id: "article-13",
+    slug: "sandeep-lamichhane-historic-npl-hat-trick-match-22",
+    title: "Sandeep Lamichhane Takes Historic First Hat-Trick of NPL as Biratnagar Edge Pokhara",
+    excerpt:
+      "Biratnagar Kings skipper Sandeep Lamichhane recorded sensational figures of 6 for 27, including the first hat-trick in Nepal Premier League history, powering his side to a crucial four-wicket win in Match 22.",
+    content: [
+      "In one of the most thrilling bowling displays seen in domestic franchise cricket, Biratnagar Kings captain Sandeep Lamichhane took six wickets for 27 runs against Pokhara Avengers, including the first-ever hat-trick in Nepal Premier League history.",
+      "Pokhara Avengers were well-placed at 104 for 2 in the 14th over courtesy of a brilliant 84 off 47 balls by opener Yuvraaj Samra. However, Lamichhane tore through the middle and lower order, dismissing Dinesh Kharel, Pratik Pokhrel, and Bipin Acharya in consecutive deliveries to claim the historic hat-trick.",
+      "Lamichhane finished with figures of 4.0-0-27-6 — the best bowling figures in NPL history, surpassing Kamal Airee's 4/26 recorded earlier in the competition.",
+      "Chasing 133 for victory, Biratnagar weathered early setbacks before Basir Ahamad (37) and Isuru Udana guided them home with four wickets and four balls to spare.",
+      "The victory keeps Biratnagar Kings firmly in fourth place with 6 points from six games, keeping their playoff fate in their own hands ahead of their final league game.",
+    ],
+    blocks: [
+      {
+        type: "paragraph",
+        text: "In one of the most historic individual performances in domestic cricket history, Biratnagar Kings captain Sandeep Lamichhane claimed the first hat-trick in the Nepal Premier League, finishing with record figures of 6 for 27 against Pokhara Avengers at the TU International Cricket Stadium in Match 22.",
+      },
+      {
+        type: "paragraph",
+        text: "[[LIVE_MATCH:match-22-biratnagar-kings-vs-pokhara-avengers]]",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "How the Historic Hat-Trick Unfolded",
+      },
+      {
+        type: "paragraph",
+        text: "Pokhara Avengers were cruising towards a competitive total on the back of Yuvraaj Samra's sparkling 84 off 47 balls. But Lamichhane returned for his second spell in the 15th over to turn the contest on its head. With precision leg-spin and vicious googlies, he sent the stumps rattling on three consecutive deliveries to achieve the historic milestone.",
+      },
+      {
+        type: "quote",
+        text: "Taking the first hat-trick in NPL history in front of our incredible home crowd is a dream come true, but getting the two points for Biratnagar Kings was what mattered most today.",
+        author: "Sandeep Lamichhane, Player of the Match",
+      },
+      {
+        type: "heading",
+        level: 2,
+        text: "Match 22 Summary Scorecard",
+      },
+      {
+        type: "table",
+        headers: ["Innings", "Score", "Top Scorer / Bowler"],
+        rows: [
+          ["Pokhara Avengers 1st Innings", "132 all out (17.5 ov)", "Yuvraaj Samra 84 (47) | Sandeep Lamichhane 6/27 (4.0 ov)"],
+          ["Biratnagar Kings 2nd Innings", "136/6 (19.2 ov)", "Basir Ahamad 37 (39) | Kushal Bhurtel 2/21 (4.0 ov)"],
+          ["Result", "Biratnagar Kings won by 4 wickets", "Player of the Match: Sandeep Lamichhane"],
+        ],
+      },
+    ],
+    category: "Matches",
+    publishedAt: "2026-11-12T19:30:00+05:45",
+    updatedAt: "2026-11-12T19:30:00+05:45",
+    featured: false,
+    author: "NPL Hub Nepal Editorial Team",
+    source: "Official CAN Match Scorecard · Match #22",
+    relatedTeamIds: ["biratnagar-kings", "pokhara-avengers"],
+    relatedMatchSlug: "match-22-biratnagar-kings-vs-pokhara-avengers",
+    status: "published",
+    readTime: "4 min read",
+    displayDate: "12 Nov 2026",
+    tags: [
+      "Sandeep Lamichhane",
+      "Hat-trick",
+      "Biratnagar Kings",
+      "Pokhara Avengers",
+      "Match 22",
+      "TU Stadium",
+    ],
+  },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────── */
