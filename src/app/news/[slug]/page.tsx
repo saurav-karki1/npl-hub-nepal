@@ -64,8 +64,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
-  const metaTitle = article.metaTitle ?? article.title;
-  const metaDesc = article.metaDescription ?? article.excerpt;
+  const rawTitle = article.metaTitle ?? article.title;
+  // If title is excessively long (> 70 chars), keep it focused to avoid SERP truncation
+  const metaTitle = rawTitle.length > 70 ? rawTitle.split(":")[0].trim() : rawTitle;
+
+  const rawDesc = article.metaDescription ?? article.excerpt;
+  // Format description to stay within Google's ~155-158 char display window without awkward cuts
+  const metaDesc =
+    rawDesc.length > 158
+      ? rawDesc.slice(0, 155).slice(0, rawDesc.slice(0, 155).lastIndexOf(" ")).trim() + "..."
+      : rawDesc;
+
   const ogImageUrl = resolveAbsoluteImageUrl(article.imageUrl, siteUrl);
   const imageExt = ogImageUrl.split(".").pop()?.split("?")[0]?.toLowerCase();
   const imageMime =

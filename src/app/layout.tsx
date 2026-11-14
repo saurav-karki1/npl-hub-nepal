@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     template: "%s | NPL Hub Nepal",
   },
   description:
-    "Independent information platform for the Nepal Premier League. Live scores, schedules, points table standings, team profiles, player rosters, statistics, and NPL news.",
+    "Independent information platform for the Nepal Premier League. Scores, schedules, points table, team profiles, player rosters, statistics, and NPL news.",
   alternates: {
     canonical: "/",
   },

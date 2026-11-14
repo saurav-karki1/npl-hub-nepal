@@ -16,7 +16,7 @@ export function TeamsPreview() {
       />
 
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        {teams.map((team) => (
+        {teams.map((team, index) => (
           <Link
             key={team.id}
             href={`/teams/${team.slug}`}
@@ -37,6 +37,7 @@ export function TeamsPreview() {
                   crestText={team.crestText}
                   size="xl"
                   className="mb-3 group-hover:scale-105 transition-all"
+                  priority={index === 0}
                 />
 
                 {/* Team Name */}

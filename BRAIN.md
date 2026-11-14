@@ -744,3 +744,14 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Build & Integrity Verification:**
     - TypeScript compilation (`npx tsc --noEmit`): 0 errors.
     - Production build (`npm run build`): Successfully generated all 237 static/SSG and dynamic routes.
+
+- **2026-11-14 (Full Platform SEO & AI Agent Optimization):**
+  - **Tooling & Audit Integration:** Cloned `claude-seo` toolkit into local workspace (added to `.gitignore`). Conducted 47 mechanical checks via `page_checks.py`, transport verification via `transport_check.py`, and agentic discovery checks via `agentic_check.py`.
+  - **Security & Transport Headers (`next.config.ts`):** Configured HTTP security headers: `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy: strict-origin-when-cross-origin`, and `Permissions-Policy`.
+  - **AI Crawler Directives (`src/app/robots.ts`):** Added explicit crawler allowances for `GPTBot`, `OAI-SearchBot`, `ChatGPT-User`, `ClaudeBot`, `PerplexityBot`, and `Google-Extended` alongside standard user-agent rules, linking to `/sitemap.xml`.
+  - **Agentic Knowledge Discovery (`public/llms.txt`):** Authored standard `/llms.txt` documenting all core hubs, franchise teams, tournament facts, and transparency/editorial policies per the llmstxt.org proposal.
+  - **Match Page SEO (`src/app/matches/[slug]/page.tsx` & `src/components/matches/MatchHeader.tsx`):** Added semantic visually-hidden `<h1>` element to match scorecards (`h1_count: 1`), optimized metadata title, trimmed meta description under 158 characters, and configured fallback `og:image` and Twitter card images.
+  - **Social Sharing & OpenGraph Integrity:** Added missing `og:image` fallbacks and optimized meta descriptions to prevent SERP truncation across `/schedule`, `/points-table`, `/teams`, `/teams/[slug]`, `/players`, `/players/[slug]`, `/stats`, `/news`, and `/news/[slug]`.
+  - **Core Web Vitals & LCP:** Added `priority` preloading to the first visible team logos on the homepage (`TeamsPreview.tsx`) and featured fixture cards (`UpcomingMatchesSection.tsx`).
+  - **Zero URL Changes:** Strictly preserved 100% of canonical URLs across all 208 sitemap routes.
+  - **Build Verification:** `npm run build` succeeded cleanly with 237 routes compiled, 0 TypeScript errors, and 0 lint errors.

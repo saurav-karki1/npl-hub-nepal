@@ -1,0 +1,35 @@
+# NPL Hub Nepal
+
+> Independent information platform for Nepal Premier League (NPL) cricket. Provides verified match fixtures, live scores, points table standings, team profiles, player rosters, and tournament statistics.
+
+## Core Hubs
+- [Schedule & Fixtures](https://nplhubnepal.vercel.app/schedule): Complete 32-match schedule for NPL Season 3 with dates, times in Nepal Time (NPT), Nepali BS calendar dates, and TU Stadium Kirtipur venue information.
+- [Points Table](https://nplhubnepal.vercel.app/points-table): Official team standings, wins, losses, Net Run Rate (NRR), tournament points, and top-4 playoff qualification rules.
+- [Teams Directory](https://nplhubnepal.vercel.app/teams): Profiles, leadership, captains, head coaches, home regions, and match schedules for all 8 NPL franchises.
+- [Players Directory](https://nplhubnepal.vercel.app/players): Verified index of confirmed squad members, marquee leaders, auction signings, and overseas cricketers across all teams.
+- [Statistics & Records](https://nplhubnepal.vercel.app/stats): Historical Season 2 (2025) records and Season 3 (2026) statistics including top run-scorers and leading wicket-takers.
+- [News & Tournament Updates](https://nplhubnepal.vercel.app/news): Editorial coverage, squad developments, tournament format announcements, and cricket insights.
+
+## Franchise Teams
+- [Biratnagar Kings](https://nplhubnepal.vercel.app/teams/biratnagar-kings): Koshi Province franchise squad, fixtures, leadership, and stats.
+- [Chitwan Rhinos](https://nplhubnepal.vercel.app/teams/chitwan-rhinos): Bagmati / Chitwan franchise squad, fixtures, leadership, and stats.
+- [Janakpur Bolts](https://nplhubnepal.vercel.app/teams/janakpur-bolts): Madhesh Province franchise squad, fixtures, leadership, and stats.
+- [Karnali Yaks](https://nplhubnepal.vercel.app/teams/karnali-yaks): Karnali Province franchise squad, fixtures, leadership, and stats.
+- [Kathmandu Gurkhas](https://nplhubnepal.vercel.app/teams/kathmandu-gurkhas): Capital franchise squad, fixtures, leadership, and stats.
+- [Lumbini Lions](https://nplhubnepal.vercel.app/teams/lumbini-lions): Lumbini Province franchise squad, fixtures, leadership, and stats.
+- [Pokhara Avengers](https://nplhubnepal.vercel.app/teams/pokhara-avengers): Gandaki Province franchise squad, fixtures, leadership, and stats.
+- [Sudurpaschim Royals](https://nplhubnepal.vercel.app/teams/sudurpaschim-royals): Far-West Province franchise squad, fixtures, leadership, and stats.
+
+## Tournament Facts
+- Tournament Name: Siddhartha Bank Nepal Premier League (NPL) Season 3
+- Competition Format: Twenty20 (T20) Cricket
+- Governing Body: Cricket Association of Nepal (CAN)
+- Primary Venue: Tribhuvan University International Cricket Ground (TU Stadium), Kirtipur, Kathmandu, Nepal
+- Number of Teams: 8 Franchises
+- Total Matches: 32 T20 Matches (28 League Stage + 4 Playoff Fixtures)
+
+## Transparency & Policies
+- [Editorial Policy](https://nplhubnepal.vercel.app/editorial-policy): Editorial standards, sourcing methodology, verification criteria, and independence statement.
+- [About Us](https://nplhubnepal.vercel.app/about): Background, mission, and independent platform disclaimer.
+- [Terms of Service](https://nplhubnepal.vercel.app/terms): Terms and conditions governing platform usage.
+- [Privacy Policy](https://nplhubnepal.vercel.app/privacy-policy): Privacy practices and data handling disclosures.

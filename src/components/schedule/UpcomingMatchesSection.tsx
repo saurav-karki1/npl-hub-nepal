@@ -42,7 +42,6 @@ function UpcomingMatchCard({
   isFeatured: boolean;
 }) {
   const { team1, team2 } = resolveMatchTeams(match);
-
   return (
     <article className="h-full">
       <Card
@@ -78,6 +77,7 @@ function UpcomingMatchCard({
                     crestBg={team1.crestBg}
                     crestText={team1.crestText}
                     size="md"
+                    priority={isFeatured}
                   />
                   <div>
                     <h3 className="font-bold text-sm text-[var(--color-ink)] leading-snug">
@@ -106,6 +106,7 @@ function UpcomingMatchCard({
                     crestBg={team2.crestBg}
                     crestText={team2.crestText}
                     size="md"
+                    priority={isFeatured}
                   />
                   <div>
                     <h3 className="font-bold text-sm text-[var(--color-ink)] leading-snug">

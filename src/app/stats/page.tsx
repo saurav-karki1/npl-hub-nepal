@@ -8,7 +8,7 @@ import { getAllTeams } from "@/lib/repository/teams";
 export const metadata: Metadata = {
   title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026)",
   description:
-    "Official Nepal Premier League statistics hub. Explore verified NPL Season 2 (2025) records including top run scorers, leading wicket takers, tournament awards, playoff results, and NPL Season 3 (2026) competition data.",
+    "Nepal Premier League statistics hub: verified NPL Season 2 (2025) records including top run scorers, leading wicket takers, awards, and Season 3 (2026) competition data.",
   keywords: [
     "NPL 2025 statistics",
     "Nepal Premier League Season 2 statistics",
@@ -26,11 +26,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: "NPL Statistics & Records — Season 2 (2025) & Season 3 (2026)",
     description:
-      "Official Nepal Premier League statistics. Explore verified NPL Season 2 (2025) tournament awards, top run scorers, top wicket takers, points table, and Season 3 competition architecture.",
+      "NPL Season 2 (2025) tournament awards, top scorers, wicket takers, and Season 3 competition data.",
     url: "/stats",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NPL Statistics & Records — NPL Hub Nepal",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

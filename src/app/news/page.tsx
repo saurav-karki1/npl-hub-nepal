@@ -28,6 +28,14 @@ export const metadata: Metadata = {
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NPL News & Tournament Updates — NPL Hub Nepal",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

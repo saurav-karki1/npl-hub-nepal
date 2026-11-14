@@ -40,9 +40,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
   const { team1, team2 } = resolveMatchTeams(match);
-  const title = `Match #${match.matchNumber}: ${team1.name} vs ${team2.name} — NPL Season 3 Scorecard`;
-  const description = `Nepal Premier League Season 3 Match #${match.matchNumber}: ${team1.name} vs ${team2.name} on ${match.dayOfWeek}, ${match.formattedDate} (${match.bsDateNepali}) at TU International Cricket Stadium, Kirtipur.`;
+  // Keep title concise — template adds " | NPL Hub Nepal"
+  const title = `Match #${match.matchNumber}: ${team1.name} vs ${team2.name} — NPL Season 3`;
+  // Trimmed to stay within ~155 chars, omits Nepali calendar dates
+  const description = `NPL Season 3 Match #${match.matchNumber}: ${team1.name} vs ${team2.name} on ${match.dayOfWeek}, ${match.formattedDate} at TU International Cricket Stadium, Kirtipur.`;
 
   return {
     title,
@@ -57,11 +62,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "website",
+      images: [
+        {
+          url: `${siteUrl}/og-image.png`,
+          width: 1200,
+          height: 630,
+          alt: `${team1.name} vs ${team2.name} — NPL Season 3`,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [`${siteUrl}/og-image.png`],
     },
   };
 }

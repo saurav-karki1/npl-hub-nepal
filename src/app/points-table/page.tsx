@@ -12,24 +12,32 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "NPL Season 3 Points Table & Team Standings",
   description:
-    "Official Nepal Premier League Season 3 points table and team standings. Track wins, losses, net run rates (NRR), and top-4 playoff qualification scenarios across all 8 franchises.",
+    "Nepal Premier League Season 3 points table: wins, losses, net run rate, and playoff qualification standings across all 8 franchises.",
   alternates: {
     canonical: "/points-table",
   },
   openGraph: {
     title: "NPL Season 3 Points Table & Standings",
     description:
-      "Official Nepal Premier League Season 3 points table and team standings. Track wins, losses, net run rates (NRR), and top-4 playoff qualification scenarios across all 8 franchises.",
+      "Nepal Premier League Season 3 points table: wins, losses, NRR, and top-4 playoff qualification standings across all 8 franchises.",
     url: "/points-table",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NPL Season 3 Points Table — NPL Hub Nepal",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "NPL Season 3 Points Table & Standings",
     description:
-      "Official Nepal Premier League Season 3 points table and team standings. Track wins, losses, net run rates (NRR), and top-4 playoff qualification scenarios across all 8 franchises.",
+      "Nepal Premier League Season 3 standings: wins, losses, NRR, and top-4 playoff qualification across all 8 franchises.",
   },
 };
 

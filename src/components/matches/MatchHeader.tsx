@@ -59,6 +59,11 @@ export function MatchHeader({ match }: MatchHeaderProps) {
     <header className="relative overflow-hidden rounded-[var(--radius-lg)] border border-emerald-950/60 shadow-md">
       <ConstellationBackground className="bg-[#052618] text-white px-5 py-6 sm:px-8 sm:py-9">
         <div className="relative z-10 space-y-6">
+          {/* Visually-hidden H1 — required for SEO & screen reader landmark */}
+          <h1 className="sr-only">
+            Match #{match.matchNumber}: {team1.name} vs {team2.name} &mdash; NPL Season 3 Scorecard
+          </h1>
+
           {/* Top Metadata Row: Match #, Stage, Status */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-emerald-800/40 pb-4">
             <div className="flex items-center gap-2.5">

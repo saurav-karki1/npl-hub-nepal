@@ -41,8 +41,18 @@ export async function generateMetadata({
 
   const team = await getPlayerTeam(player);
   const teamName = team ? team.name : "NPL Franchise";
-  const title = `${player.name} (${teamName}) — Player Profile & Stats`;
-  const description = `Explore ${player.name}'s verified profile, ${teamName} squad status, ${player.role} role, batting/bowling style, and upcoming NPL Season 3 fixtures.`;
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
+  // Keep title under ~60 chars before template suffix
+  const title = `${player.name} — ${player.role} | ${teamName}`;
+  const description = `${player.name} player profile: ${player.role} for ${teamName} in NPL Season 3. Batting style, bowling style, and upcoming fixtures.`;
+
+  const ogImageUrl = player.profileImage
+    ? player.profileImage.startsWith("http")
+      ? player.profileImage
+      : `${siteUrl}${player.profileImage}`
+    : `${siteUrl}/og-image.png`;
 
   return {
     title,
@@ -57,24 +67,20 @@ export async function generateMetadata({
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "profile",
-      ...(player.profileImage
-        ? {
-            images: [
-              {
-                url: player.profileImage,
-                width: 480,
-                height: 640,
-                alt: player.name,
-              },
-            ],
-          }
-        : {}),
+      images: [
+        {
+          url: ogImageUrl,
+          width: player.profileImage ? 480 : 1200,
+          height: player.profileImage ? 640 : 630,
+          alt: player.name,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      ...(player.profileImage ? { images: [player.profileImage] } : {}),
+      images: [ogImageUrl],
     },
   };
 }

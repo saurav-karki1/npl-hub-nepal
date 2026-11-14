@@ -9,24 +9,32 @@ import { TeamCard } from "@/components/teams/TeamCard";
 export const metadata: Metadata = {
   title: "NPL Teams & Squads",
   description:
-    "Explore all 8 Nepal Premier League franchise cricket teams competing in Season 3. View team profiles, captains, home venues, provinces, and match schedules.",
+    "All 8 Nepal Premier League Season 3 franchise cricket teams: profiles, captains, home provinces, and match schedules.",
   alternates: {
     canonical: "/teams",
   },
   openGraph: {
     title: "NPL Teams & Squads",
     description:
-      "Explore all 8 Nepal Premier League franchise cricket teams competing in Season 3. View team profiles, captains, home venues, provinces, and match schedules.",
+      "All 8 Nepal Premier League Season 3 franchise cricket teams: profiles, captains, home provinces, and match schedules.",
     url: "/teams",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NPL Season 3 Franchise Teams — NPL Hub Nepal",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "NPL Teams & Squads",
     description:
-      "Explore all 8 Nepal Premier League franchise cricket teams competing in Season 3. View team profiles, captains, home venues, provinces, and match schedules.",
+      "All 8 Nepal Premier League Season 3 franchise cricket teams: profiles, captains, home provinces, and match schedules.",
   },
 };
 

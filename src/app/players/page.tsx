@@ -8,18 +8,26 @@ import { PlayerSearchFilter } from "@/components/players/PlayerSearchFilter";
 export const metadata: Metadata = {
   title: "NPL 2026 Players Directory & Season 3 Squads",
   description:
-    "Explore verified Nepal Premier League Season 3 (2026) players across all 8 franchises. Filter by franchise, playing role, captains, and confirmed retained squad members.",
+    "Verified Nepal Premier League Season 3 players across all 8 franchises. Filter by franchise, playing role, captains, and confirmed retained squad members.",
   alternates: {
     canonical: "/players",
   },
   openGraph: {
     title: "NPL 2026 Players Directory & Season 3 Squads",
     description:
-      "Explore verified Nepal Premier League (NPL) Season 3 players across all 8 franchises. Search by name, filter by team and role.",
+      "Verified NPL Season 3 player profiles across all 8 franchises. Search by name, filter by team and playing role.",
     url: "/players",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NPL Season 3 Players Directory — NPL Hub Nepal",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

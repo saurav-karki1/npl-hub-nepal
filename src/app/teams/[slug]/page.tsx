@@ -31,8 +31,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
+
   const title = `${team.name} — Squad, Fixtures & Team Profile`;
-  const description = `Complete profile for ${team.name} in Nepal Premier League Season 3. View captain ${team.captain}, ${team.region} regional representation, and live match schedule.`;
+  // Keep under 155 chars; skip full region name if it pushes over
+  const description = `${team.name} franchise profile for NPL Season 3. Captain: ${team.captain}. ${team.region} province representation. View squad, match schedule, and results.`;
+
+  const ogImage = team.logoUrl
+    ? { url: `${siteUrl}${team.logoUrl}`, width: 512, height: 512, alt: `${team.name} logo` }
+    : { url: `${siteUrl}/og-image.png`, width: 1200, height: 630, alt: `${team.name} — NPL Hub Nepal` };
 
   return {
     title,
@@ -47,11 +55,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "NPL Hub Nepal",
       locale: "en_NP",
       type: "website",
+      images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [ogImage.url],
     },
   };
 }

@@ -17,24 +17,32 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "NPL Season 3 Schedule & Fixtures",
   description:
-    "NPL Season 3 is scheduled to run from 26 October 2026 to 21 November 2026 (९ कार्तिक – ५ मंसिर २०८३ BS). The opening match features Lumbini Lions vs Sudurpaschim Royals. View all 32 T20 match dates, timings, and TU Stadium Kirtipur venues.",
+    "NPL Season 3 runs from 26 October to 21 November 2026. View all 32 T20 match fixtures, dates, Nepal Time (NPT) kickoff times, 8 franchise teams, and TU Stadium Kirtipur venues.",
   alternates: {
     canonical: "/schedule",
   },
   openGraph: {
     title: "NPL Season 3 Schedule & Fixtures",
     description:
-      "NPL Season 3 runs from 26 October to 21 November 2026 (९ कार्तिक – ५ मंसिर २०८३ BS). View all 32 T20 match dates, Nepali BS calendar dates, Nepal Time (NPT) timings, 8 franchise teams, and TU Stadium Kirtipur venues.",
+      "NPL Season 3 runs from 26 October to 21 November 2026. View all 32 T20 match fixtures, dates, Nepal Time timings, 8 franchise teams, and TU Stadium Kirtipur venues.",
     url: "/schedule",
     siteName: "NPL Hub Nepal",
     locale: "en_NP",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "NPL Season 3 Schedule & Fixtures — NPL Hub Nepal",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "NPL Season 3 Schedule & Fixtures",
     description:
-      "NPL Season 3 runs from 26 October to 21 November 2026 (९ कार्तिक – ५ मंसिर २०८३ BS). View all 32 T20 match dates, Nepali BS calendar dates, Nepal Time (NPT) timings, 8 franchise teams, and TU Stadium Kirtipur venues.",
+      "NPL Season 3 runs from 26 October to 21 November 2026. View all 32 T20 match fixtures, dates, timings, and TU Stadium Kirtipur venues.",
   },
 };
 
