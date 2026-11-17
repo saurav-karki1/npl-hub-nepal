@@ -97,15 +97,15 @@ for (const block of matchBlocks) {
   }
 }
 
-// Verify Playoff specific placeholder values (Matches 29-32)
+// Verify Playoff specific teams / placeholders (Matches 29-32)
+console.log('--- PLAYOFF FIXTURES STATUS VERIFICATION (Matches 29-32) ---');
 const expectedPlayoffs = [
-  { matchNumber: 29, t1Pl: 'rank-1', t2Pl: 'rank-2' },
-  { matchNumber: 30, t1Pl: 'rank-3', t2Pl: 'rank-4' },
-  { matchNumber: 31, t1Pl: 'q1-loser', t2Pl: 'elim-winner' },
-  { matchNumber: 32, t1Pl: 'q1-winner', t2Pl: 'q2-winner' },
+  { matchNumber: 29, stage: 'Qualifier 1', t1Id: 'sudurpaschim-royals', t2Id: 'lumbini-lions', t1Pl: null, t2Pl: null },
+  { matchNumber: 30, stage: 'Eliminator', t1Id: 'kathmandu-gorkhas', t2Id: 'chitwan-rhinos', t1Pl: null, t2Pl: null },
+  { matchNumber: 31, stage: 'Qualifier 2', t1Id: 'sudurpaschim-royals', t2Id: null, t1Pl: null, t2Pl: 'elim-winner' },
+  { matchNumber: 32, stage: 'Final', t1Id: 'lumbini-lions', t2Id: null, t1Pl: null, t2Pl: 'q2-winner' },
 ];
 
-console.log('--- PLAYOFF PLACEHOLDER VERIFICATION (Matches 29-32) ---');
 for (const exp of expectedPlayoffs) {
   const match = parsedFixtures.find((m) => m.matchNumber === exp.matchNumber);
   if (!match) {
@@ -113,19 +113,20 @@ for (const exp of expectedPlayoffs) {
     console.error(`Missing match #${exp.matchNumber}!`);
     continue;
   }
-  const t1Matches = match.team1Id === null && match.team1Placeholder === exp.t1Pl;
-  const t2Matches = match.team2Id === null && match.team2Placeholder === exp.t2Pl;
+  const t1Ok = match.team1Id === exp.t1Id && match.team1Placeholder === exp.t1Pl;
+  const t2Ok = match.team2Id === exp.t2Id && match.team2Placeholder === exp.t2Pl;
 
-  if (t1Matches && t2Matches) {
+  if (t1Ok && t2Ok) {
     console.log(
-      `  Match #${exp.matchNumber} (${match.stage}): team1Placeholder="${match.team1Placeholder}", ` +
-      `team2Placeholder="${match.team2Placeholder}" ✅`
+      `  Match #${exp.matchNumber} (${match.stage}): ` +
+      `team1=${match.team1Id || match.team1Placeholder}, team2=${match.team2Id || match.team2Placeholder} ✅`
     );
   } else {
     violations++;
     console.error(
-      `❌ Playoff placeholder mismatch on Match #${exp.matchNumber}: ` +
-      `Expected t1="${exp.t1Pl}", t2="${exp.t2Pl}" | Found t1="${match.team1Placeholder}", t2="${match.team2Placeholder}"`
+      `❌ Playoff alignment mismatch on Match #${exp.matchNumber}: ` +
+      `Expected t1=${exp.t1Id || exp.t1Pl}, t2=${exp.t2Id || exp.t2Pl} | ` +
+      `Found t1=${match.team1Id || match.team1Placeholder}, t2=${match.team2Id || match.team2Placeholder}`
     );
   }
 }
@@ -133,8 +134,6 @@ for (const exp of expectedPlayoffs) {
 console.log('\n--- INVARIANT SUMMARY ---');
 console.log(`Total fixtures inspected: ${parsedFixtures.length}`);
 console.log(`Total match sides checked: ${validatedSides}`);
-console.log(`League matches (1-28): 28 fixtures with canonical teamId and null placeholder`);
-console.log(`Playoff matches (29-32): 4 fixtures with null teamId and canonical placeholder`);
 
 if (violations === 0) {
   console.log(`\n✅ VALIDATION PASSED: All ${validatedSides} match sides strictly satisfy the exclusive Id/Placeholder invariant.`);

@@ -28,7 +28,7 @@
   - **Google Gemini:** `gemini-3.5-flash-lite` and `gemini-3.8-flash` with multi-key failover for long-form sports journalism and SEO metadata generation.
   - **Cloudflare Workers AI / Sharp:** Optional `@cf/black-forest-labs/flux-1-schnell` background generation with local Sharp SVG constellation compositor fallback, outputting 1200x675 branded WebP feature images with team crests to Supabase Storage.
   - **Quality Gate:** 11 mandatory invariant checks before saving draft articles to `news_articles` (`status: 'draft'`, `ai_generated: true`). Never autopublishes.
-- **Build Status:** ✅ `npm run build` generates **237 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
+- **Build Status:** ✅ `npm run build` generates **238 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
 
 ---
 
@@ -755,3 +755,40 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Core Web Vitals & LCP:** Added `priority` preloading to the first visible team logos on the homepage (`TeamsPreview.tsx`) and featured fixture cards (`UpcomingMatchesSection.tsx`).
   - **Zero URL Changes:** Strictly preserved 100% of canonical URLs across all 208 sitemap routes.
   - **Build Verification:** `npm run build` succeeded cleanly with 237 routes compiled, 0 TypeScript errors, and 0 lint errors.
+
+- **2026-11-17 (Playoff Stage Data Update — Matches 24–29 Completed & Playoff Matchups Resolved):**
+  - **Matches 24–28 League Stage Conclusion (`src/lib/data/schedule-data.ts` & Supabase `matches`):**
+    - Match 24 (13 Nov): Sudurpaschim Royals defeated Kathmandu Gorkhas by 7 runs (SPR 125/6, KTG 118/7; POTM: Dipendra Singh Airee 60 off 55 balls).
+    - Match 25 (13 Nov): Chitwan Rhinos defeated Janakpur Bolts by 4 wickets (JB 88/9, CR 92/6; POTM: Dawid Malan 35* off 39 balls).
+    - Match 26 (14 Nov): Lumbini Lions defeated Biratnagar Kings by 4 wickets (BK 166/4, LL 168/6; POTM: Sundeep Jora).
+    - Match 27 (15 Nov): Karnali Yaks defeated Chitwan Rhinos by 24 runs (KY 153/8, CR 129 all out; POTM: Hussain Talat 51* & 3/17).
+    - Match 28 (15 Nov): Pokhara Avengers defeated Kathmandu Gorkhas by 55 runs (POA 224/3, KTG 169 all out; POTM: Kushal Bhurtel 99 off 51 balls).
+  - **Match 29 (Qualifier 1) Completed:**
+    - Sudurpaschim Royals vs Lumbini Lions at Tribhuvan University International Cricket Stadium.
+    - Result: Lumbini Lions won by 6 wickets (with 20 balls remaining). SPR 105/8 (20.0), LL 108/4 (16.4).
+    - Player of the Match: Niroshan Dickwella (59* off 37 balls).
+    - Lumbini Lions qualify as the first finalist for Match 32 (Final). Sudurpaschim Royals advance to Match 31 (Qualifier 2).
+  - **Playoffs Matchups Resolved (Matches 30–32):**
+    - Match 30 (Eliminator, 18 Nov, 5:00 PM NPT): Kathmandu Gorkhas (`team1`) vs Chitwan Rhinos (`team2`). Loser is eliminated; winner advances to Qualifier 2.
+    - Match 31 (Qualifier 2, 19 Nov, 5:00 PM NPT): Sudurpaschim Royals (`team1`) vs Winner of Eliminator (`team2Placeholder: 'elim-winner'`).
+    - Match 32 (Final, 21 Nov, 5:00 PM NPT): Lumbini Lions (`team1`) vs Winner of Qualifier 2 (`team2Placeholder: 'q2-winner'`).
+  - **Final League Standings Recalculated (All 28 matches, 8 teams):**
+    - 1. Lumbini Lions: P=7, W=5, L=1, NR=1, Pts=11, NRR=+1.256 (Qualified Q1)
+    - 2. Sudurpaschim Royals: P=7, W=5, L=2, NR=0, Pts=10, NRR=+0.135 (Qualified Q1)
+    - 3. Kathmandu Gorkhas: P=7, W=4, L=3, NR=0, Pts=8, NRR=+0.360 (Qualified Eliminator)
+    - 4. Chitwan Rhinos: P=7, W=3, L=3, NR=1, Pts=7, NRR=+0.011 (Qualified Eliminator)
+    - 5. Biratnagar Kings: P=7, W=3, L=4, NR=0, Pts=6, NRR=-0.467 (Eliminated)
+    - 6. Karnali Yaks: P=7, W=3, L=4, NR=0, Pts=6, NRR=-0.640 (Eliminated)
+    - 7. Pokhara Avengers: P=7, W=2, L=5, NR=0, Pts=4, NRR=-0.175 (Eliminated)
+    - 8. Janakpur Bolts: P=7, W=2, L=5, NR=0, Pts=4, NRR=-0.422 (Eliminated)
+  - **Tournament Statistics & Leaderboards (`src/lib/data/stats-season3-data.ts` & Supabase `player_season_stats`):**
+    - 143 player season stats synced; 27 POTM honors recorded.
+    - Top Run Scorers: Yuvraaj Samra (294 runs), Lokesh Bam (242), Kushal Bhurtel (235), Dipendra Singh Airee (202), Rashid Khan (186), Ravi Bopara (184), Ariful Islam (182), Pawan Sarraf (167), Niroshan Dickwella (150), Dawid Malan (149).
+    - Top Wicket Takers: Kamal Airee (12 wkts), Rahul Yadav (12), Rijan Dhakal (12), Jahandad Khan (12), Harmeet Singh (11), Sher Malla (11), Mark Watt (11), Scott Kuggeleijn (10), Hussain Talat (10), Sompal Kami (10).
+  - **Playoff Invariant & Rich Results Validation:**
+    - `validate-playoff-invariant.mjs`: Strict Id/Placeholder exclusivity confirmed across all 64 sides.
+    - `test-structured-data.mjs`: 10/10 schema tests passing; Match 29 emits `EventCompleted` with authentic teams.
+    - `verify-rich-results-jsonld.mjs`: All representative matches validated for Google Rich Results.
+  - **Build Verification:**
+    - TypeScript compilation (`npx tsc --noEmit`): 0 errors.
+    - Production build (`npm run build`): Successfully generated 238 routes with 0 errors.

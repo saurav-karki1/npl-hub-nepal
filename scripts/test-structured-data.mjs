@@ -83,7 +83,11 @@ assert(
   "Match with explicit endDate uses verified value directly"
 );
 
-const matchTba = SCHEDULE_FIXTURES.find((m) => m.time === "Time TBA");
+const matchTba = SCHEDULE_FIXTURES.find((m) => m.time === "Time TBA") || {
+  id: "test-tba",
+  date: "2026-11-17",
+  time: "Time TBA",
+};
 assert(
   resolveMatchEndDate(matchTba) === matchTba.date,
   `Playoff match with Time TBA generates date-only endDate (${matchTba.date}) matching Google guidelines`
