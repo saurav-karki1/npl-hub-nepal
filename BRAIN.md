@@ -28,7 +28,7 @@
   - **Google Gemini:** `gemini-3.5-flash-lite` and `gemini-3.8-flash` with multi-key failover for long-form sports journalism and SEO metadata generation.
   - **Cloudflare Workers AI / Sharp:** Optional `@cf/black-forest-labs/flux-1-schnell` background generation with local Sharp SVG constellation compositor fallback, outputting 1200x675 branded WebP feature images with team crests to Supabase Storage.
   - **Quality Gate:** 11 mandatory invariant checks before saving draft articles to `news_articles` (`status: 'draft'`, `ai_generated: true`). Never autopublishes.
-- **Build Status:** ✅ `npm run build` generates **238 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
+- **Build Status:** ✅ `npm run build` generates **242 static/dynamic routes** with **0 TypeScript errors** and **0 lint errors**.
 
 ---
 
@@ -792,3 +792,42 @@ pl-season-3-schedule-venues-announced) ï¿½ title, excerpt, all body content c
   - **Build Verification:**
     - TypeScript compilation (`npx tsc --noEmit`): 0 errors.
     - Production build (`npm run build`): Successfully generated 238 routes with 0 errors.
+
+- **2026-11-22 (Post-Season 3 Transformation & Multi-Season Archive Complete):**
+  - **Championship Results & Scorecards Ingested (`src/lib/data/schedule-data.ts`):**
+    - Match 30 (Eliminator, 18 Nov): Chitwan Rhinos (204/4) def. Kathmandu Gorkhas (143/9) by 61 runs (POTM: Kamil Mishara 120* off 59 balls).
+    - Match 31 (Qualifier 2, 19 Nov): Sudurpaschim Royals (136/7) def. Chitwan Rhinos (133/9) by 3 wickets (POTM: Tharindu Ratnayake 53* & 2 wkts).
+    - Match 32 (Final, 21 Nov): Sudurpaschim Royals (158/0 in 13.3 ov) def. Lumbini Lions (155/6 in 20.0 ov) by 10 wickets with 39 balls to spare.
+    - Player of the Match (Final): George Munsey (125* off 54 balls, 8x4, 12x6, SR 231.48) — highest individual score in NPL Final history.
+    - Player of the Tournament: Dipendra Singh Airee (Sudurpaschim Royals).
+    - Tournament status transitioned to `Completed`.
+  - **Homepage Transformation (`src/app/page.tsx` & `src/components/home/`):**
+    - Built and integrated `ChampionsSection.tsx` celebrating Sudurpaschim Royals as NPL Season 3 Champions 2026.
+    - Replaced upcoming-match section with full championship final scorecard summary, POTM/POTT highlights, and quick statistics links.
+    - Transformed `HeroSection.tsx` headline and copy from in-progress countdown to championship celebration.
+    - Upgraded `MatchCountdown.tsx` so season-complete state showcases Sudurpaschim Royals champions badge and direct links to final scorecard and statistics hub.
+    - Updated homepage Schema.org `SportsEvent` to `EventCompleted` with winner `Sudurpaschim Royals`.
+  - **Multi-Season Architecture & Season Archive (`stats-registry.ts`, `stats-season4-data.ts`, `stats-types.ts`):**
+    - Added Season 4 (2027) future season dataset (`SEASON_4_STATS_DATASET`) with generic pre-tournament notice for CAN announcements.
+    - Integrated multi-season archive supporting Season 3 (2026 - Completed), Season 2 (2025 - Historical), and Season 4 (2027 - Coming Soon).
+    - Updated `stats-season3-data.ts` status to `completed`, set champion (`Sudurpaschim Royals`) and runner-up (`Lumbini Lions`), updated awards and full 4-match playoff scorecards.
+    - Updated `highestScores` leaderboard with George Munsey's 125* (#1) and Kamil Mishara's 120* (#2).
+    - Synced `StatsHero.tsx` and `StatsPage` with `season-4` datasets and `EventCompleted` schema.
+  - **News & Editorial Suite (`src/lib/data/news-data.ts`):**
+    - Published 4 comprehensive, fact-checked editorial articles:
+      - `article-14`: *"Sudurpaschim Royals Crowned NPL Season 3 Champions: Historic 10-Wicket Victory in Final"* (`/news/sudurpaschim-royals-win-npl-season-3-final-report`).
+      - `article-15`: *"George Munsey's 125 Not Out: The Greatest Innings in NPL Final History"* (`/news/george-munsey-historic-125-npl-final`).
+      - `article-16`: *"Dipendra Singh Airee Named Player of the Tournament for NPL Season 3"* (`/news/dipendra-singh-airee-player-of-the-tournament-npl-season-3`).
+      - `article-17`: *"NPL Season 3 Complete Results & Final Standings: The Full Tournament Story"* (`/news/npl-season-3-complete-results-final-standings`).
+  - **Tournament Pages Polish (`/schedule`, `/points-table`, `/about`, `/teams`):**
+    - Guarded `UpcomingMatchesSection.tsx` so it cleanly unmounts when all 32 fixtures are complete.
+    - Updated `ScheduleFAQSection.tsx` with answers to who won NPL Season 3, playoff results, and championship details.
+    - Updated `PointsTableHeader.tsx` tournament status badge to *"Completed (Champions: Sudurpaschim Royals 🏆)"*.
+    - Updated `PointsTableRules.tsx` with confirmed Season 3 playoff progression and final result.
+    - Updated `AboutHero.tsx` to announce the conclusion of Season 3 and Sudurpaschim's championship.
+    - Updated `teams-data.ts` confirming Dipendra Singh Airee and Rohit Paudel as Season 3 captains with franchise achievements.
+    - Updated `scripts/validate-playoff-invariant.mjs` with final playoff fixtures (64/64 sides strictly valid).
+  - **Verification & Build:**
+    - `npm run validate:playoff`: ✅ Passed (64/64 sides valid).
+    - TypeScript compilation (`npx tsc --noEmit`): ✅ 0 errors.
+    - Production build (`npm run build`): ✅ Successfully compiled and statically generated all **242 static/dynamic routes** with 0 errors.

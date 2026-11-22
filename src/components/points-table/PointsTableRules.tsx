@@ -86,38 +86,58 @@ export function PointsTableRules() {
           <CardBody className="p-4 space-y-2.5 text-xs leading-relaxed text-[var(--color-ink-secondary)]">
             <div className="space-y-2">
               <div className="p-2 rounded-[var(--radius-sm)] bg-[var(--color-surface)] border border-[var(--color-rule)]">
-                <span className="font-bold text-[var(--color-ink)] block">
-                  Match #29 · Qualifier 1 (17 Nov)
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[var(--color-ink)] block">
+                    Match #29 · Qualifier 1 (17 Nov)
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    Lumbini Won
+                  </span>
+                </div>
                 <span className="text-[var(--color-ink-muted)]">
-                  Rank 1 vs Rank 2. Winner → Final. Loser → Qualifier 2.
+                  Lumbini Lions (108/4) def. Sudurpaschim Royals (105/8) by 6 wkts.
                 </span>
               </div>
 
               <div className="p-2 rounded-[var(--radius-sm)] bg-[var(--color-surface)] border border-[var(--color-rule)]">
-                <span className="font-bold text-[var(--color-ink)] block">
-                  Match #30 · Eliminator (18 Nov)
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[var(--color-ink)] block">
+                    Match #30 · Eliminator (18 Nov)
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    Chitwan Won
+                  </span>
+                </div>
                 <span className="text-[var(--color-ink-muted)]">
-                  Rank 3 vs Rank 4. Winner → Qualifier 2. Loser eliminated.
+                  Chitwan Rhinos (204/4) def. Kathmandu Gorkhas (143/9) by 61 runs.
                 </span>
               </div>
 
               <div className="p-2 rounded-[var(--radius-sm)] bg-[var(--color-surface)] border border-[var(--color-rule)]">
-                <span className="font-bold text-[var(--color-ink)] block">
-                  Match #31 · Qualifier 2 (19 Nov)
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-[var(--color-ink)] block">
+                    Match #31 · Qualifier 2 (19 Nov)
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                    Sudurpaschim Won
+                  </span>
+                </div>
                 <span className="text-[var(--color-ink-muted)]">
-                  Loser Q1 vs Winner Eliminator. Winner → Final.
+                  Sudurpaschim Royals (136/7) def. Chitwan Rhinos (133/9) by 3 wkts.
                 </span>
               </div>
 
-              <div className="p-2 rounded-[var(--radius-sm)] bg-emerald-50 border border-emerald-200">
-                <span className="font-bold text-emerald-950 block">
-                  Match #32 · Grand Final (21 Nov)
-                </span>
-                <span className="text-emerald-800">
-                  Winner Q1 vs Winner Q2. Decides NPL Season 3 Champion.
+              <div className="p-2.5 rounded-[var(--radius-sm)] bg-emerald-50 border border-emerald-200">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-950 block">
+                    Match #32 · Grand Final (21 Nov)
+                  </span>
+                  <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-300">
+                    🏆 Champions
+                  </span>
+                </div>
+                <span className="text-emerald-800 font-medium">
+                  Sudurpaschim Royals (158/0) def. Lumbini Lions (155/6) by 10 wkts.
                 </span>
               </div>
             </div>

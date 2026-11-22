@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Layout";
 import { HeroSection } from "@/components/home/HeroSection";
-import { UpcomingMatchSection } from "@/components/home/UpcomingMatchSection";
+import { ChampionsSection } from "@/components/home/ChampionsSection";
 import { PointsTablePreview } from "@/components/home/PointsTablePreview";
 import { LatestUpdatesSection } from "@/components/home/LatestUpdatesSection";
 import { TeamsPreview } from "@/components/home/TeamsPreview";
 import { AdsterraInContentBanner } from "@/components/ads/AdsterraBanner";
-import { getFeaturedUpcomingMatch, getStandingsAsync, getAllMatches } from "@/lib/repository/matches";
+import { getStandingsAsync, getAllMatches } from "@/lib/repository/matches";
 import { getLatestArticles } from "@/lib/repository/news";
 
 export const dynamic = "force-dynamic";
@@ -16,16 +16,16 @@ const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://nplhubnepal.vercel.app";
 
 export const metadata: Metadata = {
-  title: "NPL Hub Nepal — Nepal Premier League Cricket",
+  title: "NPL Hub Nepal — Sudurpaschim Royals Win NPL Season 3 (2026)",
   description:
-    "Independent information platform for the Nepal Premier League. Live scores, schedules, points table standings, team profiles, player rosters, statistics, and NPL news.",
+    "Sudurpaschim Royals are NPL Season 3 Champions 2026, defeating Lumbini Lions by 10 wickets in the Final. George Munsey scored 125* off 54 balls. Full results, standings, statistics and news.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "NPL Hub Nepal — Nepal Premier League Cricket",
+    title: "NPL Hub Nepal — Sudurpaschim Royals Win NPL Season 3 (2026)",
     description:
-      "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
+      "Sudurpaschim Royals are NPL Season 3 Champions 2026. George Munsey scored 125* off 54 balls in the Final. Full results, points table, teams and statistics.",
     url: siteUrl,
     siteName: "NPL Hub Nepal",
     images: [
@@ -41,9 +41,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "NPL Hub Nepal — Nepal Premier League Cricket",
+    title: "NPL Hub Nepal — Sudurpaschim Royals Win NPL Season 3 (2026)",
     description:
-      "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
+      "Sudurpaschim Royals are NPL Season 3 Champions 2026. George Munsey scored 125* off 54 balls in the Final. Full results, points table, teams and statistics.",
     images: [`${siteUrl}/images/logo.png`],
   },
 };
@@ -58,7 +58,7 @@ const homeJsonLd = {
       name: "NPL Hub Nepal",
       alternateName: ["NPL Hub", "NPL Nepal", "Nepal Premier League Hub"],
       description:
-        "Independent information platform for the Nepal Premier League. Scores, schedules, points table, teams, players, and NPL news.",
+        "Independent information platform for the Nepal Premier League. NPL Season 3 (2026) results, standings, teams, players, statistics and news.",
       publisher: {
         "@id": `${siteUrl}/#organization`,
       },
@@ -78,12 +78,33 @@ const homeJsonLd = {
       description:
         "Independent information platform dedicated to Nepal Premier League cricket.",
     },
+    {
+      "@type": "SportsEvent",
+      name: "Nepal Premier League Season 3 (2026)",
+      description: "Sudurpaschim Royals won NPL Season 3, defeating Lumbini Lions by 10 wickets in the Final on 21 November 2026.",
+      startDate: "2026-10-26",
+      endDate: "2026-11-21",
+      eventStatus: "https://schema.org/EventCompleted",
+      location: {
+        "@type": "Place",
+        name: "Tribhuvan University International Cricket Stadium",
+        address: "Kirtipur, Kathmandu, Nepal",
+      },
+      organizer: {
+        "@type": "Organization",
+        name: "Cricket Association of Nepal (CAN)",
+        url: "https://can.org.np",
+      },
+      winner: {
+        "@type": "SportsTeam",
+        name: "Sudurpaschim Royals",
+      },
+    },
   ],
 };
 
 export default async function HomePage() {
-  const [featuredMatch, standings, latestNews, allMatches] = await Promise.all([
-    getFeaturedUpcomingMatch(),
+  const [standings, latestNews, allMatches] = await Promise.all([
     getStandingsAsync(),
     getLatestArticles(4),
     getAllMatches(),
@@ -96,11 +117,11 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
       <Container className="space-y-12 sm:space-y-16">
-        {/* 1. Hero Section with Constellation Background & Dynamic Countdown */}
+        {/* 1. Hero Section with Constellation Background */}
         <HeroSection matches={allMatches} />
 
-        {/* 2. Featured Upcoming Match */}
-        <UpcomingMatchSection match={featuredMatch} />
+        {/* 2. Season 3 Champions Section */}
+        <ChampionsSection />
 
         {/* In-Page Break Advertisement */}
         <div className="flex justify-center -my-2 sm:-my-4">

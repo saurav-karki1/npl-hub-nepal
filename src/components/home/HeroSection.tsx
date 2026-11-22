@@ -46,50 +46,50 @@ export function HeroSection({ matches: propMatches }: HeroSectionProps = {}) {
           <div className="flex-1 min-w-0">
             {/* Eyebrow badge */}
             <div className="inline-flex items-center gap-2 rounded-full bg-emerald-900/60 border border-emerald-700/40 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--color-accent)] mb-4">
-              <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse" aria-hidden="true" />
-              Nepal T20 Cricket
+              <span className="text-[var(--color-accent)]">🏆</span>
+              NPL Season 3 — Complete
             </div>
 
             {/* Main Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-white">
-              Nepal Premier League{" "}
-              <span className="block text-zinc-300">Season 3</span>
+              Sudurpaschim Royals{" "}
+              <span className="block text-zinc-300">NPL Champions 2026</span>
             </h1>
 
             {/* Supporting Copy */}
             <p className="mt-5 text-base sm:text-lg text-emerald-100/90 leading-relaxed font-normal max-w-xl">
-              Experience the thrill of Nepal&apos;s biggest T20 cricket tournament.
-              Follow live scores, team updates, and exclusive news from the NPL Hub.
+              Sudurpaschim Royals defeated Lumbini Lions by 10 wickets in a historic Final.
+              George Munsey scored 125* off 54 balls. Explore full results, standings, and Season 3 statistics.
             </p>
 
             {/* CTAs */}
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <LinkButton
-                href="/schedule"
+                href="/matches/match-32-npl-season-3-final"
                 variant="primary"
                 size="lg"
                 className="bg-[var(--color-accent)] hover:bg-[#b58f23] text-zinc-950 font-bold border-transparent"
               >
-                View Schedule
+                🏆 View Final Result
               </LinkButton>
               <LinkButton
-                href="/teams"
+                href="/stats"
                 variant="ghost"
                 size="lg"
                 className="text-white hover:text-white hover:bg-white/10 border border-white/25 font-semibold"
               >
-                Explore Teams
+                Season 3 Statistics
               </LinkButton>
             </div>
 
             {/* Season Meta Pill */}
             <div className="mt-8 pt-6 border-t border-emerald-800/40 flex flex-wrap items-center gap-6 text-xs text-emerald-200/80">
               <div>
-                <span className="text-emerald-400 font-semibold">8</span> Franchise Teams
+                <span className="text-emerald-400 font-semibold">Champion:</span> Sudurpaschim Royals
               </div>
               <span className="text-emerald-700" aria-hidden="true">·</span>
               <div>
-                <span className="text-emerald-400 font-semibold">32</span> T20 Matches
+                <span className="text-emerald-400 font-semibold">32</span> Matches · Season 3
               </div>
               <span className="text-emerald-700" aria-hidden="true">·</span>
               <div>

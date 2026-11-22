@@ -54,12 +54,14 @@ export const revalidate = 0;
 export default async function StatsPage() {
   const season2Dataset = await getSeasonStats("season-2");
   const season3Dataset = await getSeasonStats("season-3");
+  const season4Dataset = await getSeasonStats("season-4");
   const availableSeasons = getAvailableSeasons();
   const allTeams = await getAllTeams();
 
   const datasets = {
     "season-2": season2Dataset,
     "season-3": season3Dataset,
+    "season-4": season4Dataset,
   };
 
   const siteUrl =
@@ -86,9 +88,13 @@ export default async function StatsPage() {
         "@id": `${siteUrl}/stats#season-3`,
         name: "Siddhartha Bank Nepal Premier League 2026 (Season 3)",
         sport: "Cricket",
-        eventStatus: "https://schema.org/EventScheduled",
+        eventStatus: "https://schema.org/EventCompleted",
         startDate: "2026-10-26",
         endDate: "2026-11-21",
+        winner: {
+          "@type": "SportsTeam",
+          name: "Sudurpaschim Royals",
+        },
         location: {
           "@type": "Place",
           name: "TU International Cricket Stadium, Kirtipur, Kathmandu",

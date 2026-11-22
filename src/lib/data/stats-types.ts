@@ -12,7 +12,7 @@
  * - Historical final standings are authoritative and must never be recomputed from partial match sets.
  */
 
-export type SeasonId = "season-2" | "season-3";
+export type SeasonId = "season-2" | "season-3" | "season-4";
 export type SeasonStatus = "completed" | "pre-tournament" | "in-progress";
 
 export interface SeasonOption {

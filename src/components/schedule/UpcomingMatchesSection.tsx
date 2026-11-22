@@ -18,6 +18,10 @@ export function UpcomingMatchesSection({ matches: propMatches }: UpcomingMatches
     .filter((m) => m.status === "upcoming" || m.status === "tba")
     .slice(0, 3);
 
+  if (upcomingHighlights.length === 0) {
+    return null;
+  }
+
   return (
     <section aria-labelledby="upcoming-fixtures-heading" className="space-y-4">
       <SectionHeader

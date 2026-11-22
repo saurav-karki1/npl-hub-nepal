@@ -142,7 +142,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
           totalTeams: 8,
           totalMatches: 32,
           primaryVenue: "TU International Cricket Stadium, Kirtipur",
-          status: "Upcoming",
+          status: "Completed",
           projectedDates: "26 October – 21 November 2026",
           isConfirmed: true,
         };

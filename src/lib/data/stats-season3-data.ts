@@ -1,12 +1,16 @@
 /**
  * NPL Season 3 (2026) — Verified Tournament Statistics
  *
- * TOURNAMENT STATUS: In-Progress (Matches 1–23 Completed, Match 7 Abandoned)
+ * TOURNAMENT STATUS: Completed — Sudurpaschim Royals are NPL Season 3 Champions
  *
  * STRICT ACCURACY RULES:
  * - All statistics below are authentic, sourced directly from verified match scorecards
- *   at Tribhuvan University International Cricket Stadium, Kathmandu.
- * - Authoritative sources: Cricket Association of Nepal (CAN), ESPN Cricinfo, Wikipedia Tournament Log.
+ *   at Tribhuvan University International Cricket Stadium, Kirtipur.
+ * - Authoritative sources: Cricket Association of Nepal (CAN), ESPN Cricinfo, Kathmandu Post,
+ *   Rising Nepal Daily, nplt20league.com, onlinekhabar.com.
+ * - Final: 21 November 2026 — Sudurpaschim Royals defeated Lumbini Lions by 10 wickets.
+ * - Player of the Match (Final): George Munsey (125* off 54 balls, SR: 231.48)
+ * - Player of the Tournament: Dipendra Singh Airee
  */
 
 import { SeasonStatsDataset } from "./stats-types";
@@ -15,7 +19,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
   seasonId: "season-3",
   seasonName: "NPL Season 3 (2026)",
   year: 2026,
-  status: "in-progress",
+  status: "completed",
 
   /* ── 1. Tournament Basics & Summary ── */
   summary: {
@@ -34,10 +38,16 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
     playoffMatches: 4,
     format: "8 franchise teams; single round robin (28 league matches) + 4 Page Playoff matches = 32 matches",
     pointsSystem: "2 points for a win, 1 point for a tie/no-result, 0 points for a loss",
-    champion: null, // In progress
-    runnerUp: null, // In progress
+    champion: {
+      teamId: "sudurpaschim-royals",
+      teamName: "Sudurpaschim Royals",
+    },
+    runnerUp: {
+      teamId: "lumbini-lions",
+      teamName: "Lumbini Lions",
+    },
     confidence: "High",
-    confidenceNote: "League stage complete (all 28 league matches played). Playoffs underway (Qualifier 1 completed). Lumbini Lions qualified for the Final. Kathmandu Gorkhas play Chitwan Rhinos in the Eliminator.",
+    confidenceNote: "Tournament complete. Sudurpaschim Royals defeated Lumbini Lions by 10 wickets in the Final on 21 November 2026 at TU International Cricket Stadium, Kirtipur. George Munsey scored an unbeaten 125 off 54 balls (Player of the Match). Dipendra Singh Airee was named Player of the Tournament.",
   },
 
   /* ── 2. Standings (Reflecting completed Matches 1–28) ── */
@@ -437,10 +447,50 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
         "playerSlug": "niroshan-dickwella",
         "detail": "59* off 37 balls vs Sudurpaschim Royals",
         "confidence": "High"
+    },
+    {
+        "id": "award-m30-potm",
+        "title": "Player of the Match (Eliminator)",
+        "recipient": "Kamil Mishara",
+        "teamId": "chitwan-rhinos",
+        "teamName": "Chitwan Rhinos",
+        "playerSlug": "kamil-mishara",
+        "detail": "120* off 59 balls (5x4, 10x6, SR: 203.39) — Historic knock; highest individual score in NPL playoffs",
+        "confidence": "High"
+    },
+    {
+        "id": "award-m31-potm",
+        "title": "Player of the Match (Qualifier 2)",
+        "recipient": "Tharindu Ratnayake",
+        "teamId": "sudurpaschim-royals",
+        "teamName": "Sudurpaschim Royals",
+        "playerSlug": "tharindu-ratnayake",
+        "detail": "53* off 42 balls (7x4) & 2 wickets — All-round match-winning performance",
+        "confidence": "High"
+    },
+    {
+        "id": "award-m32-potm",
+        "title": "Player of the Match (Final)",
+        "recipient": "George Munsey",
+        "teamId": "sudurpaschim-royals",
+        "teamName": "Sudurpaschim Royals",
+        "playerSlug": "george-munsey",
+        "detail": "125* off 54 balls (8x4, 12x6, SR: 231.48) — First century in an NPL Final; championship-defining innings",
+        "confidence": "High"
+    },
+    {
+        "id": "award-player-of-tournament",
+        "title": "Player of the Tournament",
+        "recipient": "Dipendra Singh Airee",
+        "teamId": "sudurpaschim-royals",
+        "teamName": "Sudurpaschim Royals",
+        "playerSlug": "dipendra-singh-airee",
+        "detail": "Outstanding all-round contribution throughout Season 3 — consistent run scorer and key wicket-taker",
+        "confidence": "High"
     }
 ],
 
-  /* ── 4. Playoffs (Matches 29–32) ── */
+  /* ── 4. Playoffs (Matches 29–32 — All Completed) ── */
   playoffs: [
     {
       id: "match-29",
@@ -459,6 +509,60 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
       },
       scorecardAvailable: true,
       notes: "Lumbini Lions qualify for the Final; Sudurpaschim Royals advance to Qualifier 2.",
+    },
+    {
+      id: "match-30",
+      stage: "Eliminator",
+      date: "2026-11-18",
+      formattedDate: "18 November 2026",
+      team1: { id: "kathmandu-gorkhas", name: "Kathmandu Gorkhas", score: "143/9", overs: "20.0" },
+      team2: { id: "chitwan-rhinos", name: "Chitwan Rhinos", score: "204/4", overs: "20.0" },
+      rawScoreSummary: "CR 204/4 (20.0); KTG 143/9 (20.0)",
+      result: "Chitwan Rhinos won by 61 runs",
+      winnerTeamId: "chitwan-rhinos",
+      playerOfTheMatch: {
+        name: "Kamil Mishara",
+        playerSlug: "kamil-mishara",
+        stats: "120* off 59 balls (5x4, 10x6) — Historic highest playoff score in NPL history",
+      },
+      scorecardAvailable: true,
+      notes: "Chitwan Rhinos advance to Qualifier 2; Kathmandu Gorkhas eliminated.",
+    },
+    {
+      id: "match-31",
+      stage: "Qualifier 2",
+      date: "2026-11-19",
+      formattedDate: "19 November 2026",
+      team1: { id: "sudurpaschim-royals", name: "Sudurpaschim Royals", score: "136/7", overs: "19.5" },
+      team2: { id: "chitwan-rhinos", name: "Chitwan Rhinos", score: "133/9", overs: "20.0" },
+      rawScoreSummary: "SPR 136/7 (19.5); CR 133/9 (20.0)",
+      result: "Sudurpaschim Royals won by 3 wickets (with 1 ball remaining)",
+      winnerTeamId: "sudurpaschim-royals",
+      playerOfTheMatch: {
+        name: "Tharindu Ratnayake",
+        playerSlug: "tharindu-ratnayake",
+        stats: "53* off 42 balls & 2 wickets — All-round match-winning performance",
+      },
+      scorecardAvailable: true,
+      notes: "Sudurpaschim Royals advance to the Final; Chitwan Rhinos eliminated.",
+    },
+    {
+      id: "match-32",
+      stage: "Final",
+      date: "2026-11-21",
+      formattedDate: "21 November 2026",
+      team1: { id: "lumbini-lions", name: "Lumbini Lions", score: "155/6", overs: "20.0" },
+      team2: { id: "sudurpaschim-royals", name: "Sudurpaschim Royals", score: "158/0", overs: "13.3" },
+      rawScoreSummary: "LL 155/6 (20.0); SPR 158/0 (13.3)",
+      result: "Sudurpaschim Royals won by 10 wickets (with 39 balls remaining)",
+      winnerTeamId: "sudurpaschim-royals",
+      playerOfTheMatch: {
+        name: "George Munsey",
+        playerSlug: "george-munsey",
+        stats: "125* off 54 balls (8x4, 12x6, SR: 231.48) — First century in an NPL Final",
+      },
+      scorecardAvailable: true,
+      notes: "Sudurpaschim Royals are crowned NPL Season 3 Champions 2026. George Munsey's 125* is the highest score in NPL Final history. Dipendra Singh Airee named Player of the Tournament.",
     },
   ],
 
@@ -1169,6 +1273,26 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
         items: [
         {
                 "rank": 1,
+                "playerName": "George Munsey",
+                "playerSlug": "george-munsey",
+                "teamId": "sudurpaschim-royals",
+                "teamName": "Sudurpaschim Royals",
+                "value": 125,
+                "metricLabel": "runs",
+                "secondaryDetail": "vs Lumbini Lions (Final, 54 balls, 8x4, 12x6, 125*)"
+        },
+        {
+                "rank": 2,
+                "playerName": "Kamil Mishara",
+                "playerSlug": "kamil-mishara",
+                "teamId": "chitwan-rhinos",
+                "teamName": "Chitwan Rhinos",
+                "value": 120,
+                "metricLabel": "runs",
+                "secondaryDetail": "vs Kathmandu Gorkhas (Eliminator, 59 balls, 5x4, 10x6, 120*)"
+        },
+        {
+                "rank": 3,
                 "playerName": "Yuvraaj Samra",
                 "playerSlug": "yuvraaj-samra",
                 "teamId": "pokhara-avengers",
@@ -1178,7 +1302,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "secondaryDetail": "vs Karnali Yaks (48 balls, 7x4, 10x6)"
         },
         {
-                "rank": 2,
+                "rank": 4,
                 "playerName": "Kushal Bhurtel",
                 "playerSlug": "kushal-bhurtel",
                 "teamId": "pokhara-avengers",
@@ -1188,7 +1312,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "secondaryDetail": "vs Kathmandu Gorkhas (51 balls, 5x4, 8x6)"
         },
         {
-                "rank": 3,
+                "rank": 5,
                 "playerName": "Lokesh Bam",
                 "playerSlug": "lokesh-bam",
                 "teamId": "biratnagar-kings",
@@ -1198,7 +1322,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "secondaryDetail": "vs Karnali Yaks (52 balls, 9x4, 5x6)"
         },
         {
-                "rank": 4,
+                "rank": 6,
                 "playerName": "Yuvraaj Samra",
                 "playerSlug": "yuvraaj-samra",
                 "teamId": "pokhara-avengers",
@@ -1208,7 +1332,17 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "secondaryDetail": "vs Biratnagar Kings (47 balls, 7x4, 5x6)"
         },
         {
-                "rank": 5,
+                "rank": 7,
+                "playerName": "Dawid Malan",
+                "playerSlug": "dawid-malan",
+                "teamId": "chitwan-rhinos",
+                "teamName": "Chitwan Rhinos",
+                "value": 71,
+                "metricLabel": "runs",
+                "secondaryDetail": "vs Sudurpaschim Royals (Qualifier 2, 51 balls, 9x4, 2x6, 71*)"
+        },
+        {
+                "rank": 8,
                 "playerName": "Saif Hassan",
                 "playerSlug": "saif-hassan",
                 "teamId": "janakpur-bolts",

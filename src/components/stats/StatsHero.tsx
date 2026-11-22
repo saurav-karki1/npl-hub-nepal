@@ -86,7 +86,7 @@ export function StatsHero({
             <div className="rounded-[var(--radius-md)] border border-emerald-500/30 bg-emerald-950/40 p-3 sm:p-4 text-xs sm:text-sm text-emerald-100 flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2.5">
                 <span className="text-amber-400 font-bold uppercase text-[10px] tracking-wider px-2 py-0.5 rounded-sm bg-amber-400/10 border border-amber-400/20">
-                  Defending Champions
+                  {selectedSeasonId === "season-3" ? "Champions 🏆" : "Season 2 Champions"}
                 </span>
                 <div className="flex items-center gap-2">
                   <TeamLogo
@@ -119,7 +119,7 @@ export function StatsHero({
               )}
 
               <div className="ml-auto text-emerald-300/70 text-xs">
-                TU Cricket Ground · 17 Nov – 13 Dec 2025
+                TU Cricket Ground · {summary.dates}
               </div>
             </div>
           )}

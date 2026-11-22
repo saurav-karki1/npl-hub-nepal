@@ -69,8 +69,8 @@ export function PointsTableHeader({ standings }: PointsTableHeaderProps) {
           <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-ink-muted)] block">
             Tournament Status
           </span>
-          <span className="text-xs sm:text-sm font-bold text-amber-700">
-            {standings.hasResults ? "In Progress" : "Pre-Season (Starts 26 Oct)"}
+          <span className="text-xs sm:text-sm font-bold text-emerald-700">
+            {standings.totalMatchesCompleted >= 28 ? "Completed (Champions: Sudurpaschim Royals 🏆)" : standings.hasResults ? "In Progress" : "Pre-Season"}
           </span>
         </div>
       </div>

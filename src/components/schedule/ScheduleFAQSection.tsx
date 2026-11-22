@@ -7,34 +7,34 @@ interface FAQItem {
 
 const FAQS: FAQItem[] = [
   {
-    question: "When does Nepal Premier League (NPL) Season 3 start?",
+    question: "Who won Nepal Premier League (NPL) Season 3 (2026)?",
     answer:
-      "NPL Season 3 is scheduled to run from 26 October 2026 to 21 November 2026 (९ कार्तिक – ५ मंसिर २०८३ BS). The opening match features Lumbini Lions vs Sudurpaschim Royals at the TU International Cricket Stadium, Kirtipur.",
+      "Sudurpaschim Royals won NPL Season 3 (2026), defeating Lumbini Lions by 10 wickets in the Grand Final at TU International Cricket Stadium on 21 November 2026. George Munsey scored a historic 125 not out off 54 balls to seal the title.",
   },
   {
-    question: "Are the NPL Season 3 fixtures and match dates on this page officially confirmed?",
+    question: "When did Nepal Premier League (NPL) Season 3 take place?",
     answer:
-      "Yes, the tournament dates (26 October – 21 November 2026 / ९ कार्तिक – ५ मंसिर २०८३ BS) and the 32-fixture schedule structure have been officially announced by the Cricket Association of Nepal (CAN) and authorized sources. Match dates, opening clash (Lumbini Lions vs Sudurpaschim Royals), and the TU Cricket Stadium venue are set.",
+      "NPL Season 3 was played from 26 October 2026 to 21 November 2026 (९ कार्तिक – ५ मंसिर २०८३ BS). All 32 matches (28 league fixtures and 4 playoffs) were completed at the Tribhuvan University International Cricket Ground, Kirtipur.",
   },
   {
-    question: "Where will the official NPL Season 3 schedule be published?",
+    question: "What were the results of the NPL Season 3 playoffs?",
     answer:
-      "All officially confirmed NPL Season 3 fixtures, match timings, and broadcast schedules will be published directly on this Schedule page on NPL Hub Nepal immediately following release by CAN.",
+      "In Qualifier 1, Lumbini Lions beat Sudurpaschim Royals by 6 wickets to reach the Final. In the Eliminator, Chitwan Rhinos beat Kathmandu Gorkhas by 61 runs (Kamil Mishara 120*). In Qualifier 2, Sudurpaschim Royals edged Chitwan Rhinos by 3 wickets. In the Final, Sudurpaschim Royals chased down 156 without losing a wicket (158/0 in 13.3 ov) to become Champions.",
   },
   {
-    question: "Where are Nepal Premier League matches played?",
+    question: "Where were Nepal Premier League Season 3 matches played?",
     answer:
-      "The primary venue for NPL matches is the Tribhuvan University (TU) International Cricket Stadium in Kirtipur, Kathmandu. All 32 matches including the playoffs are slated to be hosted at TU Ground.",
+      "All 32 matches of NPL Season 3 were hosted at the Tribhuvan University (TU) International Cricket Stadium in Kirtipur, Kathmandu, Nepal.",
   },
   {
-    question: "What time do NPL matches take place in Nepal?",
+    question: "Who won the Player of the Tournament and Player of the Final awards?",
     answer:
-      "NPL Season 3 league matches are scheduled in two standard daily slots: afternoon double-header fixtures starting at 12:30 PM NPT and evening fixtures at 5:00 PM NPT. Playoff match timings will be published once CAN confirms the playoff broadcast arrangements.",
+      "George Munsey of Sudurpaschim Royals was named Player of the Match in the Final for his record-breaking 125* off 54 balls. Dipendra Singh Airee, captain of Sudurpaschim Royals, was named Player of the Tournament for his all-round excellence throughout Season 3.",
   },
   {
-    question: "Where can I find NPL match results and the updated points table?",
+    question: "Where can I find complete NPL Season 3 statistics and scorecards?",
     answer:
-      "Live match updates, final scorecards, and the real-time points table with net run rates (NRR) are tracked continuously on NPL Hub Nepal's dedicated Points Table and Match Results sections.",
+      "Complete match scorecards, batting and bowling leaderboards, team standings, and multi-season records are available on NPL Hub Nepal's dedicated Statistics (/stats) and Points Table (/points-table) hubs.",
   },
 ];
 

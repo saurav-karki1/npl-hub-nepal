@@ -204,28 +204,35 @@ function CountdownCard({ state, teamsByMatchId, nowMs, reducedMotion }: Countdow
   // ---------------------------------------------------------------------------
   if (state.type === "season_complete") {
     return (
-      <div className={baseCardClass} role="region" aria-label="Season status">
-        <div className="text-center py-4 space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#c89f2a]/20 border border-[#c89f2a]/40 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[#c89f2a]">
-            <span className="w-2 h-2 rounded-full bg-[#c89f2a]" aria-hidden="true" />
-            NPL Season 3
+      <div className={baseCardClass} role="region" aria-label="Season 3 Championship">
+        <div className="text-center py-4 space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#c89f2a]/20 border border-[#c89f2a]/40 px-3 py-1 text-xs font-bold uppercase tracking-wider text-[#c89f2a]">
+            <span>🏆</span>
+            Season 3 Champions
           </div>
-          <h3 className="text-lg font-black text-white">Season 3 Complete</h3>
-          <p className="text-xs text-emerald-200/80">
-            Thank you for following Nepal Premier League Season 3.
+          <div className="space-y-1">
+            <h3 className="text-xl font-black text-white tracking-tight">
+              Sudurpaschim Royals
+            </h3>
+            <p className="text-xs text-amber-300 font-semibold">
+              Won Final by 10 Wickets
+            </p>
+          </div>
+          <p className="text-[11px] text-emerald-200/80 leading-relaxed max-w-[260px] mx-auto">
+            George Munsey 125* (54) · Dipendra Singh Airee Player of the Tournament
           </p>
-          <div className="flex justify-center gap-3 pt-2">
+          <div className="flex justify-center gap-2.5 pt-1.5">
             <Link
-              href="/stats"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-[4px] bg-[#c89f2a] text-zinc-950 hover:bg-[#b58f23] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c89f2a]"
+              href="/matches/match-32-npl-season-3-final"
+              className="inline-flex items-center gap-1 px-3.5 py-2 text-xs font-bold rounded-[4px] bg-[#c89f2a] text-zinc-950 hover:bg-[#b58f23] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#c89f2a]"
             >
-              Season Stats
+              Final Scorecard →
             </Link>
             <Link
-              href="/points-table"
-              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-[4px] border border-white/25 text-white hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+              href="/stats"
+              className="inline-flex items-center gap-1 px-3.5 py-2 text-xs font-bold rounded-[4px] border border-white/25 text-white hover:bg-white/10 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
             >
-              Points Table
+              Season Stats
             </Link>
           </div>
         </div>

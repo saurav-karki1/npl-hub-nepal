@@ -29,10 +29,9 @@ export function AboutHero() {
             </h1>
             <p className="mt-3 text-sm sm:text-base text-emerald-100/80 leading-relaxed max-w-3xl">
               An independent, comprehensive guide to Nepal’s premier domestic
-              Twenty20 cricket competition. Featuring 8 regional franchise
-              teams, 32 high-stakes fixtures, and complete tournament coverage
-              from Tribhuvan University International Cricket Stadium in
-              Kirtipur.
+              Twenty20 cricket competition. NPL Season 3 concluded on 21 November 2026,
+              with Sudurpaschim Royals crowned Champions following a historic 10-wicket
+              victory over Lumbini Lions in the Grand Final.
             </p>
           </div>
 

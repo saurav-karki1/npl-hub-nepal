@@ -102,8 +102,8 @@ console.log('--- PLAYOFF FIXTURES STATUS VERIFICATION (Matches 29-32) ---');
 const expectedPlayoffs = [
   { matchNumber: 29, stage: 'Qualifier 1', t1Id: 'sudurpaschim-royals', t2Id: 'lumbini-lions', t1Pl: null, t2Pl: null },
   { matchNumber: 30, stage: 'Eliminator', t1Id: 'kathmandu-gorkhas', t2Id: 'chitwan-rhinos', t1Pl: null, t2Pl: null },
-  { matchNumber: 31, stage: 'Qualifier 2', t1Id: 'sudurpaschim-royals', t2Id: null, t1Pl: null, t2Pl: 'elim-winner' },
-  { matchNumber: 32, stage: 'Final', t1Id: 'lumbini-lions', t2Id: null, t1Pl: null, t2Pl: 'q2-winner' },
+  { matchNumber: 31, stage: 'Qualifier 2', t1Id: 'sudurpaschim-royals', t2Id: 'chitwan-rhinos', t1Pl: null, t2Pl: null },
+  { matchNumber: 32, stage: 'Final', t1Id: 'lumbini-lions', t2Id: 'sudurpaschim-royals', t1Pl: null, t2Pl: null },
 ];
 
 for (const exp of expectedPlayoffs) {

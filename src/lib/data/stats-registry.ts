@@ -8,6 +8,7 @@
 import { SeasonId, SeasonStatsDataset } from "./stats-types";
 import { SEASON_2_STATS_DATASET } from "./stats-season2-data";
 import { SEASON_3_STATS_DATASET } from "./stats-season3-data";
+import { SEASON_4_STATS_DATASET } from "./stats-season4-data";
 import { NPL_PLAYERS } from "./players-data";
 import { TeamDetail, getTeamBySlug } from "./teams-data";
 
@@ -26,8 +27,8 @@ export const AVAILABLE_SEASONS: SeasonOption[] = [
     name: "NPL Season 3 (2026)",
     shortName: "Season 3 — 2026",
     year: 2026,
-    status: "in-progress",
-    badgeText: "Current Tournament",
+    status: "completed",
+    badgeText: "Season 3 Champion: Sudurpaschim Royals",
   },
   {
     id: "season-2",
@@ -37,11 +38,21 @@ export const AVAILABLE_SEASONS: SeasonOption[] = [
     status: "completed",
     badgeText: "Verified Historical",
   },
+  {
+    id: "season-4",
+    name: "NPL Season 4 (2027)",
+    shortName: "Season 4 — 2027",
+    year: 2027,
+    status: "pre-tournament",
+    badgeText: "Coming Soon (Future)",
+  },
 ];
 
 /** Lookup statistics dataset by season id */
 export function getSeasonStats(seasonId: SeasonId = "season-3"): SeasonStatsDataset {
   switch (seasonId) {
+    case "season-4":
+      return SEASON_4_STATS_DATASET;
     case "season-3":
       return SEASON_3_STATS_DATASET;
     case "season-2":
@@ -53,7 +64,7 @@ export function getSeasonStats(seasonId: SeasonId = "season-3"): SeasonStatsData
 
 /** Check if a given string is a valid season id */
 export function isValidSeasonId(id: string): id is SeasonId {
-  return id === "season-2" || id === "season-3";
+  return id === "season-2" || id === "season-3" || id === "season-4";
 }
 
 /**
