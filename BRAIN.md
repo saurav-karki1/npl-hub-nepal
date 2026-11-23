@@ -831,3 +831,19 @@ pl-season-3-schedule-venues-announced) Ã¯Â¿Â½ title, excerpt, all body content c
     - `npm run validate:playoff`: âœ… Passed (64/64 sides valid).
     - TypeScript compilation (`npx tsc --noEmit`): âœ… 0 errors.
     - Production build (`npm run build`): âœ… Successfully compiled and statically generated all **242 static/dynamic routes** with 0 errors.
+
+## [c01b6ab] 2026-11-23 — Final Season 3 Leaderboards + Collapsible Scoreboard UI
+- **Most Runs leaderboard** (stats-season3-data.ts) updated with verified final tournament totals
+  incorporating all 32 matches (28 league + 4 playoffs):
+  #1 Yuvraaj Samra 294 (Platinum Cap) · #2 Lokesh Bam 242 · #3 Ravi Bopara 237 ·
+  #4 Kushal Bhurtel 235 · #5 Dawid Malan 220 · #6 Dipendra Singh Airee 217 ·
+  #7 Rashid Khan 198 · #8 Kamil Mishara 189 · #9 Ariful Islam 182 · #10 Niroshan Dickwella 178.
+- **Most Wickets leaderboard** updated with final season totals:
+  #1 Rijan Dhakal 17 (Golden Cap) · #2 Scott Kuggeleijn 15 · #3 Kamal Airee 13 ·
+  #4 Rahul Yadav 12 · #5 Jahandad Khan 12 · #6 Harmeet Singh 11 · #7 Sher Malla 11 · #8 Mark Watt 11.
+  Sources: nplt20league.com, risingnepaldaily.com, statsnpl.com, kantipurmax.com.
+- **PlayerLeaderboardsSection.tsx** converted to 'use client' component with collapsible rows:
+  - Default view shows top 5 entries per leaderboard card.
+  - 'See all N' button expands; 'Show less' collapses. No page reload.
+  - Updated verification notice with accurate award citations.
+- Build: tsc 0 errors · 242 routes compiled · pushed to origin/master + origin/main.
