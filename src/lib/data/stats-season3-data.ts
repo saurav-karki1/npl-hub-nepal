@@ -1173,7 +1173,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "teamName": "Pokhara Avengers",
                 "value": 294,
                 "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 102 · Avg: 42.00 · SR: 183.75"
+                "secondaryDetail": "4 inns · HS: 102 · Avg: 73.50 · SR: 179.27"
         },
         {
                 "rank": 2,
@@ -1183,87 +1183,87 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "teamName": "Biratnagar Kings",
                 "value": 242,
                 "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 87 · Avg: 40.33 · SR: 148.47"
+                "secondaryDetail": "7 inns · HS: 87 · Avg: 34.57 · SR: 142.35"
         },
         {
                 "rank": 3,
+                "playerName": "Ravi Bopara",
+                "playerSlug": "ravi-bopara",
+                "teamId": "chitwan-rhinos",
+                "teamName": "Chitwan Rhinos",
+                "value": 237,
+                "metricLabel": "runs",
+                "secondaryDetail": "7 inns · HS: 55 · Avg: 39.50 · SR: 121.54"
+        },
+        {
+                "rank": 4,
                 "playerName": "Kushal Bhurtel",
                 "playerSlug": "kushal-bhurtel",
                 "teamId": "pokhara-avengers",
                 "teamName": "Pokhara Avengers",
                 "value": 235,
                 "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 99 · Avg: 33.57 · SR: 162.07"
+                "secondaryDetail": "7 inns · HS: 99 · Avg: 33.57 · SR: 148.73"
         },
         {
-                "rank": 4,
+                "rank": 5,
+                "playerName": "Dawid Malan",
+                "playerSlug": "dawid-malan",
+                "teamId": "chitwan-rhinos",
+                "teamName": "Chitwan Rhinos",
+                "value": 220,
+                "metricLabel": "runs",
+                "secondaryDetail": "6 inns · HS: 71* · Avg: 55.00 · SR: 118.28"
+        },
+        {
+                "rank": 6,
                 "playerName": "Dipendra Singh Airee",
                 "playerSlug": "dipendra-singh-airee",
                 "teamId": "sudurpaschim-royals",
                 "teamName": "Sudurpaschim Royals",
-                "value": 202,
+                "value": 217,
                 "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 60 · Avg: 28.86 · SR: 141.26"
-        },
-        {
-                "rank": 5,
-                "playerName": "Rashid Khan",
-                "playerSlug": "rashid-khan",
-                "teamId": "lumbini-lions",
-                "teamName": "Lumbini Lions",
-                "value": 186,
-                "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 55 · Avg: 26.57 · SR: 196.84"
-        },
-        {
-                "rank": 6,
-                "playerName": "Ravi Bopara",
-                "playerSlug": "ravi-bopara",
-                "teamId": "chitwan-rhinos",
-                "teamName": "Chitwan Rhinos",
-                "value": 184,
-                "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 55 · Avg: 26.29 · SR: 134.31"
+                "secondaryDetail": "9 inns · HS: 60 · Avg: 27.12 · SR: 106.37"
         },
         {
                 "rank": 7,
+                "playerName": "Rashid Khan",
+                "playerSlug": "rashid-khan",
+                "teamId": "kathmandu-gorkhas",
+                "teamName": "Kathmandu Gorkhas",
+                "value": 198,
+                "metricLabel": "runs",
+                "secondaryDetail": "7 inns · HS: 52 · Avg: 33.00 · SR: 135.62"
+        },
+        {
+                "rank": 8,
+                "playerName": "Kamil Mishara",
+                "playerSlug": "kamil-mishara",
+                "teamId": "chitwan-rhinos",
+                "teamName": "Chitwan Rhinos",
+                "value": 189,
+                "metricLabel": "runs",
+                "secondaryDetail": "5 inns · HS: 120* · Avg: 47.25 · SR: 196.88"
+        },
+        {
+                "rank": 9,
                 "playerName": "Ariful Islam",
                 "playerSlug": "ariful-islam",
                 "teamId": "karnali-yaks",
                 "teamName": "Karnali Yaks",
                 "value": 182,
                 "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 44 · Avg: 26.00 · SR: 171.70"
+                "secondaryDetail": "7 inns · HS: 44 · Avg: 26.00 · SR: 171.70"
         },
         {
-                "rank": 8,
-                "playerName": "Pawan Sarraf",
-                "playerSlug": "pawan-sarraf",
-                "teamId": "karnali-yaks",
-                "teamName": "Karnali Yaks",
-                "value": 167,
-                "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 37 · Avg: 23.86 · SR: 97.66"
-        },
-        {
-                "rank": 9,
+                "rank": 10,
                 "playerName": "Niroshan Dickwella",
                 "playerSlug": "niroshan-dickwella",
                 "teamId": "lumbini-lions",
                 "teamName": "Lumbini Lions",
-                "value": 150,
+                "value": 178,
                 "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 59* · Avg: 21.43 · SR: 158.73"
-        },
-        {
-                "rank": 10,
-                "playerName": "Dawid Malan",
-                "playerSlug": "dawid-malan",
-                "teamId": "chitwan-rhinos",
-                "teamName": "Chitwan Rhinos",
-                "value": 149,
-                "metricLabel": "runs",
-                "secondaryDetail": "7 matches · HS: 70 · Avg: 21.29 · SR: 128.45"
+                "secondaryDetail": "9 inns · HS: 59* · Avg: 22.25 · SR: 155.65"
         }
 ],
       },
@@ -1411,16 +1411,36 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
         items: [
         {
                 "rank": 1,
+                "playerName": "Rijan Dhakal",
+                "playerSlug": "rijan-dhakal",
+                "teamId": "chitwan-rhinos",
+                "teamName": "Chitwan Rhinos",
+                "value": 17,
+                "metricLabel": "wickets",
+                "secondaryDetail": "8 matches · BB: 4/16 · Econ: 6.22 · 🏅 Golden Cap"
+        },
+        {
+                "rank": 2,
+                "playerName": "Scott Kuggeleijn",
+                "playerSlug": "scott-kuggeleijn",
+                "teamId": "sudurpaschim-royals",
+                "teamName": "Sudurpaschim Royals",
+                "value": 15,
+                "metricLabel": "wickets",
+                "secondaryDetail": "11 matches · BB: 3/13 · Econ: 7.97"
+        },
+        {
+                "rank": 3,
                 "playerName": "Kamal Airee",
                 "playerSlug": "kamal-airee",
                 "teamId": "chitwan-rhinos",
                 "teamName": "Chitwan Rhinos",
-                "value": 12,
+                "value": 13,
                 "metricLabel": "wickets",
-                "secondaryDetail": "6 matches · BB: 4/26 · Econ: 5.72"
+                "secondaryDetail": "8 matches · BB: 4/26 · Econ: 5.58"
         },
         {
-                "rank": 2,
+                "rank": 4,
                 "playerName": "Rahul Yadav",
                 "playerSlug": "rahul-yadav",
                 "teamId": "janakpur-bolts",
@@ -1430,47 +1450,37 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "secondaryDetail": "7 matches · BB: 4/31 · Econ: 6.87"
         },
         {
-                "rank": 3,
-                "playerName": "Rijan Dhakal",
-                "playerSlug": "rijan-dhakal",
-                "teamId": "chitwan-rhinos",
-                "teamName": "Chitwan Rhinos",
-                "value": 12,
-                "metricLabel": "wickets",
-                "secondaryDetail": "6 matches · BB: 4/24 · Econ: 6.63"
-        },
-        {
-                "rank": 4,
+                "rank": 5,
                 "playerName": "Jahandad Khan",
                 "playerSlug": "jahandad-khan",
                 "teamId": "kathmandu-gorkhas",
                 "teamName": "Kathmandu Gorkhas",
                 "value": 12,
                 "metricLabel": "wickets",
-                "secondaryDetail": "7 matches · BB: 4/23 · Econ: 7.83"
+                "secondaryDetail": "7 matches · BB: 4/23 · Econ: 7.86"
         },
         {
-                "rank": 5,
+                "rank": 6,
                 "playerName": "Harmeet Singh",
                 "playerSlug": "harmeet-singh",
                 "teamId": "janakpur-bolts",
                 "teamName": "Janakpur Bolts",
                 "value": 11,
                 "metricLabel": "wickets",
-                "secondaryDetail": "7 matches · BB: 4/17 · Econ: 5.70"
+                "secondaryDetail": "7 matches · BB: 4/17 · Econ: 5.66"
         },
         {
-                "rank": 6,
+                "rank": 7,
                 "playerName": "Sher Malla",
                 "playerSlug": "sher-malla",
                 "teamId": "lumbini-lions",
                 "teamName": "Lumbini Lions",
                 "value": 11,
                 "metricLabel": "wickets",
-                "secondaryDetail": "7 matches · BB: 3/11 · Econ: 5.65"
+                "secondaryDetail": "7 matches · BB: 3/11 · Econ: 6.14"
         },
         {
-                "rank": 7,
+                "rank": 8,
                 "playerName": "Mark Watt",
                 "playerSlug": "mark-watt",
                 "teamId": "karnali-yaks",
@@ -1480,16 +1490,6 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "secondaryDetail": "7 matches · BB: 4/12 · Econ: 6.19"
         },
         {
-                "rank": 8,
-                "playerName": "Scott Kuggeleijn",
-                "playerSlug": "scott-kuggeleijn",
-                "teamId": "sudurpaschim-royals",
-                "teamName": "Sudurpaschim Royals",
-                "value": 10,
-                "metricLabel": "wickets",
-                "secondaryDetail": "8 matches · BB: 3/13 · Econ: 8.44"
-        },
-        {
                 "rank": 9,
                 "playerName": "Hussain Talat",
                 "playerSlug": "hussain-talat",
@@ -1497,7 +1497,7 @@ export const SEASON_3_STATS_DATASET: SeasonStatsDataset = {
                 "teamName": "Karnali Yaks",
                 "value": 10,
                 "metricLabel": "wickets",
-                "secondaryDetail": "6 matches · BB: 3/17 · Econ: 7.57"
+                "secondaryDetail": "7 matches · BB: 3/17 · Econ: 7.57"
         },
         {
                 "rank": 10,
